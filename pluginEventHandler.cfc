@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 		Document:	pluginEventHandler.cfc
 		Author:		Steve Withington | www.stephenwithington.com
-		Modified:	2011.02.04
+		Modified:	2011.03.14
 
 --->
 <cfcomponent extends="mura.plugin.pluginGenericEventHandler">
@@ -140,25 +140,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 			return result;
 		</cfscript>
-	</cffunction>
-
-	<cffunction name="checkFrameworkConfig" output="false">
-		<cfargument name="$" />
-		<cfset var str="">
-		<cfset var configPath="#expandPath('/plugins')#/#variables.pluginConfig.getDirectory()#/frameworkConfig.cfm">
-		<cfset var lineBreak=chr(13) & chr(10)>
-		<cfif variables.framework.applicationKey neq variables.pluginConfig.getPackage() & lineBreak>
-			<cfset str='<cfset variables.framework=structNew()>' & lineBreak>
-			<cfset str=str & '<cfset variables.framework.applicationKey="#variables.pluginConfig.getPackage()#">' & lineBreak>
-			<cfset str=str & '<cfset variables.framework.base="/#variables.pluginConfig.getPackage()#">' & lineBreak>
-			<cfset str=str & '<cfset variables.framework.usingsubsystems=false>' & lineBreak>
-			<cfset str=str & '<cfset variables.framework.action="action">' & lineBreak>
-			<cfset str=str & '<cfset variables.framework.home="main.default">' & lineBreak>
-			<cfset str=str & '<cfset variables.framework.baseURL="useRequestURI">' & lineBreak>
-			<cfset str=str & '<cfset variables.framework.SESOmitIndex="true">' & lineBreak>
-			<cfset $.getBean('fileWriter').writeFile(file=configPath, output=str)>
-			<cfinclude template="frameworkConfig.cfm">
-		</cfif>
 	</cffunction>
 	
 	<cffunction name="preseveInternalState" output="false">
