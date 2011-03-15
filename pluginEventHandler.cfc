@@ -51,10 +51,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
     </cffunction>
 
 	<cffunction name="onRenderStart" output="false" returntype="any">
-		<cfargument name="$" />
+		<cfargument name="$" required="true" hint="mura scope" />
 		<cfscript>
-			// this allows you to call methods here by accessing '$.mfw1.methodName(argumentCollection=args)'
-			$.mfw1 = this;
+			// this allows you to call methods here by accessing '$.{yourApplicationKey}.methodName(argumentCollection=args)'
+			$[variables.framework.applicationKey] = this;
 		</cfscript>
 	</cffunction>
 
