@@ -17,17 +17,32 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-		Document:	/public/controllers/main.cfc
+		Document:	/admin/controllers/controller.cfc
 		Author:		Steve Withington | www.stephenwithington.com
-		Modified:	2011.02.04
+		Modified:	2011.03.15
+		Notes:		All ADMIN controllers should EXTEND this file.
 
 --->
-<cfcomponent extends="controller" output="false">
+<cfcomponent extends="mura.cfobject" output="false">
 
-	<!--- ********************************* PAGES ******************************************* --->
+	<cfscript>
+		variables.fw = '';
 
-	<cffunction name="default" output="false" returntype="any">
-		<cfargument name="rc" required="true" />
-	</cffunction>
+		function init ( fw ) {
+			variables.fw = arguments.fw;
+		};
+
+		function before ( rc ) {
+			var $ = StructNew();
+			if ( StructKeyExists(rc, '$') ) {
+				$ = rc.$;
+			};
+
+			if ( rc.isFrontEndRequest ) {
+				fw.redirect(action='public:main.default');
+			};
+			
+		};
+	</cfscript>
 
 </cfcomponent>

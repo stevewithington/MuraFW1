@@ -19,32 +19,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 		Document:	/admin/controllers/main.cfc
 		Author:		Steve Withington | www.stephenwithington.com
-		Modified:	2011.02.04
+		Modified:	2011.03.15
 
 --->
-<cfcomponent extends="mura.cfobject" output="false">
+<cfcomponent extends="controller" output="false">
 
-	<cfscript>
-		variables.fw = '';
+	<!--- ********************************* PAGES ******************************************* --->
 
-		function init ( fw ) {
-			variables.fw = arguments.fw;
-		};
-
-		function before ( rc ) {
-			var $ = StructNew();
-			if ( StructKeyExists(rc, '$') ) {
-				$ = rc.$;
-			};
-
-			if ( rc.isFrontEndRequest ) {
-				fw.redirect(action='public:main.default');
-			};
-			
-		};
-	</cfscript>
-
-	<!--- ************ pages *************** --->
 	<cffunction name="default" output="false" returntype="any">
 		<cfargument name="rc" />
 		<!---<cfparam name="rc.save" default="false" />

@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 		Document:	pluginEventHandler.cfc
 		Author:		Steve Withington | www.stephenwithington.com
-		Modified:	2011.03.14
+		Modified:	2011.03.15
 
 --->
 <cfcomponent extends="mura.plugin.pluginGenericEventHandler">
@@ -64,17 +64,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		<cfargument name="$" required="true" hint="mura scope" />
 		<cfargument name="action" required="false" default="" 
 			hint="if only rendering a 'widget', then pass in the action such as 'public:main.default' ... otherwise, just leave it blank!" />
-		<cfreturn doEvent(arguments.$,arguments.action) />
+		<cfreturn doAction(arguments.$,arguments.action) />
 	</cffunction>
 
 	<!--- ********** FW/1 ************* --->
-
-	<cffunction name="doEvent" output="false">
-		<cfargument name="$" required="true" />
-		<cfargument name="action" type="string" required="false" default="" 
-					hint="Optional: If not passed it looks into the event for a defined action, else it uses the default" />
-		<cfreturn doAction(arguments.$,arguments.action) />
-	</cffunction>
 	
 	<cffunction name="doAction" output="false">
 		<cfargument name="$" />
