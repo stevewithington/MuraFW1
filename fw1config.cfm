@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 		Document:	fw1config.cfm
 		Author:		Steve Withington | www.stephenwithington.com
-		Modified:	2011.02.04
+		Modified:	2011.03.30
 
 --->
 <cfscript>
@@ -27,6 +27,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 	// !important: enter the plugin packageName here. must be the same as found in '/plugin/config.xml.cfm'
 	framework.package = 'muraFW1';
+	
+	// change to TRUE if you're developing the plugin so you can see changes in your controllers, etc.
+	framework.reloadApplicationOnEveryRequest = false;
 
 	// less commonly modified
 	framework.defaultSection = 'main';
@@ -40,7 +43,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	framework.action = 'action';
 	//framework.reload = 'reload';
 	//framework.password = 'appreload';
-	//framework.reloadApplicationOnEveryRequest = false;
 	framework.generateSES = false;
 	framework.SESOmitIndex = true;
 	framework.baseURL = 'useRequestURI';
