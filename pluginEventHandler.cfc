@@ -19,12 +19,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 		Document:	pluginEventHandler.cfc
 		Author:		Steve Withington | www.stephenwithington.com
-		Modified:	2011.03.15
+		Modified:	2011.07.12
 
 --->
 <cfcomponent extends="mura.plugin.pluginGenericEventHandler">
 
-	<cfset variables.preserveKeyList = 'context,base,cfcbase,subsystem,subsystembase,section,item,services,action,controllerExecutionStarted' />
+	<cfset variables.preserveKeyList = 'context,base,cfcbase,subsystem,subsystembase,section,item,services,action,controllerExecutionStarted,view,layout' />
 	<!--- Include FW/1 configuration that is shared between the Mura CMS and the FW/1 application. --->
 	<cfset variables.framework = getFramework() />
 

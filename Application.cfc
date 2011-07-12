@@ -91,6 +91,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		</cfscript>
 	</cffunction>
 
+	<!--- this should only be used for dev --->
+	<cffunction name="onError" output="true">
+		<cfdump var="#arguments#" label="arguments" />
+		<cfdump var="#request#" label="request" />
+		<cfabort />
+	</cffunction>
+
 	<!--- ********************** HELPERS / Mura-specific *************************** --->
 	<cffunction name="secureRequest" output="false">
 		<cfif isAdminRequest() and not IsUserInRole('S2')>
