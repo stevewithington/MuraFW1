@@ -55,6 +55,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		<cfscript>
 			// this allows you to call methods here by accessing '$.{yourApplicationKey}.methodName(argumentCollection=args)'
 			$[variables.framework.applicationKey] = this;
+			// a reference to the deployed directory, useful for generating frontend admin links
+			$.pluginDirectory = variables.pluginConfig.getDirectory();
 		</cfscript>
 	</cffunction>
 

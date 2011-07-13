@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 --->
 </cfsilent>
+<cfparam name="rc.compactDisplay" default="false">
 <cfsavecontent variable="local.newBody">
 	<cfoutput>
 		<div class="mfw1adminblock">
@@ -53,4 +54,4 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		</div>
 	</cfoutput>
 </cfsavecontent>
-<cfoutput>#application.pluginManager.renderAdminTemplate(body=local.newBody,pageTitle=rc.pc.getName())#</cfoutput>
+<cfoutput>#application.pluginManager.renderAdminTemplate(body=local.newBody,pageTitle=rc.pc.getName(),compactDisplay=rc.compactDisplay)#</cfoutput>
