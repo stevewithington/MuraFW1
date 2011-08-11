@@ -139,10 +139,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		<cfargument name="state" />
 		<cfset var preserveKeys=structNew()>
 		<cfset var k="">
-
-		<cfif StructKeyExists(request, 'controllers')>
-			<cfset StructDelete(request, 'controllers') />
-		</cfif>
 		
 		<cfloop list="#variables.preserveKeyList#" index="k">
 			<cfif isDefined("arguments.state.#k#")>
@@ -150,6 +146,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 				<cfset structDelete(arguments.state,k)>
 			</cfif>
 		</cfloop>
+		
+		<cfset StructDelete(arguments.state, 'controllers') />
 		<cfset structDelete( arguments.state, "serviceExecutionComplete" )>
 		<cfreturn preserveKeys>
 	</cffunction>
@@ -157,11 +155,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	<cffunction name="restoreInternalState" output="false">
 		<cfargument name="state" />
 		<cfargument name="restore" />
+		
 		<cfloop list="#variables.preserveKeyList#" index="k">
 			<cfset StructDelete(arguments.state,k)>
 		</cfloop>
-		<cfset StructAppend( state,restore, true )>
-		<cfset StructDelete( state, "serviceExecutionComplete" )>
+		
+		<cfset StructAppend( arguments.state, arguments.restore, true )>
+		<cfset StructDelete(arguments.state, 'controllers') />
+		<cfset StructDelete( arguments.state, "serviceExecutionComplete" )>
+		
 	</cffunction>
 
 	<!--- apparently needed for CF8 (thanks Grant Shepert!) --->
