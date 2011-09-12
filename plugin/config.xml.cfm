@@ -3,7 +3,7 @@
 	<package>muraFW1</package>
 	<directoryFormat>packageOnly</directoryFormat>
 	<loadPriority>5</loadPriority>
-	<version>2.324</version>
+	<version>2.325</version>
 	<provider>Steve Withington</provider>
 	<providerURL>http://stephenwithington.com</providerURL>
 	<category>Application</category>
