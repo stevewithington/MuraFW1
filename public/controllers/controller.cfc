@@ -19,7 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 		Document:	/public/controllers/controller.cfc
 		Author:		Steve Withington | www.stephenwithington.com
-		Modified:	2011.03.15
 		Notes:		All PUBLIC controllers should EXTEND this file.
 
 --->
@@ -38,7 +37,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 				$ = rc.$;
 			};
 			
-			if ( not rc.isFrontEndRequest ) {
+			if ( not variables.fw.isFrontEndRequest ) {
 				fw.redirect(action='admin:main.default');
 			};
 		};
