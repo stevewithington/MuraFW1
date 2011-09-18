@@ -19,7 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 		Document:	plugin/plugin.cfc
 		Author:		Steve Withington | www.stephenwithington.com
-		Modified:	2011.02.04
 
 --->
 <cfcomponent output="false" extends="mura.plugin.plugincfc">

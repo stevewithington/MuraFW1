@@ -20,13 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 		Document:	/public/views/main/default.cfm
 		Author:		Steve Withington | www.stephenwithington.com
-		Modified:	2011.02.04
 		Notes:		This is the 'default' view for the public
 
 --->
 </cfsilent>
 <p>Hello there! Welcome to the public view.</p>
-<cfif $.currentUser().isSuperUser()>
-	<cfoutput><a href="/plugins/#$.pluginDirectory#/index.cfm?action=admin:main.default&compactDisplay=true" rel="shadowbox;width=1100;">Admin</a></cfoutput>
-</cfif>
-

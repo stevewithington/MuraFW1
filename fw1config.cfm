@@ -19,17 +19,20 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 		Document:	fw1config.cfm
 		Author:		Steve Withington | www.stephenwithington.com
-		Modified:	2011.03.30
 
 --->
 <cfscript>
 	framework = StructNew();
 
-	// !important: enter the plugin packageName here. must be the same as found in '/plugin/config.xml.cfm'
+	// !important: enter the plugin packageName here. must be the same as found in '{context}/plugin/config.xml.cfm'
 	framework.package = 'muraFW1';
 	
 	// change to TRUE if you're developing the plugin so you can see changes in your controllers, etc.
 	framework.reloadApplicationOnEveryRequest = false;
+
+	// the 'action' defaults to your packageNameAction, i.e., 'muraFW1action' ... you may want to update this to something else.
+	// please try to avoid using simply 'action' so as not to conflict with other FW1 plugins
+	framework.action = framework.package & 'action';
 
 	// less commonly modified
 	framework.defaultSection = 'main';
@@ -40,9 +43,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	// ***** rarely modified *****
 	framework.applicationKey = framework.package;
 	framework.base = '/' & framework.package;
-	framework.action = 'action';
-	//framework.reload = 'reload';
-	//framework.password = 'appreload';
+	framework.reload = 'reload';
+	framework.password = 'appreload'; // IF you're NOT using the default reload key of 'appreload', then you'll need to update this!
 	framework.generateSES = false;
 	framework.SESOmitIndex = true;
 	framework.baseURL = 'useRequestURI';

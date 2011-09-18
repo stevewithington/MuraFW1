@@ -32,6 +32,12 @@ packageName.  Another important variable to note is
 variables.framework.baseURL='useRequestURI';  Do NOT change this setting! This setting is
 required in order for Mura CMS and FW/1 to coexist.
 
+Lastly, the framework.action defaults to your pacakgeName & 'action' ... i.e. if your
+packageName is 'muraFW1', the default action will be 'muraFW1action'.  This is to
+help prevent your plugin from intercepting another plugin's action.  So, if your
+packageName is not a valid ColdFusion variable name (i.e., begins with a number, etc.)
+then you will experience problems trying to get your application to work.
+
 Application.cfc
 This file extends fw1.cfc. Here is where you'll be able to edit common FW/1 methods
 such as setupApplication(), setupSession(), setupRequest(), setupSubsystem() if needed.
@@ -43,6 +49,7 @@ onRenderStart(), etc.
 
 
 ADDITIONAL RESOURCES
+MuraFW1 Project Home:		http://github.com/stevewithington/MuraFW1
 Mura CMS Project Home:		http://www.getmura.com
 Mura Support:				http://www.getmura.com/index.cfm/support/
 Mura Blog:					http://www.getmura.com/index.cfm/blog/

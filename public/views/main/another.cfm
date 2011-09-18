@@ -20,8 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 		Document:	/public/views/main/another.cfm
 		Author:		Steve Withington | www.stephenwithington.com
-		Modified:	2011.02.04
-		Notes:		
 
 --->
 </cfsilent>

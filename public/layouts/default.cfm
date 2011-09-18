@@ -20,7 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 		Document:	/public/layouts/default.cfm
 		Author:		Steve Withington | www.stephenwithington.com
-		Modified:	2011.02.04
 
 --->
 	<cfscript>
@@ -34,4 +33,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	<div class="clearfix">
 		#body#
 	</div>
+	<cfif $.currentUser().isSuperUser()>
+		<div class="clearfix">
+			<a href="#rc.$.globalConfig('context')#/plugins/#rc.pc.getDirectory()#/index.cfm?action=admin:main.default&compactDisplay=true" rel="shadowbox;width=1100;">Admin</a>
+		</div>
+	</cfif>
 </cfoutput>

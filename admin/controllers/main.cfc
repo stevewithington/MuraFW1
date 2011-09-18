@@ -19,7 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 		Document:	/admin/controllers/main.cfc
 		Author:		Steve Withington | www.stephenwithington.com
-		Modified:	2011.03.15
 
 --->
 <cfcomponent extends="controller" output="false">

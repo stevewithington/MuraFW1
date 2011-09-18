@@ -19,7 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 		Document:	pluginEventHandler.cfc
 		Author:		Steve Withington | www.stephenwithington.com
-		Modified:	2011.07.12
 
 --->
 <cfcomponent extends="mura.plugin.pluginGenericEventHandler">
@@ -55,8 +54,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		<cfscript>
 			// this allows you to call methods here by accessing '$.{yourApplicationKey}.methodName(argumentCollection=args)'
 			$[variables.framework.applicationKey] = this;
-			// a reference to the deployed directory, useful for generating frontend admin links
-			$.pluginDirectory = variables.pluginConfig.getDirectory();
 		</cfscript>
 	</cffunction>
 
@@ -141,14 +138,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		<cfargument name="state" />
 		<cfset var preserveKeys=structNew()>
 		<cfset var k="">
-		
 		<cfloop list="#variables.preserveKeyList#" index="k">
 			<cfif isDefined("arguments.state.#k#")>
 				<cfset preserveKeys[k]=arguments.state[k]>
 				<cfset structDelete(arguments.state,k)>
 			</cfif>
 		</cfloop>
-		
 		<cfset StructDelete(arguments.state, 'controllers') />
 		<cfset structDelete( arguments.state, "serviceExecutionComplete" )>
 		<cfreturn preserveKeys>
@@ -157,15 +152,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	<cffunction name="restoreInternalState" output="false">
 		<cfargument name="state" />
 		<cfargument name="restore" />
-		
 		<cfloop list="#variables.preserveKeyList#" index="k">
 			<cfset StructDelete(arguments.state,k)>
 		</cfloop>
-		
 		<cfset StructAppend( arguments.state, arguments.restore, true )>
 		<cfset StructDelete(arguments.state, 'controllers') />
 		<cfset StructDelete( arguments.state, "serviceExecutionComplete" )>
-		
 	</cffunction>
 
 	<!--- apparently needed for CF8 (thanks Grant Shepert!) --->

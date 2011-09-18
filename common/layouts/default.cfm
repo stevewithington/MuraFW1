@@ -20,7 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 		Document:	/common/layouts/default.cfm
 		Author:		Steve Withington | www.stephenwithington.com
-		Modified:	2011.03.30
 
 --->
 	<cfscript>

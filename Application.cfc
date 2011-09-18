@@ -19,7 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 		Document:	Application.cfc
 		Author:		Steve Withington | www.stephenwithington.com
-		Modified:	2011.02.04
 
 --->
 <cfcomponent extends="fw1">
@@ -65,6 +64,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 			// rc.pc and rc.pluginConfig
 			request.context.pc = application[variables.framework.applicationKey].pluginConfig;
 			request.context.pluginConfig = application[variables.framework.applicationKey].pluginConfig;
+			
+			request.context.action = variables.framework.action;
 		</cfscript>
 	</cffunction>
 
@@ -109,7 +110,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 	<cffunction name="isAdminRequest" output="false" returntype="boolean">
 		<cfscript>
-			if ( StructKeyExists(request, 'action') and ListFirst(request.action, ':') eq 'admin' ) {
+			//if ( StructKeyExists(request, 'action') and ListFirst(request.action, ':') eq 'admin' ) {
+			if ( StructKeyExists(request, variables.framework.action) and ListFirst(request[variables.framework.action], ':') eq 'admin' ) {
 				return true;
 			} else {
 				return false;
@@ -128,22 +130,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		<cfreturn framework />
 	</cffunction>
 
-	
 	<cffunction name="buildURL" access="public" output="false" hint="Appends compatDisplay to query string if the current template is in compactDisplay mode.">
 		<cfargument name="action" type="string" />
 		<cfargument name="path" type="string" default="#variables.framework.baseURL#" />
 		<cfargument name="queryString" type="string" default="" />
-		
 		<cfif StructKeyExists(request.context, "compactDisplay") 
 			and IsBoolean(request.context.compactDisplay)
 			and not REFindNoCase('&?compactDisplay=[true|false]',arguments.action)
 			and not REFindNoCase('&?compactDisplay=[true|false]',arguments.queryString)>
 			<cfset arguments.queryString = ListAppend(arguments.queryString,"compactDisplay=#request.context.compactDisplay#","&") />
 		</cfif>
-		
 		<cfreturn super.buildURL(argumentCollection=arguments)/>
-		
 	</cffunction>
-	
 
 </cfcomponent>

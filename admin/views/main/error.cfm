@@ -20,7 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 		Document:	/admin/views/main/error.cfm
 		Author:		Steve Withington | www.stephenwithington.com
-		Modified:	2011.02.04
 
 --->
 </cfsilent>
