@@ -13,7 +13,8 @@ between a typical FW/1 application and how it lives within Mura CMS.
 
 First of all, this plugin does use FW/1 subsystems. There are two primary subsystems 
 at play here. One is 'admin' and the other is 'public'. This means your URLs will have 
-either '?action=admin:your.view' or '?action=public:your.view'
+either '?{packageName}Action=admin:your.view' or '?{packageName}Action=public:your.view'
+(i.e., ?muraFW1action=admin:default.main)
 
 Next, here are some of the more important files to be aware of and a little bit about
 what they are.
