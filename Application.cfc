@@ -65,7 +65,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 			request.context.pc = application[variables.framework.applicationKey].pluginConfig;
 			request.context.pluginConfig = application[variables.framework.applicationKey].pluginConfig;
 			
-			request.context.action = variables.framework.action;
+			request.context.action = request.context[variables.framework.action];
 		</cfscript>
 	</cffunction>
 
