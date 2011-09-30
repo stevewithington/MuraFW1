@@ -40,6 +40,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	framework.usingSubSystems = true;
 	framework.defaultSubsystem = 'public';
 
+	// by default, fw1 uses 'fw1pk' ... however, to allow for plugin-specific keys, this plugin will use your packageName + 'pk'
+	framework.preserveKeyURLKey = framework.package & 'pk';
+
 	// ***** rarely modified *****
 	framework.applicationKey = framework.package;
 	framework.base = '/' & framework.package;
@@ -51,7 +54,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	framework.suppressImplicitService = false;
 	framework.unhandledExtensions = 'cfc';
 	framework.unhandledPaths = '/flex2gateway';
-	framework.preserveKeyURLKey = 'fw1pk';
 	framework.maxNumContextsPreserved = 10;
 	framework.cacheFileExists = false;
 
