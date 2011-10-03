@@ -110,7 +110,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 	<cffunction name="isAdminRequest" output="false" returntype="boolean">
 		<cfscript>
-			//if ( StructKeyExists(request, 'action') and ListFirst(request.action, ':') eq 'admin' ) {
 			if ( StructKeyExists(request, variables.framework.action) and ListFirst(request[variables.framework.action], ':') eq 'admin' ) {
 				return true;
 			} else {
@@ -138,7 +137,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 			and IsBoolean(request.context.compactDisplay)
 			and not REFindNoCase('&?compactDisplay=[true|false]',arguments.action)
 			and not REFindNoCase('&?compactDisplay=[true|false]',arguments.queryString)>
-			<cfset arguments.queryString = ListAppend(arguments.queryString,"compactDisplay=#request.context.compactDisplay#","&") />
+			<cfif not Find('?',arguments.action)>
+				<cfset arguments.queryString = ListAppend(arguments.queryString,"compactDisplay=#request.context.compactDisplay#","&") />
+			<cfelse>
+				<cfset arguments.action = ListAppend(arguments.action, "compactDisplay=#request.context.compactDisplay#","&") />
+			</cfif>
 		</cfif>
 		<cfreturn super.buildURL(argumentCollection=arguments)/>
 	</cffunction>
