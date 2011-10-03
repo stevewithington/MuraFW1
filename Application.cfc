@@ -134,13 +134,22 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		<cfargument name="action" type="string" />
 		<cfargument name="path" type="string" default="#variables.framework.baseURL#" />
 		<cfargument name="queryString" type="string" default="" />
+		
 		<cfif StructKeyExists(request.context, "compactDisplay") 
 			and IsBoolean(request.context.compactDisplay)
 			and not REFindNoCase('&?compactDisplay=[true|false]',arguments.action)
 			and not REFindNoCase('&?compactDisplay=[true|false]',arguments.queryString)>
-			<cfset arguments.queryString = ListAppend(arguments.queryString,"compactDisplay=#request.context.compactDisplay#","&") />
+				
+			<cfif not find('?',arguments.action)>
+				<cfset arguments.queryString = ListAppend(arguments.queryString,"compactDisplay=#request.context.compactDisplay#","&") />
+			<cfelse>
+				<cfset arguments.action = ListAppend(arguments.action, "compactDisplay=#request.context.compactDisplay#","&") />				
+			</cfif>			
+			
 		</cfif>
+		
 		<cfreturn super.buildURL(argumentCollection=arguments)/>
+		
 	</cffunction>
 
 </cfcomponent>
