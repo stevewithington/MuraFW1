@@ -115,7 +115,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 	<cffunction name="isAdminRequest" output="false" returntype="boolean">
 		<cfscript>
-			if ( StructKeyExists(request, variables.framework.action) and ListFirst(request[variables.framework.action], ':') eq 'admin' ) {
+			if ( StructKeyExists(request, 'context') and ListFirst(request.context[variables.framework.action], ':') eq 'admin' ) {
 				return true;
 			} else {
 				return false;
