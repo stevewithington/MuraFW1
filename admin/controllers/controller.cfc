@@ -30,18 +30,22 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		function init ( fw ) {
 			variables.fw = arguments.fw;
 		};
+	</cfscript>
 
-		function before ( rc ) {
-			var $ = StructNew();
+	<cffunction name="before" output="false" returntype="any">
+		<cfargument name="rc" required="true" />
+		<cfscript>
 			if ( StructKeyExists(rc, '$') ) {
 				$ = rc.$;
 			};
 
-			if ( variables.fw.isFrontEndRequest() ) {
+			if ( rc.isFrontEndRequest ) {
 				fw.redirect(action='public:main.default');
-			};
-			
-		};
-	</cfscript>
+			}
+		</cfscript>
+		<cfif not rc.$.currentUser().isLoggedIn()>
+			<cflocation url="#rc.$.globalConfig('context')#/admin/" addtoken="false" />
+		</cfif>
+	</cffunction>
 
 </cfcomponent>

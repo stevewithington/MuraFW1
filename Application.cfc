@@ -57,8 +57,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 			};
 
 			// rc.$
-			if ( not StructKeyExists(request.context, '$') and StructKeyExists(session, 'siteid') ) {
-				request.context.$ = getBeanFactory().getBean('muraScope').init(session.siteid);
+			if ( not StructKeyExists(request.context, '$') ) {
+				request.context.$ = application.serviceFactory.getBean('muraScope');
+				if ( StructKeyExists(session, 'siteid') ) {
+					request.context.$.init(session.siteid);
+				} else {
+					request.context.$.init('default');
+				};
 			};
 
 			// rc.pc and rc.pluginConfig
