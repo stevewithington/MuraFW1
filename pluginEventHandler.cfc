@@ -54,6 +54,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		<cfscript>
 			// this allows you to call methods here by accessing '$.{yourApplicationKey}.methodName(argumentCollection=args)'
 			$[variables.framework.applicationKey] = this;
+			$.loadShadowboxJS();
 		</cfscript>
 	</cffunction>
 
