@@ -36,7 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		<cfargument name="rc" required="true" />
 		<cfscript>
 			if ( StructKeyExists(rc, '$') ) {
-				$ = rc.$;
+				var $ = rc.$;
 			};
 
 			if ( rc.isFrontEndRequest ) {
