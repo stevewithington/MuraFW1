@@ -34,7 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		function before ( rc ) {
 			var $ = StructNew();
 			if ( StructKeyExists(rc, '$') ) {
-				$ = rc.$;
+				var $ = rc.$;
 			};
 			
 			if ( not variables.fw.isFrontEndRequest() ) {
