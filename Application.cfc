@@ -107,7 +107,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	<!--- ********************** HELPERS / Mura-specific *************************** --->
 	<cffunction name="secureRequest" output="false">
 		<cfif isAdminRequest() and not ( isDefined('session.mura') and listFindNoCase(session.mura.memberships,'S2') )>
-			<cfif not StructKeyExists(session,'siteID') or not application.permUtility.getModulePerm(getBeanFactory('pluginConfig').getValue('moduleID'),session.siteid)>
+			<cfif not StructKeyExists(session,'siteID') or not application.permUtility.getModulePerm(application[variables.framework.applicationKey].pluginConfig.getModuleID(),session.siteid)>
 				<cflocation url="#application.configBean.getContext()#/admin/" addtoken="false" />
 			</cfif>
 		</cfif>
