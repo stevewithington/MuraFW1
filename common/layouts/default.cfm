@@ -28,7 +28,5 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	<cfhtmlhead text="#local.str#" />
 </cfsilent>
 <cfoutput>
-	<div class="mfw1wrapper">
-		#body#
-	</div>
+	#body#
 </cfoutput>

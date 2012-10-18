@@ -30,7 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	// change to TRUE if you're developing the plugin so you can see changes in your controllers, etc.
 	framework.reloadApplicationOnEveryRequest = false;
 
-	// the 'action' defaults to your packageNameAction, i.e., 'muraFW1action' ... you may want to update this to something else.
+	// the 'action' defaults to your packageNameAction, e.g., 'muraFW1action' ... you may want to update this to something else.
 	// please try to avoid using simply 'action' so as not to conflict with other FW1 plugins
 	framework.action = framework.package & 'action';
 

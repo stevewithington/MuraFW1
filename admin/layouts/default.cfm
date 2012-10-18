@@ -27,7 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 <cfsavecontent variable="local.newBody">
 	<cfoutput>
 		<div class="mfw1adminblock">
-			<div id="pageTitle"><h2>#rc.pc.getPackage()#</h2></div>
+			<div id="pageTitle"><h2>#HTMLEditFormat(rc.pc.getPackage())#</h2></div>
 			<div class="navwrapper">
 				<ul>
 					<li class="first<cfif rc.action eq 'admin:main.default'> active</cfif>"><a href="#buildURL('admin:main')#">Main</a></li>
@@ -53,4 +53,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		</div>
 	</cfoutput>
 </cfsavecontent>
-<cfoutput>#application.pluginManager.renderAdminTemplate(body=local.newBody,pageTitle=rc.pc.getName(),compactDisplay=rc.compactDisplay)#</cfoutput>
+<cfoutput>
+	#application.pluginManager.renderAdminTemplate(
+		body=local.newBody
+		,pageTitle=rc.pc.getName()
+		,compactDisplay=rc.compactDisplay
+	)#
+</cfoutput>
