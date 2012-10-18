@@ -51,13 +51,13 @@ onRenderStart(), etc.
 
 
 ## Additional Resources
-[MuraFW1 Project Home](http://github.com/stevewithington/MuraFW1)
-[Mura CMS Project Home](http://www.getmura.com)
-[Mura CMS Github Project](http://github.com/blueriver/MuraCMS.git)
-[Mura Support](http://www.getmura.com/index.cfm/support/)
-[Mura Blog](http://www.getmura.com/index.cfm/blog/)
-[Mura Forum](http://www.getmura.com/forum/)
-[FW/1 Project Home](http://fw1.riaforge.org)
-[FW/1 Documentation wiki](http://github.com/seancorfield/fw1/wiki)
-[FW/1 Blog](http://corfield.org/blog/archives.cfm/category/fw1)
-[FW/1 Support](http://groups.google.com/group/framework-one/)
+* [MuraFW1 Project Home](http://github.com/stevewithington/MuraFW1)
+* [Mura CMS Project Home](http://www.getmura.com)
+* [Mura CMS Github Project](http://github.com/blueriver/MuraCMS.git)
+* [Mura Support](http://www.getmura.com/index.cfm/support/)
+* [Mura Blog](http://www.getmura.com/index.cfm/blog/)
+* [Mura Forum](http://www.getmura.com/forum/)
+* [FW/1 Project Home](http://fw1.riaforge.org)
+* [FW/1 Documentation wiki](http://github.com/seancorfield/fw1/wiki)
+* [FW/1 Blog](http://corfield.org/blog/archives.cfm/category/fw1)
+* [FW/1 Support](http://groups.google.com/group/framework-one/)
