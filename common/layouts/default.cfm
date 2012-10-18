@@ -27,6 +27,4 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	</cfscript>
 	<cfhtmlhead text="#local.str#" />
 </cfsilent>
-<cfoutput>
-	#body#
-</cfoutput>
+<cfoutput>#body#</cfoutput>

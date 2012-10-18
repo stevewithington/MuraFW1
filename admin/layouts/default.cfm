@@ -26,30 +26,34 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 <cfparam name="rc.compactDisplay" default="false">
 <cfsavecontent variable="local.newBody">
 	<cfoutput>
-		<div class="mfw1adminblock">
-			<div id="pageTitle"><h2>#HTMLEditFormat(rc.pc.getPackage())#</h2></div>
-			<div class="navwrapper">
-				<ul>
-					<li class="first<cfif rc.action eq 'admin:main.default'> active</cfif>"><a href="#buildURL('admin:main')#">Main</a></li>
-					<li<cfif rc.action eq 'admin:license.default'> class="active"</cfif>><a href="#buildURL('admin:license')#">License</a></li>
-					<li class="last<cfif rc.action eq 'admin:instructions.default'> active</cfif>"><a href="#buildURL('admin:instructions')#">Instructions</a></li>
-				</ul>
-			</div>
-		</div>
+		<div class="mfw1wrapper">
 
-		<cfif StructKeyExists(rc, 'errors') and IsArray(rc.errors) and ArrayLen(rc.errors)>
 			<div class="mfw1adminblock">
-				<h4 class="red">Please note the following message<cfif ArrayLen(rc.errors) gt 1>s</cfif>:</h4>
-				<ul>
-					<cfloop from="1" to="#ArrayLen(rc.errors)#" index="local.e">
-						<li>#rc.errors[local.e]#</li>
-					</cfloop>
-				</ul>
+				<div id="pageTitle"><h2>#HTMLEditFormat(rc.pc.getPackage())#</h2></div>
+				<div class="navwrapper">
+					<ul>
+						<li class="first<cfif rc.action eq 'admin:main.default'> active</cfif>"><a href="#buildURL('admin:main')#">Main</a></li>
+						<li<cfif rc.action eq 'admin:license.default'> class="active"</cfif>><a href="#buildURL('admin:license')#">License</a></li>
+						<li class="last<cfif rc.action eq 'admin:instructions.default'> active</cfif>"><a href="#buildURL('admin:instructions')#">Instructions</a></li>
+					</ul>
+				</div>
 			</div>
-		</cfif>
 
-		<div class="mfw1adminblock">
-			#body#
+			<cfif StructKeyExists(rc, 'errors') and IsArray(rc.errors) and ArrayLen(rc.errors)>
+				<div class="mfw1adminblock">
+					<h4 class="red">Please note the following message<cfif ArrayLen(rc.errors) gt 1>s</cfif>:</h4>
+					<ul>
+						<cfloop from="1" to="#ArrayLen(rc.errors)#" index="local.e">
+							<li>#rc.errors[local.e]#</li>
+						</cfloop>
+					</ul>
+				</div>
+			</cfif>
+
+			<div class="mfw1adminblock">
+				#body#
+			</div>
+
 		</div>
 	</cfoutput>
 </cfsavecontent>
