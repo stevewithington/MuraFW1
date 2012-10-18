@@ -1,13 +1,13 @@
 # MuraFW1
 ------------------------------------------------------------------------------------------
 
-## INTRODUCTION
+## Introduction
 This is a base Mura CMS plugin using FW/1 as its application framework.  It's intended
 to be used by experienced ColdFusion/CFML developers and those developers familiar with 
 Framework One, or more commonly known as FW/1.
 
 
-## IMPORTANT NOTES
+## Important Notes
 Assuming you've used FW/1 in the past, you'll need to know a few minor differences
 between a typical FW/1 application and how it lives within Mura CMS. 
 
@@ -50,13 +50,14 @@ commonly used Mura 'events' such as onApplicationLoad(), onSiteRequestStart(),
 onRenderStart(), etc.
 
 
-## ADDITIONAL RESOURCES
-MuraFW1 Project Home:		http://github.com/stevewithington/MuraFW1
-Mura CMS Project Home:		http://www.getmura.com
-Mura Support:				http://www.getmura.com/index.cfm/support/
-Mura Blog:					http://www.getmura.com/index.cfm/blog/
-Mura Forum:					http://www.getmura.com/forum/
-FW/1 Project Home:			http://fw1.riaforge.org
-FW/1 Documentation wiki:	http://github.com/seancorfield/fw1/wiki
-FW/1 Blog:					http://corfield.org/blog/archives.cfm/category/fw1
-FW/1 Support:				http://groups.google.com/group/framework-one/
+## Additional Resources
+[MuraFW1 Project Home](http://github.com/stevewithington/MuraFW1)
+[Mura CMS Project Home](http://www.getmura.com)
+[Mura CMS Github Project](http://github.com/blueriver/MuraCMS.git)
+[Mura Support](http://www.getmura.com/index.cfm/support/)
+[Mura Blog](http://www.getmura.com/index.cfm/blog/)
+[Mura Forum](http://www.getmura.com/forum/)
+[FW/1 Project Home](http://fw1.riaforge.org)
+[FW/1 Documentation wiki](http://github.com/seancorfield/fw1/wiki)
+[FW/1 Blog](http://corfield.org/blog/archives.cfm/category/fw1)
+[FW/1 Support](http://groups.google.com/group/framework-one/)
