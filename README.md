@@ -8,7 +8,7 @@ Framework One, or more commonly known as FW/1.
 
 
 ## PLEASE READ
-**This version (2.0) is still in development!** This plugin requires a minimum of Adobe
+**This version (3.0) is still in development!** This plugin requires a minimum of Adobe
 ColdFusion 9.0.1+ or Railo 3.3+
 
 

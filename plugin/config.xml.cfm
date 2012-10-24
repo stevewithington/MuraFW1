@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	<provider>Steve Withington</provider>
 	<providerURL>http://stephenwithington.com</providerURL>
 	<loadPriority>5</loadPriority>
-	<version>2.0</version>
+	<version>3.0</version>
 	<category>Application</category>
 	<ormcfclocation />
 	<customtagpaths />
