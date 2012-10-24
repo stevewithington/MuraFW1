@@ -1,6 +1,6 @@
-<!---
+/*
 
-This file is part of muraFW1
+This file is part of MuraFW1
 (c) Stephen J. Withington, Jr. | www.stephenwithington.com
 
 This program is free software; you can redistribute it and/or modify
@@ -17,70 +17,31 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-		Document:	plugin/plugin.cfc
-		Author:		Steve Withington | www.stephenwithington.com
+*/
+component persistent="false" accessors="true" output="false" extends="mura.plugin.plugincfc" {
 
---->
-<cfcomponent output="false" extends="mura.plugin.plugincfc">
+	property name="config" type="any" default="";
 
-	<cfset variables.config = '' />
-
-	<cffunction name="init" access="public" returntype="any" output="false">
-		<cfargument name="config"  type="any" default="" />
-		<cfscript>
-			variables.config = arguments.config;
-		</cfscript>
-	</cffunction>
+	public any function init(any config='') {
+		setConfig(arguments.config);
+	}
 	
-	<cffunction name="install" access="public" returntype="void" output="false">
-		<cfscript>
-			var local = StructNew();
+	public void function install() {
+		// triggered by the pluginManager when the plugin is INSTALLED.
+		application.appInitialized = false;
+	}
 
-			// need to check and see if this is already installed ... if so, then abort!
-			local.moduleid = variables.config.getModuleID();
-
-			// comment this out if you want to allow more than 1 installation of this plugin per Mura CMS install.
-			if ( val(getInstallationCount()) neq 1 ) {
-				variables.config.getPluginManager().deletePlugin(local.moduleid);
-			} else {
-				// doSomethingElseIfNeeded();
-			};
-
-			application.appInitialized = false;
-		</cfscript>
-	</cffunction>
-
-	<cffunction name="update" access="public" returntype="void" output="false">
-		<cfscript>
-			// this will be executed by the pluginManager when the plugin is updated.
-			application.appInitialized = false;
-		</cfscript>
-	</cffunction>
+	public void function update() {
+		// triggered by the pluginManager when the plugin is UPDATED.
+		application.appInitialized = false;
+	}
 	
-	<cffunction name="delete" access="public" returntype="void" output="false">
-		<cfscript>
-			// this will be executed by the pluginManager when the plugin is deleted.
-			var local = StructNew();
-			// don't delete the subTypes if this is being invoked by the deletePlugin() from install()
-			if ( val(getInstallationCount()) eq 1 ) {
-				//deleteSomethingAppSpecificIfNeeded();
-			};
-			application.appInitialized = false;
-		</cfscript>
-	</cffunction>
+	public void function delete() {
+		// triggered by the pluginManager when the plugin is DELETED.
+		application.appInitialized = false;
+	}
 
-	<!--- *******************************    private    ******************************** --->
-	<cffunction name="getInstallationCount" access="private" returntype="any" output="false">
-		<cfscript>
-			var qoq = '';
-			var rs = variables.config.getConfigBean().getPluginManager().getAllPlugins();
-		</cfscript>
-		<cfquery name="qoq" dbtype="query">
-			SELECT *
-			FROM rs
-			WHERE package = <cfqueryparam value="#variables.config.getPackage()#" cfsqltype="cf_sql_varchar" maxlength="100" />
-		</cfquery>
-		<cfreturn val(qoq.recordcount) />
-	</cffunction>
+	public void function toBundle(pluginConfig, bundle, siteid) {
+	}
 
-</cfcomponent>
+}

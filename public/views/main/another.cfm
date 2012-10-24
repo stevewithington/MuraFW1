@@ -1,7 +1,7 @@
 <cfsilent>
 <!---
 
-This file is part of muraFW1
+This file is part of MuraFW1
 (c) Stephen J. Withington, Jr. | www.stephenwithington.com
 
 This program is free software; you can redistribute it and/or modify
@@ -18,9 +18,9 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-		Document:	/public/views/main/another.cfm
-		Author:		Steve Withington | www.stephenwithington.com
-
 --->
 </cfsilent>
-<p>Cool! You're viewing 'another' page via the 'Public' view.</p>
+<cfoutput>
+	<h3>Another Page</h3>
+	<p>Cool! You're viewing another page via the 'Public' view.</p>
+</cfoutput>

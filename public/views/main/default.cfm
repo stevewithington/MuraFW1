@@ -1,7 +1,7 @@
 <cfsilent>
 <!---
 
-This file is part of muraFW1
+This file is part of MuraFW1
 (c) Stephen J. Withington, Jr. | www.stephenwithington.com
 
 This program is free software; you can redistribute it and/or modify
@@ -18,10 +18,13 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-		Document:	/public/views/main/default.cfm
-		Author:		Steve Withington | www.stephenwithington.com
-		Notes:		This is the 'default' view for the public
-
 --->
 </cfsilent>
-<p>Hello there! Welcome to the public view.</p>
+<cfoutput>
+	<h3>Public Main</h3>
+	<p>Hello there! Welcome to the <strong>public:main.default</strong> view.</p>
+	<div class="notice">
+		<p>Here's something from the public services:<br>
+		<strong>rc.thisIsJustSomeRCVariable = #rc.thisIsJustSomeRCVariable#</strong></p>
+	</div>
+</cfoutput>

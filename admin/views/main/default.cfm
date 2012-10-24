@@ -1,7 +1,7 @@
 <cfsilent>
 <!---
 
-This file is part of muraFW1
+This file is part of MuraFW1
 (c) Stephen J. Withington, Jr. | www.stephenwithington.com
 
 This program is free software; you can redistribute it and/or modify
@@ -18,15 +18,9 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-		Document:	/admin/views/main/default.cfm
-		Author:		Steve Withington | www.stephenwithington.com
-
 --->
 </cfsilent>
 <cfoutput>
-	<h3>Admin Main</h3>	
-	<ul id="navTask">
-		<li><a href="#buildURL('admin:main.another')#">Another Page</a></li>
-	</ul>
-	<p>Hello there! Welcome to the Main view of the Admin section.</p>
+	<h2>Home</h2>
+	<p>Hello there! Welcome to the Home view of the FW/1's Main section.</p>
 </cfoutput>

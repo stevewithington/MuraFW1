@@ -19,10 +19,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 --->
+	<cfscript>
+		request.layout = false;
+	</cfscript>
 </cfsilent>
 <cfoutput>
-	<div class="fw1AdminContent">
-		<h2>License</h2>
-		<cfinclude template="../../../plugin/license.cfm" />
+	<h3>List Something</h3>
+	<div class="success">
+		<h5>A Few Team Mura Developers:</h5>
+		<ul>
+			<cfloop list="#rc.something#" index="i">
+				<li>#HTMLEditFormat(i)#</li>
+			</cfloop>
+		</ul>
 	</div>
 </cfoutput>

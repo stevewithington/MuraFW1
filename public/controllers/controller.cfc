@@ -1,6 +1,6 @@
-<!---
+/*
 
-This file is part of muraFW1
+This file is part of MuraFW1
 (c) Stephen J. Withington, Jr. | www.stephenwithington.com
 
 This program is free software; you can redistribute it and/or modify
@@ -17,30 +17,21 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-		Document:	/public/controllers/controller.cfc
-		Author:		Steve Withington | www.stephenwithington.com
-		Notes:		All PUBLIC controllers should EXTEND this file.
+	Notes:		All PUBLIC controllers should EXTEND this file.
 
---->
-<cfcomponent extends="mura.cfobject" output="false">
+*/
+component persistent="false" accessors="true" output="false" extends="mura.cfobject" {
+		
+		property name="fw" type="any" default="";
 
-	<cfscript>
-		variables.fw = '';
+		public any function init(required any fw) {
+			setFW(arguments.fw);
+		}
 
-		function init ( fw ) {
-			variables.fw = arguments.fw;
-		};
-
-		function before ( rc ) {
-			var $ = StructNew();
-			if ( StructKeyExists(rc, '$') ) {
-				var $ = rc.$;
+		public any function before(required struct rc) {
+			if ( !getFW().isFrontEndRequest() ) {
+				getFW().redirect(action='admin:main.default');
 			};
-			
-			if ( not variables.fw.isFrontEndRequest() ) {
-				fw.redirect(action='admin:main.default');
-			};
-		};
-	</cfscript>
+		}
 
-</cfcomponent>
+}

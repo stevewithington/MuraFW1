@@ -1,7 +1,7 @@
 <cfsilent>
 <!---
 
-This file is part of muraFW1
+This file is part of MuraFW1
 (c) Stephen J. Withington, Jr. | www.stephenwithington.com
 
 This program is free software; you can redistribute it and/or modify
@@ -18,9 +18,6 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-		Document:	/public/layouts/default.cfm
-		Author:		Steve Withington | www.stephenwithington.com
-
 --->
 	<cfscript>
 		//request.layout = false;
@@ -28,14 +25,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 </cfsilent>
 <cfoutput>
 	<div class="clearfix">
-		<p><a href="#buildURL( 'public:main' )#">Public Main</a> | <a href="#buildURL( 'public:main.another' )#">Another Page</a></p>
+		<p>
+			<a href="#buildURL('public:main')#">Public Main</a> 
+			| <a href="#buildURL('public:main.another')#">Another Page</a> 
+			| <a href="#buildURL('public:list')#">List Something</a>
+		</p>
 	</div>
 	<div class="clearfix">
 		#body#
 	</div>
 	<cfif $.currentUser().isSuperUser()>
 		<div class="clearfix">
-			<a href="#rc.$.globalConfig('context')#/plugins/#rc.pc.getDirectory()#/index.cfm?action=admin:main.default&compactDisplay=true" rel="shadowbox;width=1100;">Admin</a>
+			<a href="#rc.$.globalConfig('context')#/plugins/#rc.pc.getDirectory()#/index.cfm?action=admin:main.default&compactDisplay=true" rel="shadowbox;">Admin</a>
 		</div>
 	</cfif>
 </cfoutput>

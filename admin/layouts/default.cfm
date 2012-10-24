@@ -1,7 +1,7 @@
 <cfsilent>
 <!---
 
-This file is part of muraFW1
+This file is part of MuraFW1
 (c) Stephen J. Withington, Jr. | www.stephenwithington.com
 
 This program is free software; you can redistribute it and/or modify
@@ -18,43 +18,96 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-		Document:	/admin/layouts/default.cfm
-		Author:		Steve Withington | www.stephenwithington.com
-
 --->
+	<cfsavecontent variable="local.errors">
+		<cfif StructKeyExists(rc, 'errors') and IsArray(rc.errors) and ArrayLen(rc.errors)>
+			<div class="alert alert-error">
+				<button type="button" class="close" data-dismiss="alert"><i class="icon-remove-sign"></i></button>
+				<h2>Alert!</h2>
+				<h3>Please note the following message<cfif ArrayLen(rc.errors) gt 1>s</cfif>:</h3>
+				<ul>
+					<cfloop from="1" to="#ArrayLen(rc.errors)#" index="local.e">
+						<li>
+							<cfif isSimpleValue(rc.errors[local.e])>
+								<cfoutput>#rc.errors[local.e]#</cfoutput>
+							<cfelse>
+								<cfdump var="#rc.errors[local.e]#" />
+							</cfif>
+						</li>
+					</cfloop>
+				</ul>
+			</div><!--- /.alert --->
+		</cfif>
+	</cfsavecontent>
+	<cfscript>
+		param name="rc.compactDisplay" default="false";
+		body = local.errors & body;
+		//rc.errors = ['Ooops!','Wow.'];
+	</cfscript>
 </cfsilent>
-<cfparam name="rc.compactDisplay" default="false">
 <cfsavecontent variable="local.newBody">
 	<cfoutput>
-		<div class="mfw1wrapper">
+		<div class="container-fluid">
 
-			<div class="mfw1adminblock">
-				<div id="pageTitle"><h2>#HTMLEditFormat(rc.pc.getPackage())#</h2></div>
-				<div class="navwrapper">
-					<ul>
-						<li class="first<cfif rc.action eq 'admin:main.default'> active</cfif>"><a href="#buildURL('admin:main')#">Main</a></li>
-						<li<cfif rc.action eq 'admin:license.default'> class="active"</cfif>><a href="#buildURL('admin:license')#">License</a></li>
-						<li class="last<cfif rc.action eq 'admin:instructions.default'> active</cfif>"><a href="#buildURL('admin:instructions')#">Instructions</a></li>
-					</ul>
-				</div>
-			</div>
+			<!--- PRIMARY NAV --->
+			<div class="row-fluid">
+				<div class="navbar">
+					<div class="navbar-inner">
+						<a class="brand" href="#buildURL('admin:main')#">#HTMLEditFormat(rc.pc.getPackage())#</a>
+						<ul class="nav">
+							<li class="<cfif rc.action contains 'admin:main'>active</cfif>">
+								<a href="##" class="dropdown-toggle" data-toggle="dropdown">Main <b class="caret"></b></a>
+								<ul class="dropdown-menu">
+									<li class="<cfif rc.action eq 'admin:main.default'>active</cfif>">
+										<a href="#buildURL('admin:main')#"><i class="icon-home"></i> Home</a>
+									</li>
+									<li class="<cfif rc.action contains 'admin:main.another'>active</cfif>">
+										<a href="#buildURL('admin:main.another')#"><i class="icon-leaf"></i> Another Page</a>
+									</li>
+								</ul>
+							</li>
+							<li class="<cfif rc.action contains 'admin:license'>active</cfif>">
+								<a href="#buildURL('admin:license')#"><i class="icon-book"></i> License</a>
+							</li>
+							<li class="<cfif rc.action contains 'admin:instructions'>active</cfif>">
+								<a href="#buildURL('admin:instructions')#"><i class="icon-info-sign"></i> Instructions</a>
+							</li>
+						</ul><!--- /.nav --->
+					</div><!--- /.navbar-inner --->
+				</div><!--- /.navbar --->
+			</div><!--- /.row --->
 
-			<cfif StructKeyExists(rc, 'errors') and IsArray(rc.errors) and ArrayLen(rc.errors)>
-				<div class="mfw1adminblock">
-					<h4 class="red">Please note the following message<cfif ArrayLen(rc.errors) gt 1>s</cfif>:</h4>
-					<ul>
-						<cfloop from="1" to="#ArrayLen(rc.errors)#" index="local.e">
-							<li>#rc.errors[local.e]#</li>
-						</cfloop>
-					</ul>
-				</div>
-			</cfif>
+			<!--- MAIN CONTENT AREA --->
+			<div class="row-fluid">
+				<cfif rc.action contains 'admin:main'>
 
-			<div class="mfw1adminblock">
-				#body#
-			</div>
+					<!--- SUB-NAV --->
+					<div class="span3">
+						<ul class="nav nav-list">
+							<!--- <li class="nav-header">Main</li> --->
+							<li class="<cfif rc.action eq 'admin:main.default'>active</cfif>">
+								<a href="#buildURL('admin:main')#"><i class="icon-home"></i> Home</a>
+							</li>
+							<li class="<cfif rc.action eq 'admin:main.another'>active</cfif>">
+								<a href="#buildURL('admin:main.another')#"><i class="icon-leaf"></i> Another Page</a>
+							</li>
+						</ul>
+					</div>
+					<!--- BODY --->
+					<div class="span9">
+						#body#
+					</div>
 
-		</div>
+				<cfelse>
+
+					<!--- BODY --->
+					<div class="span12">
+						#body#
+					</div>
+
+				</cfif>
+			</div><!--- /.row --->
+		</div><!--- /.container --->
 	</cfoutput>
 </cfsavecontent>
 <cfoutput>

@@ -1,6 +1,6 @@
-<!---
+/*
 
-This file is part of muraFW1
+This file is part of MuraFW1
 (c) Stephen J. Withington, Jr. | www.stephenwithington.com
 
 This program is free software; you can redistribute it and/or modify
@@ -17,21 +17,12 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-		Document:	/admin/controllers/main.cfc
-		Author:		Steve Withington | www.stephenwithington.com
+*/
+component persistent="false" accessors="true" output="false" extends="controller" {
 
---->
-<cfcomponent extends="controller" output="false">
+	// *********************************  PAGES  *******************************************
 
-	<!--- ********************************* PAGES ******************************************* --->
+	public any function default(required rc) {
+	}
 
-	<cffunction name="default" output="false" returntype="any">
-		<cfargument name="rc" />
-		<!---<cfparam name="rc.save" default="false" />
-		<cfparam name="rc.delete" default="false" />--->
-		<cfscript>
-			// rc.varName = '';
-		</cfscript>
-	</cffunction>
-
-</cfcomponent>
+}
