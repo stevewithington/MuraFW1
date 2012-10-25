@@ -27,54 +27,36 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 
 	variables.fw1Keys = 'SERVICEEXECUTIONCOMPLETE,LAYOUTS,CONTROLLEREXECUTIONCOMPLETE,VIEW,SERVICES,CONTROLLERS,CONTROLLEREXECUTIONSTARTED';
 
-	/**
-	* @oid a unique display object id
-	*/
 	public string function doAction(string action='') {
 		var local = StructNew();
 		local.targetPath = getPageContext().getRequest().getRequestURI();
-
 		local.action = StructKeyExists(request, getFWValue('action')) ? request[getFWValue('action')] : arguments.action;
-
-		local.cacheID = UCase( arguments.action );
-		local.message = '<span class="error">Cached</span>';
-
 		onApplicationStart();
 
-		request.context[getFWValue('action')] = arguments.action;
-		if ( StructKeyExists(url, getFWValue('action')) ) {
-			request.context[getFWValue('action')] = url[getFWValue('action')];
-		};
-		if ( StructKeyExists(form, getFWValue('action')) ) {
-			request.context[getFWValue('action')] = form[getFWValue('action')];
-		}
+		request.context[getFWValue('action')] = StructKeyExists(form, getFWValue('action')) 
+			? form[getFWValue('action')] : StructKeyExists(url, getFWValue('action')) 
+			? url[getFWValue('action')] : local.action;
+
 		request.action = getFullyQualifiedAction(request.context[getFWValue('action')]);
 
+		local.cacheID = UCase(arguments.action);
 
 		if ( IsNull(cacheGet(local.cacheID)) || StructKeyExists(url, 'clear') || getSection(request.action) == getSection(arguments.action) ) {
-			cacheRemove(local.cacheID);
-			local.message = '<span class="success">New</span>';
-			
+			cacheRemove(local.cacheID);			
 			onRequestStart(local.targetPath);
-
 			savecontent variable='local.response' {
 				onRequest(local.targetPath);
 			};
-
 			clearFW1Request();
+			// should probably make the cache timeout settings dynamic
 			cachePut(local.cacheID, local.response, CreateTimeSpan(0,0,5,0), CreateTimeSpan(0,0,5,0));
 		};
-
-		local.message = '<div class="notice"><h4>' & local.message & ' Object</h4><p>action: #arguments.action# // qa: #getFullyQualifiedAction(local.action)#</p></div>';
-
-		return local.message & cacheGet(local.cacheID);
+		return cacheGet(local.cacheID);
 	}
 
 	public any function setupApplication() {
 		var local = {};
 		lock scope="application" type="exclusive" timeout="50" {
-			// THIS IS CRITICIAL!! This is what gives this FW1 app access to it's own pluginConfig within Mura CMS
-			// in the setupRequest() it is also assigned to request.context to allow you to access the pluginConfig with 'rc.pc' OR 'rc.pluginConfig'
 			application[getFWValue('applicationKey')].pluginConfig = application.pluginManager.getConfig(ID=getFWValue('applicationKey'));
 			local.pc = application[getFWValue('applicationKey')].pluginConfig;
 			setBeanFactory(local.pc.getApplication(purge=false));
@@ -93,7 +75,6 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 			setupApplication();
 		};
 
-		// rc.$
 		if ( !StructKeyExists(request.context, '$') ) {
 			request.context.$ = application.serviceFactory.getBean('muraScope');
 			if ( StructKeyExists(session, 'siteid') ) {
@@ -103,7 +84,6 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 			};
 		};
 
-		// rc.pc and rc.pluginConfig
 		request.context.pc = application[getFWValue('applicationKey')].pluginConfig;
 		request.context.pluginConfig = application[getFWValue('applicationKey')].pluginConfig;
 		request.context.action = request.context[getFWValue('action')];
