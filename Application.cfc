@@ -34,19 +34,18 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 		var local = StructNew();
 		local.targetPath = getPageContext().getRequest().getRequestURI();
 
+
+		// TODO: need a way to determine which displayObject is requesting statechange
+		// see https://github.com/stevewithington/MuraFW1/issues/6
+
 		//local.requestState = preserveState(request);
 
 		onApplicationStart();
 
-		//if ( Len(arguments.action) && !StructKeyExists(request.context, getFWValue('action')) ) {
-		if ( Len(arguments.action) ) {
-			request.context[getFWValue('action')] = arguments.action;
-		};
-
+		request.context[getFWValue('action')] = arguments.action;
 		if ( StructKeyExists(url, getFWValue('action')) ) {
 			request.context[getFWValue('action')] = url[getFWValue('action')];
 		};
-
 		request.action = request.context[getFWValue('action')];
 		
 		onRequestStart(local.targetPath);
