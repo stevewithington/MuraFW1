@@ -34,9 +34,9 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 		var local = StructNew();
 		local.targetPath = getPageContext().getRequest().getRequestURI();
 
-		//local.action = StructKeyExists(request, getFWValue('action')) ? request[getFWValue('action')] : arguments.action;
+		local.action = StructKeyExists(request, getFWValue('action')) ? request[getFWValue('action')] : arguments.action;
 
-		local.cacheID = UCase( arguments.action & '^' & arguments.oid );
+		local.cacheID = UCase( arguments.action );
 		local.message = '<span class="error">Cached</span>';
 
 		onApplicationStart();
