@@ -29,8 +29,12 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 
 	public string function doAction(string action='') {
 		var local = StructNew();
+
 		local.targetPath = getPageContext().getRequest().getRequestURI();
-		local.action = StructKeyExists(request, getFWValue('action')) ? request[getFWValue('action')] : arguments.action;
+
+		local.action = StructKeyExists(request, getFWValue('action')) 
+			? request[getFWValue('action')] : arguments.action;
+
 		onApplicationStart();
 
 		request.context[getFWValue('action')] = StructKeyExists(form, getFWValue('action')) 
@@ -41,17 +45,28 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 
 		local.cacheID = UCase(arguments.action);
 
-		if ( IsNull(cacheGet(local.cacheID)) || StructKeyExists(url, 'clear') || getSection(request.action) == getSection(arguments.action) ) {
+		if ( 
+			IsNull(cacheGet(local.cacheID)) 
+			|| StructKeyExists(request, getFWValue('reload')) && request[getFWValue('reload')] == getFWValue('password')
+			|| getSubSystem(request.action) & getSection(request.action) 
+				== getSubSystem(request.action) & getSection(arguments.action) 
+		) {
 			cacheRemove(local.cacheID);			
+
 			onRequestStart(local.targetPath);
+
 			savecontent variable='local.response' {
 				onRequest(local.targetPath);
 			};
+
 			clearFW1Request();
+
 			// should probably make the cache timeout settings dynamic
 			cachePut(local.cacheID, local.response, CreateTimeSpan(0,0,5,0), CreateTimeSpan(0,0,5,0));
 		};
+
 		return cacheGet(local.cacheID);
+
 	}
 
 	public any function setupApplication() {
