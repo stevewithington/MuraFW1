@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 --->
 	<cfscript>
+		// set to false if you don't want to inherit the default layout
 		request.layout = false;
 	</cfscript>
 </cfsilent>

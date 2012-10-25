@@ -19,6 +19,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 --->
+	<cfscript>
+		request.layout = true;
+	</cfscript>
 </cfsilent>
 <cfoutput>
 	<h3>Public Main</h3>

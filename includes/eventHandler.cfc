@@ -23,6 +23,9 @@ component persistent="false" accessors="true" output="false" extends="mura.plugi
 	// framework variables
 	include 'fw1config.cfm';
 
+	// ========================== Mura CMS Specific Methods ==============================
+	// Add any other Mura CMS Specific methods you need here.
+
 	public void function onApplicationLoad(required struct $) {
 		variables.pluginConfig.addEventHandler(this);
 	}
@@ -31,22 +34,14 @@ component persistent="false" accessors="true" output="false" extends="mura.plugi
 		arguments.$.setCustomMuraScopeKey(getFWValue('package'), getApplication());
 	}
 
-	public any function onSiteRequestEnd(required struct $) {
-	}
-
 	public any function onRenderStart(required struct $) {
 		arguments.$.loadShadowboxJS();
 	}
-	
-	public void function onRenderEnd(required struct $) {		
-	}
+
 	
 	// ========================== Helper Methods ==============================
 
-	private string function doAction(struct $={}, string action='') {
-		return getApplication().doAction($=arguments.$, action=arguments.action);
-	}
-
+	// If you need to call any of the Application.cfc methods, you can use getApplication().theMethod()
 	private any function getApplication() {
 		if( !StructKeyExists(request, '#getFWValue('package')#Application') ) {
 			request['#getFWValue('package')#Application'] = CreateObject('component', '#getFWValue('package')#.Application');

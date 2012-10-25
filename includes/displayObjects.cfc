@@ -30,24 +30,20 @@ component persistent="false" accessors="true" output="false" extends="mura.plugi
 	// ========================== Display Methods ==============================
 
 	public any function dspMuraFW1BasicApp($) {
-		return doAction('public:main.default');
+		return getApplication().doAction('public:main.default');
 	}
 
 	public any function dspMuraFW1SameAppDifferentView($) {
-		return doAction('public:list.default');
+		return getApplication().doAction('public:list.default');
 	}
 
 	// ========================== Helper Methods ==============================
 
-	private string function doAction(string action='') {
-		return getApplication().doAction(arguments.action);
-	}
-
 	private any function getApplication() {
-		if( !StructKeyExists(request, '#getFWValue('package')#Application') ) {
-			request['#getFWValue('package')#Application'] = CreateObject('component', '#getFWValue('package')#.Application');
+		if( !StructKeyExists(request, '#getFWValue('applicationKey')#Application') ) {
+			request['#getFWValue('applicationKey')#Application'] = CreateObject('component', '#getFWValue('package')#.Application');
 		};
-		return request['#getFWValue('package')#Application'];
+		return request['#getFWValue('applicationKey')#Application'];
 	}
 
 }

@@ -25,17 +25,40 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 	include '../../config/mappings.cfm';
 	include '../mappings.cfm';
 
-	public string function doAction(string action='') {
+	variables.preserveKeyList = 'context,base,cfcbase,subsystem,subsystembase,section,item,services,action,view,layout';
+	variables.fw1Keys = 'SERVICEEXECUTIONCOMPLETE,LAYOUTS,CONTROLLEREXECUTIONCOMPLETE,VIEW,SERVICES,CONTROLLERS,CONTROLLEREXECUTIONSTARTED';
+
+	// need a way to preserve the state of each display object that's not currently being executed
+
+	public string function doAction(string action=getFWValue('home')) {
 		var local = StructNew();
 		local.targetPath = getPageContext().getRequest().getRequestURI();
 
-		// FW/1 onRequestStart
+		//local.requestState = preserveState(request);
+
+		onApplicationStart();
+
+		//if ( Len(arguments.action) && !StructKeyExists(request.context, getFWValue('action')) ) {
+		if ( Len(arguments.action) ) {
+			request.context[getFWValue('action')] = arguments.action;
+		};
+
+		if ( StructKeyExists(url, getFWValue('action')) ) {
+			request.context[getFWValue('action')] = url[getFWValue('action')];
+		};
+
+		request.action = request.context[getFWValue('action')];
+		
 		onRequestStart(local.targetPath);
 
-		// FW/1 onRequest
 		savecontent variable='local.response' {
 			onRequest(local.targetPath);
 		};
+
+		//restoreState(request, local.requestState);
+
+		clearFW1Request();
+
 		return local.response;
 	}
 
@@ -167,6 +190,52 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 
 	public boolean function isFrontEndRequest() {
 		return StructKeyExists(request, 'murascope');
+	}
+
+
+	// ==========================  STATE  ==============================
+
+	public any function preserveState(any state=request) {
+		var preservedState = StructNew();
+		var arrKeys = ListToArray(variables.preserveKeyList);
+		var i = '';
+
+		if ( StructKeyExists(arguments.state, getFWValue('action')) ) {
+			StructInsert(preservedState, getFWValue('action'), arguments.state[getFWValue('action')], true);
+		};
+
+		for ( i=1; i <= ArrayLen(arrKeys); i++ ) {
+			if ( IsDefined('arguments.state.#arrKeys[i]#') ) {
+				preservedState[arrKeys[i]] = arguments.state[arrKeys[i]];
+				StructDelete(arguments.state, arrKeys[i]);
+			};
+		};
+
+		return preservedState;
+	}
+
+	public void function restoreState(struct state=request, struct restore=preserveState()) {
+		var arrKeys = ListToArray(variables.preserveKeyList);
+		var arrFW1Keys = ListToArray(variables.fw1Keys);
+		var i = '';
+
+		// restore state
+		for ( i=1; i <= ArrayLen(arrKeys); i++ ) {
+			StructDelete(arguments.state, arrKeys[i]);
+		};
+
+		StructAppend(arguments.state, arguments.restore, true);
+	}
+
+	public void function clearFW1Request() {
+		var arrFW1Keys = ListToArray(variables.fw1Keys);
+		var i = '';
+		if ( StructKeyExists(request, '_fw1') ) {
+			for ( i=1; i <= ArrayLen(arrFW1Keys); i++ ) {
+				StructDelete(request._fw1, arrFW1Keys[i]);
+			};
+			request._fw1.requestDefaultsInitialized = false;
+		};
 	}
 
 }
