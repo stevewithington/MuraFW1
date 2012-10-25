@@ -34,4 +34,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 			</cfloop>
 		</ul>
 	</div>
+
+	<!--- Just testing --->
+	<div>
+		<form method="post">
+			<label for="action">Action</label>
+			<select id="action" name="MuraFW1Action">
+				<cfset local.actions = 'public:main.default,public:main.another,public:list.default'>
+				<cfloop list="#local.actions#" index="local.i">
+					<option value="#local.i#"<cfif rc.action eq local.i> selected="selected"</cfif>>#local.i#</option>
+				</cfloop>
+			</select>
+			<input type="submit" value="Submit" />
+		</form>
+	</div>
 </cfoutput>

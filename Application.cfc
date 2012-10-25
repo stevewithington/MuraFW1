@@ -46,6 +46,9 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 		if ( StructKeyExists(url, getFWValue('action')) ) {
 			request.context[getFWValue('action')] = url[getFWValue('action')];
 		};
+		if ( StructKeyExists(form, getFWValue('action')) ) {
+			request.context[getFWValue('action')] = form[getFWValue('action')];
+		}
 		request.action = request.context[getFWValue('action')];
 		
 		onRequestStart(local.targetPath);
