@@ -28,7 +28,7 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 	variables.fw1Keys = 'SERVICEEXECUTIONCOMPLETE,LAYOUTS,CONTROLLEREXECUTIONCOMPLETE,VIEW,SERVICES,CONTROLLERS,CONTROLLEREXECUTIONSTARTED';
 
 	public string function doAction(string action='') {
-		var local = StructNew();
+		var local = {};
 
 		local.targetPath = getPageContext().getRequest().getRequestURI();
 
@@ -45,6 +45,9 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 
 		local.cacheID = UCase(arguments.action);
 
+		// Should probably check to see if the subsystem is different ONLY
+		// VS. checking to see if the sysbsystem AND section are different!!!
+		// This would make more sense since each subsystem is more of a self contained 'App'
 		if ( 
 			IsNull(cacheGet(local.cacheID)) 
 			|| StructKeyExists(request, getFWValue('reload')) && request[getFWValue('reload')] == getFWValue('password')
@@ -198,7 +201,6 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 	public boolean function isFrontEndRequest() {
 		return StructKeyExists(request, 'murascope');
 	}
-
 
 	// ==========================  STATE  ==============================
 
