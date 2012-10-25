@@ -27,27 +27,33 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 
 	variables.fw1Keys = 'SERVICEEXECUTIONCOMPLETE,LAYOUTS,CONTROLLEREXECUTIONCOMPLETE,VIEW,SERVICES,CONTROLLERS,CONTROLLEREXECUTIONSTARTED';
 
-	// need a way to preserve the state of each display object that's not currently being executed
-
-	public string function doAction(string action=getFWValue('home')) {
+	/**
+	* @oid a unique display object id
+	*/
+	public string function doAction(string action='') {
 		var local = StructNew();
 		local.targetPath = getPageContext().getRequest().getRequestURI();
 
-		// TODO: need a way to determine which displayObject is requesting statechange
-		// see https://github.com/stevewithington/MuraFW1/issues/6
+		//local.action = StructKeyExists(request, getFWValue('action')) ? request[getFWValue('action')] : arguments.action;
 
-		if ( IsNull(cacheGet(arguments.action)) || StructKeyExists(url, 'clear') ) {
+		local.cacheID = UCase( arguments.action & '^' & arguments.oid );
+		local.message = '<span class="error">Cached</span>';
 
-			onApplicationStart();
+		onApplicationStart();
 
-			request.context[getFWValue('action')] = arguments.action;
-			if ( StructKeyExists(url, getFWValue('action')) ) {
-				request.context[getFWValue('action')] = url[getFWValue('action')];
-			};
-			if ( StructKeyExists(form, getFWValue('action')) ) {
-				request.context[getFWValue('action')] = form[getFWValue('action')];
-			}
-			request.action = request.context[getFWValue('action')];
+		request.context[getFWValue('action')] = arguments.action;
+		if ( StructKeyExists(url, getFWValue('action')) ) {
+			request.context[getFWValue('action')] = url[getFWValue('action')];
+		};
+		if ( StructKeyExists(form, getFWValue('action')) ) {
+			request.context[getFWValue('action')] = form[getFWValue('action')];
+		}
+		request.action = getFullyQualifiedAction(request.context[getFWValue('action')]);
+
+
+		if ( IsNull(cacheGet(local.cacheID)) || StructKeyExists(url, 'clear') || getSection(request.action) == getSection(arguments.action) ) {
+			cacheRemove(local.cacheID);
+			local.message = '<span class="success">New</span>';
 			
 			onRequestStart(local.targetPath);
 
@@ -56,16 +62,12 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 			};
 
 			clearFW1Request();
-
-			cachePut(arguments.action, local.response);
-
+			cachePut(local.cacheID, local.response, CreateTimeSpan(0,0,5,0), CreateTimeSpan(0,0,5,0));
 		};
 
-		// writeDump(cacheGetMetadata(arguments.action));
-		// writeDump(cacheGetAllIds());
-		// abort;
+		local.message = '<div class="notice"><h4>' & local.message & ' Object</h4><p>action: #arguments.action# // qa: #getFullyQualifiedAction(local.action)#</p></div>';
 
-		return cacheGet(arguments.action);
+		return local.message & cacheGet(local.cacheID);
 	}
 
 	public any function setupApplication() {
@@ -130,6 +132,7 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 
 	public string function buildURL(required string action, string path='#getFWValue('baseURL')#', string queryString='') {
 		var regx = '&?compactDisplay=[true|false]';
+		arguments.action = getFullyQualifiedAction(arguments.action);
 		if (
 			StructKeyExists(request.context, 'compactDisplay') 
 			&& IsBoolean(request.context.compactDisplay) 
@@ -143,8 +146,10 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 				arguments.action = ListAppend(arguments.action, qs, '&');
 			};
 		};
+
 		return super.buildURL(argumentCollection=arguments);
 	}
+
 	
 	// ========================== Errors & Missing Views ==============================
 

@@ -48,13 +48,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	// ***** rarely modified *****
 	variables.framework.applicationKey = variables.framework.package;
 	variables.framework.base = '/' & variables.framework.package;
-	variables.framework.cfcbase = variables.framework.package;
+	//variables.framework.cfcbase = variables.framework.package;
 	variables.framework.reload = 'reload';
 	variables.framework.password = 'appreload'; // IF you're NOT using the default reload key of 'appreload', then you'll need to update this!
 	variables.framework.generateSES = false;
 	variables.framework.SESOmitIndex = true;
 	variables.framework.baseURL = 'useRequestURI';
-	variables.framework.suppressImplicitService = false;
+	variables.framework.suppressImplicitService = true;
 	variables.framework.unhandledExtensions = 'cfc';
 	variables.framework.unhandledPaths = '/flex2gateway';
 	variables.framework.maxNumContextsPreserved = 10;
