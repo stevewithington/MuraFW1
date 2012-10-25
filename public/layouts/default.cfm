@@ -36,7 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	</div>
 	<cfif $.currentUser().isSuperUser()>
 		<div class="clearfix">
-			<a href="#rc.$.globalConfig('context')#/plugins/#rc.pc.getDirectory()#/index.cfm?action=admin:main.default&compactDisplay=true" rel="shadowbox;">Admin</a>
+			<a href="#rc.$.globalConfig('context')#/plugins/#rc.pc.getDirectory()#/index.cfm?MuraFW1Action=admin:main.default&compactDisplay=true" rel="shadowbox;">Admin</a>
 		</div>
 	</cfif>
 </cfoutput>

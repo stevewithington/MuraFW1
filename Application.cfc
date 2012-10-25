@@ -25,7 +25,6 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 	include '../../config/mappings.cfm';
 	include '../mappings.cfm';
 
-	variables.preserveKeyList = 'context,base,cfcbase,subsystem,subsystembase,section,item,services,action,view,layout';
 	variables.fw1Keys = 'SERVICEEXECUTIONCOMPLETE,LAYOUTS,CONTROLLEREXECUTIONCOMPLETE,VIEW,SERVICES,CONTROLLERS,CONTROLLEREXECUTIONSTARTED';
 
 	// need a way to preserve the state of each display object that's not currently being executed
@@ -34,34 +33,39 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 		var local = StructNew();
 		local.targetPath = getPageContext().getRequest().getRequestURI();
 
-
 		// TODO: need a way to determine which displayObject is requesting statechange
 		// see https://github.com/stevewithington/MuraFW1/issues/6
 
-		//local.requestState = preserveState(request);
+		if ( IsNull(cacheGet(arguments.action)) || StructKeyExists(url, 'clear') ) {
 
-		onApplicationStart();
+			onApplicationStart();
 
-		request.context[getFWValue('action')] = arguments.action;
-		if ( StructKeyExists(url, getFWValue('action')) ) {
-			request.context[getFWValue('action')] = url[getFWValue('action')];
+			request.context[getFWValue('action')] = arguments.action;
+			if ( StructKeyExists(url, getFWValue('action')) ) {
+				request.context[getFWValue('action')] = url[getFWValue('action')];
+			};
+			if ( StructKeyExists(form, getFWValue('action')) ) {
+				request.context[getFWValue('action')] = form[getFWValue('action')];
+			}
+			request.action = request.context[getFWValue('action')];
+			
+			onRequestStart(local.targetPath);
+
+			savecontent variable='local.response' {
+				onRequest(local.targetPath);
+			};
+
+			clearFW1Request();
+
+			cachePut(arguments.action, local.response);
+
 		};
-		if ( StructKeyExists(form, getFWValue('action')) ) {
-			request.context[getFWValue('action')] = form[getFWValue('action')];
-		}
-		request.action = request.context[getFWValue('action')];
-		
-		onRequestStart(local.targetPath);
 
-		savecontent variable='local.response' {
-			onRequest(local.targetPath);
-		};
+		// writeDump(cacheGetMetadata(arguments.action));
+		// writeDump(cacheGetAllIds());
+		// abort;
 
-		//restoreState(request, local.requestState);
-
-		clearFW1Request();
-
-		return local.response;
+		return cacheGet(arguments.action);
 	}
 
 	public any function setupApplication() {
@@ -79,6 +83,7 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 		var local = {};
 
 		secureRequest();
+
 		request.context.isAdminRequest = isAdminRequest();
 		request.context.isFrontEndRequest = isFrontEndRequest();
 		
@@ -129,7 +134,7 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 			StructKeyExists(request.context, 'compactDisplay') 
 			&& IsBoolean(request.context.compactDisplay) 
 			&& !REFindNoCase(regx, arguments.action) 
-			&& REFindNoCase(regx, arguments.queryString) 
+			&& !REFindNoCase(regx, arguments.queryString) 
 		) {
 			var qs = 'compactDisplay=' & request.context.compactDisplay;
 			if ( !Find('?', arguments.action) ) {
@@ -196,38 +201,6 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 
 
 	// ==========================  STATE  ==============================
-
-	public any function preserveState(any state=request) {
-		var preservedState = StructNew();
-		var arrKeys = ListToArray(variables.preserveKeyList);
-		var i = '';
-
-		if ( StructKeyExists(arguments.state, getFWValue('action')) ) {
-			StructInsert(preservedState, getFWValue('action'), arguments.state[getFWValue('action')], true);
-		};
-
-		for ( i=1; i <= ArrayLen(arrKeys); i++ ) {
-			if ( IsDefined('arguments.state.#arrKeys[i]#') ) {
-				preservedState[arrKeys[i]] = arguments.state[arrKeys[i]];
-				StructDelete(arguments.state, arrKeys[i]);
-			};
-		};
-
-		return preservedState;
-	}
-
-	public void function restoreState(struct state=request, struct restore=preserveState()) {
-		var arrKeys = ListToArray(variables.preserveKeyList);
-		var arrFW1Keys = ListToArray(variables.fw1Keys);
-		var i = '';
-
-		// restore state
-		for ( i=1; i <= ArrayLen(arrKeys); i++ ) {
-			StructDelete(arguments.state, arrKeys[i]);
-		};
-
-		StructAppend(arguments.state, arguments.restore, true);
-	}
 
 	public void function clearFW1Request() {
 		var arrFW1Keys = ListToArray(variables.fw1Keys);
