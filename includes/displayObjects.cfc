@@ -17,6 +17,11 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+	NOTES: 
+		The idea is that you shouldn't have to edit this file.
+		See /includes/displayObjects.cfc && /includes/eventHandler.cfc
+		on how to access these methods.
+
 */
 component persistent="false" accessors="true" output="false" extends="mura.plugin.pluginGenericEventHandler" {
 

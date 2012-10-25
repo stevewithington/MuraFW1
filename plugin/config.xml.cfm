@@ -18,9 +18,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 --->
+<cfinclude template="../includes/fw1config.cfm" />
 <plugin>
-	<name>MuraFW1</name>
-	<package>MuraFW1</package>
+	<cfoutput>
+		<name>#getFWValue('package')#</name>
+		<package>#getFWValue('package')#</package>
+	</cfoutput>
+	<!--- <name>MuraFW1</name>
+	<package>MuraFW1</package> --->
 	<directoryFormat>packageOnly</directoryFormat>
 	<provider>Steve Withington</provider>
 	<providerURL>http://stephenwithington.com</providerURL>

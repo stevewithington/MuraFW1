@@ -17,6 +17,11 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+	NOTES: 
+		The idea is that you shouldn't have to edit this file.
+		See /includes/displayObjects.cfc && /includes/eventHandler.cfc
+		on how to access these methods.
+
 */
 component persistent="false" accessors="true" output="false" extends="includes.fw1" {
 
@@ -29,7 +34,6 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 
 	public string function doAction(string action='') {
 		var local = {};
-
 		local.targetPath = getPageContext().getRequest().getRequestURI();
 
 		local.action = StructKeyExists(request, getFWValue('action')) 
@@ -43,32 +47,29 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 
 		request.action = getFullyQualifiedAction(request.context[getFWValue('action')]);
 
+		// !important * DO NOT CHANGE
 		local.cacheID = UCase(arguments.action);
 
 		// Should probably check to see if the subsystem is different ONLY
-		// VS. checking to see if the sysbsystem AND section are different!!!
+		// VS. checking to see if the sysbsystem AND section are different...
 		// This would make more sense since each subsystem is more of a self contained 'App'
 		if ( 
-			IsNull(cacheGet(local.cacheID)) 
-			|| StructKeyExists(request, getFWValue('reload')) && request[getFWValue('reload')] == getFWValue('password')
+			IsNull(CacheGet(local.cacheID)) 
+			|| StructKeyExists(request, getFWValue('reload')) 
+				&& request[getFWValue('reload')] == getFWValue('password')
 			|| getSubSystem(request.action) & getSection(request.action) 
 				== getSubSystem(request.action) & getSection(arguments.action) 
 		) {
-			cacheRemove(local.cacheID);			
-
+			CacheRemove(local.cacheID);
 			onRequestStart(local.targetPath);
-
 			savecontent variable='local.response' {
 				onRequest(local.targetPath);
 			};
-
 			clearFW1Request();
-
 			// should probably make the cache timeout settings dynamic
-			cachePut(local.cacheID, local.response, CreateTimeSpan(0,0,5,0), CreateTimeSpan(0,0,5,0));
+			CachePut(local.cacheID, local.response, CreateTimeSpan(0,0,5,0), CreateTimeSpan(0,0,5,0));
 		};
-
-		return cacheGet(local.cacheID);
+		return CacheGet(local.cacheID);
 
 	}
 
@@ -109,14 +110,22 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 	
 	public void function setupView() {
 		var httpRequestData = GetHTTPRequestData();
-		if ( StructKeyExists(httpRequestData.headers, 'X-#getFWValue('package')#-AJAX') && IsBoolean(httpRequestData.headers['X-#getFWValue('package')#-AJAX']) && httpRequestData.headers['X-#getFWValue('package')#-AJAX'] ) {
+		if ( 
+			StructKeyExists(httpRequestData.headers, 'X-#getFWValue('package')#-AJAX') 
+			&& IsBoolean(httpRequestData.headers['X-#getFWValue('package')#-AJAX']) 
+			&& httpRequestData.headers['X-#getFWValue('package')#-AJAX'] 
+		) {
 			setupResponse();
 		};
 	}
 	
 	public void function setupResponse() {
 		var httpRequestData = GetHTTPRequestData();
-		if ( StructKeyExists(httpRequestData.headers, 'X-#getFWValue('package')#-AJAX') && IsBoolean(httpRequestData.headers['X-#getFWValue('package')#-AJAX']) && httpRequestData.headers['X-#getFWValue('package')#-AJAX'] ) {
+		if (
+			StructKeyExists(httpRequestData.headers, 'X-#getFWValue('package')#-AJAX') 
+			&& IsBoolean(httpRequestData.headers['X-#getFWValue('package')#-AJAX']) 
+			&& httpRequestData.headers['X-#getFWValue('package')#-AJAX'] 
+		) {
 			if ( StructKeyExists(request.context, 'fw') ) {
 				StructDelete(request.context, 'fw');
 			}
@@ -144,7 +153,6 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 				arguments.action = ListAppend(arguments.action, qs, '&');
 			};
 		};
-
 		return super.buildURL(argumentCollection=arguments);
 	}
 
