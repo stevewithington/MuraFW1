@@ -35,7 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		</cfif>
 	</div>
 
-	<cfif IsBoolean(getFWValue('debugMode')) and getFWValue('debugMode')>
+	<cfif IsBoolean(variables.framework.debugMode) and variables.framework.debugMode>
 		<h2>Debug Output</h2>
 		<!--- <cfset local.scopes = 'application,arguments,cgi,client,cookie,form,local,request,server,session,url,variables'> --->
 		<cfset local.scopes = 'local,request,session'>

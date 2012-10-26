@@ -18,9 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 	NOTES: 
-		The idea is that you shouldn't have to edit this file.
-		See /includes/displayObjects.cfc && /includes/eventHandler.cfc
-		on how to access these methods.
+		The fw1config.cfm file has 2 helper methods that allow you to
 
 */
 component persistent="false" accessors="true" output="false" extends="mura.plugin.pluginGenericEventHandler" {
@@ -34,21 +32,21 @@ component persistent="false" accessors="true" output="false" extends="mura.plugi
 
 	// ========================== Display Methods ==============================
 
-	public any function dspMuraFW1BasicApp($) {
+	public any function dspMuraFW1App1($) {
 		return getApplication().doAction('public:main.default');
 	}
 
-	public any function dspMuraFW1SameAppDifferentView($) {
-		return getApplication().doAction('public:list.default');
+	public any function dspMuraFW1App2($) {
+		return getApplication().doAction('app2:main.default');
 	}
 
 	// ========================== Helper Methods ==============================
 
 	private any function getApplication() {
-		if( !StructKeyExists(request, '#getFWValue('applicationKey')#Application') ) {
-			request['#getFWValue('applicationKey')#Application'] = CreateObject('component', '#getFWValue('package')#.Application');
+		if( !StructKeyExists(request, '#variables.framework.applicationKey#Application') ) {
+			request['#variables.framework.applicationKey#Application'] = CreateObject('component', '#variables.framework.package#.Application');
 		};
-		return request['#getFWValue('applicationKey')#Application'];
+		return request['#variables.framework.applicationKey#Application'];
 	}
 
 }

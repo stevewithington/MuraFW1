@@ -19,18 +19,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 --->
 <cfinclude template="../includes/fw1config.cfm" />
-<plugin>
-	<cfoutput>
-		<name>#getFWValue('package')#</name>
-		<package>#getFWValue('package')#</package>
-	</cfoutput>
-	<!--- <name>MuraFW1</name>
-	<package>MuraFW1</package> --->
+<cfoutput><plugin>
+	<name>#variables.framework.package#</name>
+	<package>#variables.framework.package#</package>
 	<directoryFormat>packageOnly</directoryFormat>
 	<provider>Steve Withington</provider>
 	<providerURL>http://stephenwithington.com</providerURL>
 	<loadPriority>5</loadPriority>
-	<version>3.0</version>
+	<version>#variables.framework.packageVersion#</version>
 	<category>Application</category>
 	<ormcfclocation />
 	<customtagpaths />
@@ -40,7 +36,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		<eventHandler event="onApplicationLoad" component="includes.eventHandler" persist="false" />
 	</eventHandlers>
 	<displayobjects location="global">
-		<displayobject name="MuraFW1 Basic App" displaymethod="dspMuraFW1BasicApp" component="includes.displayObjects" persist="false" />
-		<displayobject name="MuraFW1 Basic App: Different View" displaymethod="dspMuraFW1SameAppDifferentView" component="includes.displayObjects" persist="false" />
+		<displayobject name="MuraFW1 App1" displaymethod="dspMuraFW1App1" component="includes.displayObjects" persist="false" />
+		<displayobject name="MuraFW1 App2" displaymethod="dspMuraFW1App2" component="includes.displayObjects" persist="false" />
+		<displayobject name="MuraFW1 Simple Display Object" displayobjectfile="includes/display_objects/simple.cfm" />
 	</displayobjects>
-</plugin>
+</plugin></cfoutput>

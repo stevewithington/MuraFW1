@@ -31,22 +31,20 @@ component persistent="false" accessors="true" output="false" extends="mura.plugi
 	}
 	
 	public void function onSiteRequestStart(required struct $) {
-		arguments.$.setCustomMuraScopeKey(getFWValue('package'), getApplication());
+		arguments.$.setCustomMuraScopeKey(variables.framework.package, getApplication());
 	}
 
 	public any function onRenderStart(required struct $) {
 		arguments.$.loadShadowboxJS();
 	}
 
-	
 	// ========================== Helper Methods ==============================
 
-	// If you need to call any of the Application.cfc methods, you can use getApplication().theMethod()
 	private any function getApplication() {
-		if( !StructKeyExists(request, '#getFWValue('package')#Application') ) {
-			request['#getFWValue('package')#Application'] = CreateObject('component', '#getFWValue('package')#.Application');
+		if( !StructKeyExists(request, '#variables.framework.applicationKey#Application') ) {
+			request['#variables.framework.applicationKey#Application'] = CreateObject('component', '#variables.framework.package#.Application');
 		};
-		return request['#getFWValue('package')#Application'];
+		return request['#variables.framework.applicationKey#Application'];
 	}
 
 }

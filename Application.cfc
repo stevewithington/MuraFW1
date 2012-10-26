@@ -36,29 +36,27 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 		var local = {};
 		local.targetPath = getPageContext().getRequest().getRequestURI();
 
-		local.action = StructKeyExists(request, getFWValue('action')) 
-			? request[getFWValue('action')] : arguments.action;
+		local.action = StructKeyExists(request, variables.framework.action) 
+			? request[variables.framework.action] : arguments.action;
 
 		onApplicationStart();
 
-		request.context[getFWValue('action')] = StructKeyExists(form, getFWValue('action')) 
-			? form[getFWValue('action')] : StructKeyExists(url, getFWValue('action')) 
-			? url[getFWValue('action')] : local.action;
+		request.context[variables.framework.action] = StructKeyExists(form, variables.framework.action) 
+			? form[variables.framework.action] : StructKeyExists(url, variables.framework.action) 
+			? url[variables.framework.action] : local.action;
 
-		request.action = getFullyQualifiedAction(request.context[getFWValue('action')]);
+		request.action = getFullyQualifiedAction(request.context[variables.framework.action]);
 
-		// !important * DO NOT CHANGE
+		// !important ** DO NOT CHANGE **
 		local.cacheID = UCase(arguments.action);
 
-		// Should probably check to see if the subsystem is different ONLY
-		// VS. checking to see if the sysbsystem AND section are different...
-		// This would make more sense since each subsystem is more of a self contained 'App'
+		// The main check here is to see if the subsystem is different...
+		// if not, then it should grab the cached state of the application.
 		if ( 
 			IsNull(CacheGet(local.cacheID)) 
-			|| StructKeyExists(request, getFWValue('reload')) 
-				&& request[getFWValue('reload')] == getFWValue('password')
-			|| getSubSystem(request.action) & getSection(request.action) 
-				== getSubSystem(request.action) & getSection(arguments.action) 
+			|| StructKeyExists(request, variables.framework.reload) 
+				&& request[variables.framework.reload] == variables.framework.password
+			|| getSubSystem(request.action) == getSubSystem(arguments.action)
 		) {
 			CacheRemove(local.cacheID);
 			onRequestStart(local.targetPath);
@@ -76,8 +74,8 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 	public any function setupApplication() {
 		var local = {};
 		lock scope="application" type="exclusive" timeout="50" {
-			application[getFWValue('applicationKey')].pluginConfig = application.pluginManager.getConfig(ID=getFWValue('applicationKey'));
-			local.pc = application[getFWValue('applicationKey')].pluginConfig;
+			application[variables.framework.applicationKey].pluginConfig = application.pluginManager.getConfig(ID=variables.framework.applicationKey);
+			local.pc = application[variables.framework.applicationKey].pluginConfig;
 			setBeanFactory(local.pc.getApplication(purge=false));
 		};
 	}
@@ -103,17 +101,17 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 			};
 		};
 
-		request.context.pc = application[getFWValue('applicationKey')].pluginConfig;
-		request.context.pluginConfig = application[getFWValue('applicationKey')].pluginConfig;
-		request.context.action = request.context[getFWValue('action')];
+		request.context.pc = application[variables.framework.applicationKey].pluginConfig;
+		request.context.pluginConfig = application[variables.framework.applicationKey].pluginConfig;
+		request.context.action = request.context[variables.framework.action];
 	}
 	
 	public void function setupView() {
 		var httpRequestData = GetHTTPRequestData();
 		if ( 
-			StructKeyExists(httpRequestData.headers, 'X-#getFWValue('package')#-AJAX') 
-			&& IsBoolean(httpRequestData.headers['X-#getFWValue('package')#-AJAX']) 
-			&& httpRequestData.headers['X-#getFWValue('package')#-AJAX'] 
+			StructKeyExists(httpRequestData.headers, 'X-#variables.framework.package#-AJAX') 
+			&& IsBoolean(httpRequestData.headers['X-#variables.framework.package#-AJAX']) 
+			&& httpRequestData.headers['X-#variables.framework.package#-AJAX'] 
 		) {
 			setupResponse();
 		};
@@ -122,9 +120,9 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 	public void function setupResponse() {
 		var httpRequestData = GetHTTPRequestData();
 		if (
-			StructKeyExists(httpRequestData.headers, 'X-#getFWValue('package')#-AJAX') 
-			&& IsBoolean(httpRequestData.headers['X-#getFWValue('package')#-AJAX']) 
-			&& httpRequestData.headers['X-#getFWValue('package')#-AJAX'] 
+			StructKeyExists(httpRequestData.headers, 'X-#variables.framework.package#-AJAX') 
+			&& IsBoolean(httpRequestData.headers['X-#variables.framework.package#-AJAX']) 
+			&& httpRequestData.headers['X-#variables.framework.package#-AJAX'] 
 		) {
 			if ( StructKeyExists(request.context, 'fw') ) {
 				StructDelete(request.context, 'fw');
@@ -137,7 +135,7 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 		};
 	}
 
-	public string function buildURL(required string action, string path='#getFWValue('baseURL')#', string queryString='') {
+	public string function buildURL(required string action, string path='#variables.framework.baseURL#', string queryString='') {
 		var regx = '&?compactDisplay=[true|false]';
 		arguments.action = getFullyQualifiedAction(arguments.action);
 		if (
@@ -165,8 +163,8 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 		var arrScopes = ListToArray(scopes);
 		var i = '';
 		var scope = '';
-		WriteOutput('<h2>' & getFWValue('package') & ' ERROR</h2>');
-		if ( IsBoolean(getFWValue('debugMode')) && getFWValue('debugMode') ) {
+		WriteOutput('<h2>' & variables.framework.package & ' ERROR</h2>');
+		if ( IsBoolean(variables.framework.debugMode) && variables.framework.debugMode ) {
 			for ( i=1; i <= ArrayLen(arrScopes); i++ ) {
 				scope = arrScopes[i];
 				WriteDump(var=Evaluate(scope),label=UCase(scope));
@@ -192,14 +190,14 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 
 	public any function secureRequest() {
 		if ( isAdminRequest() && !( IsDefined('session.mura') && ListFindNoCase(session.mura.memberships,'S2') ) ) {
-			if ( !StructKeyExists(session,'siteID') || !application.permUtility.getModulePerm(application[getFWValue('applicationKey')].pluginConfig.getModuleID(),session.siteid) ) {
+			if ( !StructKeyExists(session,'siteID') || !application.permUtility.getModulePerm(application[variables.framework.applicationKey].pluginConfig.getModuleID(),session.siteid) ) {
 				location(url='#application.configBean.getContext()#/admin/', addtoken=false);
 			};
 		};
 	}
 
 	public boolean function isAdminRequest() {
-		if ( StructKeyExists(request, 'context') && ListFirst(request.context[getFWValue('action')], ':') == 'admin' ) {
+		if ( StructKeyExists(request, 'context') && ListFirst(request.context[variables.framework.action], ':') == 'admin' ) {
 			return true;
 		} else {
 			return false;

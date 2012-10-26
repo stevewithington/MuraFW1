@@ -24,19 +24,21 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	</cfscript>
 </cfsilent>
 <cfoutput>
-	<div class="clearfix">
-		<p>
-			<a href="#buildURL('public:main')#">Public Main</a> 
-			| <a href="#buildURL('public:main.another')#">Another Page</a> 
-			| <a href="#buildURL('public:list')#">List Something</a>
-		</p>
-	</div>
-	<div class="clearfix">
-		#body#
-	</div>
-	<cfif $.currentUser().isSuperUser()>
-		<div class="clearfix">
-			<a href="#rc.$.globalConfig('context')#/plugins/#rc.pc.getDirectory()#/index.cfm?MuraFW1Action=admin:main.default&compactDisplay=true" rel="shadowbox;">Admin</a>
+	<div style="padding:1em 0; margin:2em 0;">
+		<div>
+			<p>
+				<a href="#buildURL('app2:main')#">Public Main</a> 
+				| <a href="#buildURL('app2:main.another')#">Another Page</a> 
+				| <a href="#buildURL('app2:list')#">List Something</a>
+			</p>
 		</div>
-	</cfif>
+		<div>
+			#body#
+		</div>
+		<cfif $.currentUser().isSuperUser()>
+			<div class="clearfix">
+				<a href="#rc.$.globalConfig('context')#/plugins/#rc.pc.getDirectory()#/index.cfm?MuraFW1Action=admin:main.default&compactDisplay=true" rel="shadowbox;">Admin</a>
+			</div>
+		</cfif>
+	</div>
 </cfoutput>

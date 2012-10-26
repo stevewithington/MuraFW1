@@ -20,10 +20,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 --->
 	<cfscript>
-		request.layout = false;
+		request.layout = true;
 	</cfscript>
 </cfsilent>
 <cfoutput>
-	<h3>Application ##1</h3>
-	<p>Hello from MuraFW1! Welcome to the <strong>public:main.default</strong> view.</p>
+	<h3>Another Page</h3>
+	<p>Cool! You're viewing another page via the 'App2' view.</p>
 </cfoutput>

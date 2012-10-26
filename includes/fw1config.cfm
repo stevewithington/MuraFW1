@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 	// !important: enter the plugin packageName here. must be the same as found in '{context}/plugin/config.xml.cfm'
 	variables.framework.package = 'MuraFW1';
+	variables.framework.packageVersion = '3.002';
 
 	// If true, then additional information is returned by the Application.onError() method
 	// and FW1 will 'reloadApplicationOnEveryRequest' (unless explicitly set otherwise below).
@@ -53,7 +54,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	// ***** rarely modified *****
 	variables.framework.applicationKey = variables.framework.package;
 	variables.framework.base = '/' & variables.framework.package;
-	//variables.framework.cfcbase = variables.framework.package;
 	variables.framework.reload = 'reload';
 	variables.framework.password = 'appreload'; // IF you're NOT using the default reload key of 'appreload', then you'll need to update this!
 	variables.framework.generateSES = false;
@@ -74,16 +74,4 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		variables.framework.home = variables.framework.defaultSection & '.' & variables.framework.defaultItem;
 		variables.framework.error = variables.framework.defaultSection & '.error';
 	};
-
-	public any function getFW() {
-		return variables.framework;
-	}
-
-	public any function getFWValue(required string key) {
-		try {
-			return StructFind(variables.framework, arguments.key);
-		} catch(any e) {
-			return '';
-		};
-	}
 </cfscript>

@@ -1,5 +1,4 @@
-<cfsilent>
-<!---
+/*
 
 This file is part of MuraFW1
 (c) Stephen J. Withington, Jr. | www.stephenwithington.com
@@ -18,12 +17,17 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
---->
-	<cfscript>
-		request.layout = false;
-	</cfscript>
-</cfsilent>
-<cfoutput>
-	<h3>Application ##1</h3>
-	<p>Hello from MuraFW1! Welcome to the <strong>public:main.default</strong> view.</p>
-</cfoutput>
+*/
+component persistent="false" accessors="true" extends="controller" output="false" {
+
+	// ********************************* PAGES *******************************************
+
+	public any function default(required struct rc) {
+
+		// These essentially return the same values
+		//rc.something = 'Matt Levine,Sean Schroeder,Steve Withington,Grant Sherpert,Eddie Ballisty';
+		variables.fw.service('myServices.getDeveloperList', 'something');
+
+	}
+
+}

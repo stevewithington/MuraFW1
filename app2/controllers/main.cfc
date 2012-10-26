@@ -25,7 +25,7 @@ component persistent="false" accessors="true" extends="controller" output="false
 	public any function default(required struct rc) {
 
 		// if we need some service...
-		variables.fw.service('public.doSomeService', 'thisIsJustSomeRCVariable');
+		variables.fw.service('myServices.doSomeService', 'thisIsJustSomeRCVariable');
 
 	}
 

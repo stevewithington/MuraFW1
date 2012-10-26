@@ -20,32 +20,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 --->
 	<cfscript>
-		// set to false if you don't want to inherit the default layout
-		request.layout = false;
+		request.layout = true;
 	</cfscript>
 </cfsilent>
 <cfoutput>
-	<h3>List Something</h3>
-	<div class="success">
-		<h5>A Few Team Mura Developers:</h5>
-		<ul>
-			<cfloop list="#rc.something#" index="i">
-				<li>#HTMLEditFormat(i)#</li>
-			</cfloop>
-		</ul>
-	</div>
-
-	<!--- Just testing --->
-	<div>
-		<form method="post">
-			<label for="action">Action</label>
-			<select id="action" name="MuraFW1Action">
-				<cfset local.actions = 'public:main.default,public:main.another,public:list.default'>
-				<cfloop list="#local.actions#" index="local.i">
-					<option value="#local.i#"<cfif rc.action eq local.i> selected="selected"</cfif>>#local.i#</option>
-				</cfloop>
-			</select>
-			<input type="submit" value="Submit" />
-		</form>
+	<h3>App2 Main</h3>
+	<p>Hello there! Welcome to the <strong>app2:main.default</strong> view.</p>
+	<div class="notice">
+		<p>Here's something from the public services:<br>
+		<strong>rc.thisIsJustSomeRCVariable = #rc.thisIsJustSomeRCVariable#</strong></p>
 	</div>
 </cfoutput>
