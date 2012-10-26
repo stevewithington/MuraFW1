@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+	NOTES:
+
 --->
 	<cfsavecontent variable="local.errors">
 		<cfif StructKeyExists(rc, 'errors') and IsArray(rc.errors) and ArrayLen(rc.errors)>
@@ -42,7 +44,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	<cfscript>
 		param name="rc.compactDisplay" default="false";
 		body = local.errors & body;
-		//rc.errors = ['Ooops!','Wow.'];
 	</cfscript>
 </cfsilent>
 <cfsavecontent variable="local.newBody">

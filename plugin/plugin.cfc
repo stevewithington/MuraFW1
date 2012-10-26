@@ -41,7 +41,4 @@ component persistent="false" accessors="true" output="false" extends="mura.plugi
 		application.appInitialized = false;
 	}
 
-	public void function toBundle(pluginConfig, bundle, siteid) {
-	}
-
 }

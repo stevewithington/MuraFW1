@@ -36,8 +36,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		<eventHandler event="onApplicationLoad" component="includes.eventHandler" persist="false" />
 	</eventHandlers>
 	<displayobjects location="global">
+		<displayobject name="MuraFW1 Simple Display Object" displayobjectfile="includes/display_objects/simple.cfm" />
 		<displayobject name="MuraFW1 App1" displaymethod="dspMuraFW1App1" component="includes.displayObjects" persist="false" />
 		<displayobject name="MuraFW1 App2" displaymethod="dspMuraFW1App2" component="includes.displayObjects" persist="false" />
-		<displayobject name="MuraFW1 Simple Display Object" displayobjectfile="includes/display_objects/simple.cfm" />
 	</displayobjects>
 </plugin></cfoutput>

@@ -18,7 +18,7 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-	NOTES: 
+	NOTES:
 		The most important variable to note is variables.framework.package.
 		Also, set variables.framework.debugMode to false when you're finished
 		developing the plugin.
@@ -29,7 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 	// !important: enter the plugin packageName here. must be the same as found in '{context}/plugin/config.xml.cfm'
 	variables.framework.package = 'MuraFW1';
-	variables.framework.packageVersion = '3.002';
+	variables.framework.packageVersion = '3.000';
 
 	// If true, then additional information is returned by the Application.onError() method
 	// and FW1 will 'reloadApplicationOnEveryRequest' (unless explicitly set otherwise below).

@@ -8,9 +8,11 @@ Framework One, or more commonly known as FW/1.
 
 
 ## PLEASE READ
-**This version (3.0) is still in development!** This plugin requires a minimum of Adobe
-ColdFusion 9.0.1+ or Railo 3.3+
+**This version (3.0) is still in development and has not been fully tested.** 
 
+### Minimum Requirements
+	* Mura CMS v.6.0+
+	* Adobe ColdFusion 9.0.1+ or Railo 3.3+
 
 ## Important Notes
 Assuming you've used FW/1 in the past, you'll need to know a few minor differences
@@ -19,7 +21,7 @@ between a typical FW/1 application and how it lives within Mura CMS.
 First of all, this plugin does use FW/1 subsystems. There are two primary subsystems 
 at play here. One is 'admin' and the other is 'public'. This means your URLs will have 
 either '?{packageName}Action=admin:your.view' or '?{packageName}Action=public:your.view'
-(e.g., ?muraFW1action=admin:default.main)
+(e.g., ?MuraFW1action=admin:default.main)
 
 Next, here are some of the more important files to be aware of and a little bit about
 what they are.
@@ -32,28 +34,35 @@ modifications have been made to the file other than its name.
 
 ### /includes/fw1config.cfm
 This file contains 'variables.framework' which is used by both FW/1 and Mura. The most
-mimportant variable in this file is: `framework.package = 'MuraFW1';`
+important variable in this file is: `variables.framework.package = 'MuraFW1';`
 You **MUST** enter the plugin's 'packageName' here and it MUST be the same as found in 
 **/plugin/config.xml.cfm**  So please be sure to change **MuraFW1** to match your plugin's
-packageName.
+packageName. You should be able to simply modify the *package* name in `config.xml.cfm`
+and 
 
 Another important variable to note is `framework.baseURL='useRequestURI';`
 **Do NOT change this setting!** This setting is required in order for Mura CMS and FW/1 to coexist.
 
-Lastly, the framework.action defaults to your pacakgeName & 'action' ... e.g. if your
-packageName is 'MuraFW1', the default action will be 'MuraFW1action'.  This is to
+Lastly, the `variables.framework.action` defaults to your `pacakgeName & action` ... e.g. if your
+packageName is 'MuraFW1', the default action will be **MuraFW1action**.  This is to
 help prevent your plugin from intercepting another plugin's action.  So, if your
-packageName is not a valid ColdFusion variable name (e.g., begins with a number, etc.)
+packageName is not a valid CFML variable name (e.g., begins with a number, etc.)
 then you will experience problems trying to get your application to work.
 
 ### /Application.cfc
 This file extends /includes/fw1.cfc. Here is where you'll be able to edit common FW/1 methods
-such as setupApplication(), setupSession(), setupRequest(), setupSubsystem() if needed.
+such as setupApplication(), setupSession(), setupRequest(), setupSubsystem() if needed. The
+hope is that you shouldn't have to modify it very much for simple applications.
 
 ### /includes/eventHandler.cfc
-This file extends mura.plugin.pluginGenericEventHandler.  Here is where you can access
+This file extends `mura.plugin.pluginGenericEventHandler`.  Here is where you can modify/add
 commonly used Mura 'events' such as onApplicationLoad(), onSiteRequestStart(),
 onRenderStart(), etc.
+
+### /includes/displayObjects.cfc
+This file extends `mura.plugin.pluginGenericEventHandler`.  You should be able to add any
+display methods here.  Just be sure sure to map them into your `config.xml.cfm` file so
+they'll show up for content managers.
 
 
 ## Additional Resources
