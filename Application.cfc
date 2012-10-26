@@ -36,6 +36,10 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 		var local = {};
 		local.targetPath = getPageContext().getRequest().getRequestURI();
 
+		local.fwTriggered = StructKeyExists(form, variables.framework.action) || StructKeyExists(url, variables.framework.action);
+
+		arguments.action = getFullyQualifiedAction(arguments.action);
+
 		local.action = StructKeyExists(request, variables.framework.action) 
 			? request[variables.framework.action] : arguments.action;
 
@@ -48,15 +52,16 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 		request.action = getFullyQualifiedAction(request.context[variables.framework.action]);
 
 		// !important ** DO NOT CHANGE **
-		local.cacheID = UCase(arguments.action);
+		local.cacheID = UCase(variables.framework.package & '_' & arguments.action);
+		local.cacheExists = !IsNull(CacheGet(local.cacheID));
 
 		// The main check here is to see if the subsystem is different...
 		// if not, then it should grab the cached state of the application.
-		if ( 
-			IsNull(CacheGet(local.cacheID)) 
+		if (
+			!local.cacheExists
 			|| StructKeyExists(request, variables.framework.reload) 
 				&& request[variables.framework.reload] == variables.framework.password
-			|| getSubSystem(request.action) == getSubSystem(arguments.action)
+			|| ( getSubSystem(arguments.action) == getSubSystem(request.action) && local.fwTriggered )
 		) {
 			CacheRemove(local.cacheID);
 			onRequestStart(local.targetPath);
@@ -65,10 +70,10 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 			};
 			clearFW1Request();
 			// should probably make the cache timeout settings dynamic
-			CachePut(local.cacheID, local.response, CreateTimeSpan(0,0,5,0), CreateTimeSpan(0,0,5,0));
+			CachePut(local.cacheID, local.response, CreateTimeSpan(0,1,0,0), CreateTimeSpan(0,1,0,0));
 		};
-		return CacheGet(local.cacheID);
 
+		return CacheGet(local.cacheID);
 	}
 
 	public any function setupApplication() {
