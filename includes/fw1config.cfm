@@ -46,7 +46,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	variables.framework.defaultSection = 'main';
 	variables.framework.defaultItem = 'default';
 	variables.framework.usingSubsystems = true;
-	variables.framework.defaultSubsystem = 'public';
+	variables.framework.defaultSubsystem = 'admin';
 
 	// by default, fw1 uses 'fw1pk' ... however, to allow for plugin-specific keys, this plugin will use your packageName + 'pk'
 	variables.framework.preserveKeyURLKey = variables.framework.package & 'pk';
