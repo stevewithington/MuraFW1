@@ -23,8 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 --->
 </cfsilent>
 <cfoutput>
-	<div class="fw1AdminContent">
-		<h2>License</h2>
-		<cfinclude template="../../../plugin/license.cfm" />
-	</div>
+	<h2>License</h2>
+	<cfinclude template="../../../plugin/license.cfm" />
 </cfoutput>

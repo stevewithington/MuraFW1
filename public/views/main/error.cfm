@@ -22,32 +22,28 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 --->
 	<cfscript>
-		request.layout = true;
+		request.layout = false;
 	</cfscript>
+	<cfsavecontent variable="local.errors">
+		<cfif StructKeyExists(rc, 'errors') and IsArray(rc.errors) and ArrayLen(rc.errors)>
+			<div class="alert alert-error error">
+				<h2>Alert!</h2>
+				<h3>Please note the following message<cfif ArrayLen(rc.errors) gt 1>s</cfif>:</h3>
+				<ul>
+					<cfloop from="1" to="#ArrayLen(rc.errors)#" index="local.e">
+						<li>
+							<cfif isSimpleValue(rc.errors[local.e])>
+								<cfoutput>#rc.errors[local.e]#</cfoutput>
+							<cfelse>
+								<cfdump var="#rc.errors[local.e]#" />
+							</cfif>
+						</li>
+					</cfloop>
+				</ul>
+			</div><!--- /.alert --->
+		</cfif>
+	</cfsavecontent>
 </cfsilent>
 <cfoutput>
-	<h3>List Something</h3>
-	<div class="success">
-		<h5>A Few Team Mura Developers:</h5>
-		<ul>
-			<cfloop list="#rc.something#" index="i">
-				<li>#HTMLEditFormat(i)#</li>
-			</cfloop>
-		</ul>
-	</div>
-
-	<!--- Some form testing --->
-	<div>
-		<form method="post">
-			<label for="action">Action</label>
-			<!--- NOTE the 'name' attribute! --->
-			<select id="action" name="MuraFW1Action">
-				<cfset local.actions = 'app2:main.default,app2:main.another,app2:list.default'>
-				<cfloop list="#local.actions#" index="local.i">
-					<option value="#local.i#"<cfif rc.action eq local.i> selected="selected"</cfif>>#local.i#</option>
-				</cfloop>
-			</select>
-			<input type="submit" value="Submit" />
-		</form>
-	</div>
+	#local.errors#
 </cfoutput>

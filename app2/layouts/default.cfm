@@ -21,9 +21,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	NOTES:
 
 --->
-	<cfscript>
-		//request.layout = false;
-	</cfscript>
 </cfsilent>
 <cfoutput>
 	<div style="padding:1em 0; margin:2em 0;">

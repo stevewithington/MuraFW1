@@ -36,7 +36,7 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 		var local = {};
 		local.targetPath = getPageContext().getRequest().getRequestURI();
 
-		local.fwTriggered = StructKeyExists(form, variables.framework.action) || StructKeyExists(url, variables.framework.action);
+		local.fwTriggered = StructKeyExists(form, variables.framework.action) || StructKeyExists(url, variables.framework.action) || StructKeyExists(request, variables.framework.preserveKeyURLKey);
 
 		arguments.action = getFullyQualifiedAction(arguments.action);
 
