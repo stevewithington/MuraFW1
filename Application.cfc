@@ -59,6 +59,7 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 		// if not, then it should grab the cached state of the application.
 		if (
 			!local.cacheExists
+			|| StructKeyExists(form, variables.framework.action)
 			|| StructKeyExists(request, variables.framework.reload) 
 				&& request[variables.framework.reload] == variables.framework.password
 			|| ( getSubSystem(arguments.action) == getSubSystem(request.action) && local.fwTriggered )
