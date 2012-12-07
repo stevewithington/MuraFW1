@@ -52,7 +52,7 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 		request.action = getFullyQualifiedAction(request.context[variables.framework.action]);
 
 		// !important ** DO NOT CHANGE **
-		local.cacheID = UCase(variables.framework.package & '_' & arguments.action);
+		local.cacheID = UCase(variables.framework.package & '_' & arguments.action & '_' & Hash(session.sessionid));
 		local.cacheExists = !IsNull(CacheGet(local.cacheID));
 
 		// The main check here is to see if the subsystem is different...
