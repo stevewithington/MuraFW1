@@ -243,13 +243,10 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 	}
 
 	private any function getCachedView(required string viewKey) {
-		var p = variables.framework.package;
 		var view = '';
-		getSessionCache();
-		if ( StructKeyExists(session[p].views, arguments.viewKey) ) {
-			lock scope='session' type='readonly' timeout=10 {
-				view = session[p].views[arguments.viewKey];
-			};
+		var cache = getSessionCache();
+		if ( StructKeyExists(cache, 'views') && StructKeyExists(cache.views, arguments.viewKey) ) {
+			view = cache.views[arguments.viewKey];
 		};
 		return view;
 	}
