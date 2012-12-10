@@ -21,9 +21,22 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	NOTES:
 
 --->
-	<cfsavecontent variable="htmlhead"><cfoutput>
-		<link rel="stylesheet" type="text/css" href="#$.event('pluginPath')#includes/assets/css/murafw1.css">
-	</cfoutput></cfsavecontent>
-	<cfhtmlhead text="#htmlhead#" />
 </cfsilent>
-<cfoutput>#body#</cfoutput>
+<cfoutput>
+	<div style="padding:1em 0; margin:2em 0;">
+		<div>
+			<p>
+				<a href="#buildURL('public:main')#">Public Main</a> 
+				| <a href="#buildURL('public:registration')#">Registration</a>
+			</p>
+		</div>
+		<div>
+			#body#
+		</div>
+		<cfif $.currentUser().isSuperUser()>
+			<div class="clearfix">
+				<a href="#rc.$.globalConfig('context')#/plugins/#rc.pc.getDirectory()#/index.cfm?MuraFW1Action=admin:main.default&compactDisplay=true" rel="shadowbox;">Admin</a>
+			</div>
+		</cfif>
+	</div>
+</cfoutput>

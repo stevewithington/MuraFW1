@@ -1,5 +1,4 @@
-<cfsilent>
-<!---
+/*
 
 This file is part of MuraFW1
 (c) Stephen J. Withington, Jr. | www.stephenwithington.com
@@ -20,10 +19,20 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 	NOTES:
 
---->
-	<cfsavecontent variable="htmlhead"><cfoutput>
-		<link rel="stylesheet" type="text/css" href="#$.event('pluginPath')#includes/assets/css/murafw1.css">
-	</cfoutput></cfsavecontent>
-	<cfhtmlhead text="#htmlhead#" />
-</cfsilent>
-<cfoutput>#body#</cfoutput>
+*/
+component persistent="false" accessors="true" output="false" extends="mura.cfobject" {
+
+	public any function init() {
+		return this;
+	}
+
+	public any function formDefaults(
+		string fname=''
+		, string lname=''
+		, boolean isSubmitted=false
+	) {
+		StructAppend(request.context, arguments);
+		return arguments;
+	}
+
+}

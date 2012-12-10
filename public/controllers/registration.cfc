@@ -1,5 +1,4 @@
-<cfsilent>
-<!---
+/*
 
 This file is part of MuraFW1
 (c) Stephen J. Withington, Jr. | www.stephenwithington.com
@@ -20,10 +19,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 	NOTES:
 
---->
-	<cfsavecontent variable="htmlhead"><cfoutput>
-		<link rel="stylesheet" type="text/css" href="#$.event('pluginPath')#includes/assets/css/murafw1.css">
-	</cfoutput></cfsavecontent>
-	<cfhtmlhead text="#htmlhead#" />
-</cfsilent>
-<cfoutput>#body#</cfoutput>
+*/
+component persistent="false" accessors="true" extends="controller" output="false" {
+
+	// ********************************* PAGES *******************************************
+
+	public any function default(required struct rc) {
+		variables.fw.service('registration.formDefaults', 'formDefaults');
+	}
+
+}

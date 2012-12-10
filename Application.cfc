@@ -33,53 +33,42 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 	variables.fw1Keys = 'SERVICEEXECUTIONCOMPLETE,LAYOUTS,CONTROLLEREXECUTIONCOMPLETE,VIEW,SERVICES,CONTROLLERS,CONTROLLEREXECUTIONSTARTED';
 
 	public string function doAction(string action='') {
+		var p = variables.framework.package; 
+		var fwa = variables.framework.action;
 		var local = {};
+
 		local.targetPath = getPageContext().getRequest().getRequestURI();
-
-		local.fwTriggered = StructKeyExists(form, variables.framework.action) || StructKeyExists(url, variables.framework.action) || StructKeyExists(request, variables.framework.preserveKeyURLKey);
-
-		arguments.action = getFullyQualifiedAction(arguments.action);
-
-		local.action = StructKeyExists(request, variables.framework.action) 
-			? request[variables.framework.action] : arguments.action;
-
 		onApplicationStart();
 
-		request.context[variables.framework.action] = StructKeyExists(form, variables.framework.action) 
-			? form[variables.framework.action] : StructKeyExists(url, variables.framework.action) 
-			? url[variables.framework.action] : local.action;
+		request.context[fwa] = StructKeyExists(form, fwa) 
+			? form[fwa] : StructKeyExists(url, fwa) 
+			? url[fwa] : StructKeyExists(request, fwa)
+			? request[fwa] : getFullyQualifiedAction(arguments.action);
 
-		request.action = getFullyQualifiedAction(request.context[variables.framework.action]);
+		request.action = getFullyQualifiedAction(request.context[fwa]);
+		local.viewKey = UCase(p & '_' & arguments.action);
+		local.response = getCachedView(local.viewKey);
 
-		// !important ** DO NOT CHANGE **
-		local.cacheID = UCase(variables.framework.package & '_' & arguments.action & '_' & Hash(session.sessionid));
-		local.cacheExists = !IsNull(CacheGet(local.cacheID));
+		local.newViewRequired = !Len(local.response) 
+			? true : getSubSystem(arguments.action) == getSubSystem(request.context[fwa])
+			? true : false;
 
-		// The main check here is to see if the subsystem is different...
-		// if not, then it should grab the cached state of the application.
-		if (
-			!local.cacheExists
-			|| StructKeyExists(form, variables.framework.action)
-			|| StructKeyExists(request, variables.framework.reload) 
-				&& request[variables.framework.reload] == variables.framework.password
-			|| ( getSubSystem(arguments.action) == getSubSystem(request.action) && local.fwTriggered )
-		) {
-			CacheRemove(local.cacheID);
+		if ( local.newViewRequired ) {
 			onRequestStart(local.targetPath);
 			savecontent variable='local.response' {
 				onRequest(local.targetPath);
 			};
 			clearFW1Request();
-			// should probably make the cache timeout settings dynamic
-			CachePut(local.cacheID, local.response, CreateTimeSpan(0,1,0,0), CreateTimeSpan(0,1,0,0));
+			// cache the view
+			setCachedView(local.viewKey, local.response);
 		};
 
-		return CacheGet(local.cacheID);
+		return local.response;
 	}
 
 	public any function setupApplication() {
 		var local = {};
-		lock scope="application" type="exclusive" timeout="50" {
+		lock scope='application' type='exclusive' timeout=50 {
 			application[variables.framework.applicationKey].pluginConfig = application.pluginManager.getConfig(ID=variables.framework.applicationKey);
 			local.pc = application[variables.framework.applicationKey].pluginConfig;
 			setBeanFactory(local.pc.getApplication(purge=false));
@@ -225,6 +214,58 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 			};
 			request._fw1.requestDefaultsInitialized = false;
 		};
+	}
+
+	// ========================== PRIVATE ==============================
+
+	private any function getSessionCache() {
+		var local = {};
+		if ( isCacheExpired() ) {
+			setSessionCache();
+		};
+		lock scope='session' type='readonly' timeout=10 {
+			local.cache = session[variables.framework.package];
+		};
+		return local.cache;
+	}
+
+	private void function setSessionCache() {
+		var p = variables.framework.package;
+		// Expires - s:seconds, n:minutes, h:hours, d:days
+		lock scope='session' type='exclusive' timeout=10 {
+			session[p] = {
+				created = Now()
+				, expires = DateAdd('m', 10, Now())
+				, sessionid = Hash(CreateUUID())
+				, views = {}
+			};
+		};
+	}
+
+	private any function getCachedView(required string viewKey) {
+		var p = variables.framework.package;
+		var view = '';
+		getSessionCache();
+		if ( StructKeyExists(session[p].views, arguments.viewKey) ) {
+			lock scope='session' type='readonly' timeout=10 {
+				view = session[p].views[arguments.viewKey];
+			};
+		};
+		return view;
+	}
+
+	private void function setCachedView(required string viewKey, string viewValue='') {
+		lock scope='session' type='exclusive' timeout=10 {
+			session[variables.framework.package].views[arguments.viewKey] = arguments.viewValue;
+		};
+	}
+
+	private boolean function isCacheExpired() {
+		var p = variables.framework.package;
+		return !StructKeyExists(session, p) 
+				|| DateCompare(now(), session[p].expires, 's') == 1 
+				|| DateCompare(application.appInitializedTime, session[p].created, 's') == 1
+			? true : false;
 	}
 
 }

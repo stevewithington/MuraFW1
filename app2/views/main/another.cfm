@@ -26,6 +26,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	</cfscript>
 </cfsilent>
 <cfoutput>
-	<h3>Another Page</h3>
+	<h3>Application ##2: Another Page</h3>
 	<p>Cool! You're viewing another page via the 'App2' view.</p>
 </cfoutput>

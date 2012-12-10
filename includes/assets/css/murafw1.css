@@ -1,0 +1,49 @@
+/* MuraFW1 Brand
+-------------------------------------------------- */
+.container-murafw1 .navbar .plugin-brand {
+	padding: 5px;
+	margin-left: 20px;
+	float: right;
+	font-weight: bold;
+	font-size: 20px;
+	color: #000;
+	text-shadow: 0 1px 0 rgba(255,255,255,.1), 0 0 30px rgba(255,255,255,.125);
+	-webkit-transition: all .2s linear;
+	-moz-transition: all .2s linear;
+	transition: all .2s linear;
+}
+
+/* MuraFW1 Nav
+-------------------------------------------------- */
+.container-murafw1 .navbar .plugin-brand:hover  {
+	text-decoration: none;
+	text-shadow: 0 1px 0 rgba(255,255,255,.1), 0 0 30px rgba(255,255,255,.4);
+	color:#fff;
+}
+
+.container-murafw1 .navbar .nav > li > a {
+	padding: 6px 15px !important;
+}
+
+/* MuraFW1 Sidenav
+-------------------------------------------------- */
+.container-murafw1 .nav.nav-list.murafw1-sidenav {
+	margin: 18px 0 0;
+}
+
+.container-murafw1 .nav.nav-list.murafw1-sidenav a {
+	border: 1px solid #e5e5e5;
+	margin: 0 -15px -1px;
+}
+
+/* Desktop
+------------------------- */
+@media (max-width: 980px) {
+	/* Unfloat brand */
+	.container-murafw1 .navbar-fixed-top .plugin-brand {
+		float: left;
+		margin-left: 0;
+		padding-left: 10px;
+		padding-right: 10px;
+	}
+}

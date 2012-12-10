@@ -48,13 +48,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 </cfsilent>
 <cfsavecontent variable="local.newBody">
 	<cfoutput>
-		<div class="container-fluid">
+		<div class="container-murafw1">
 
 			<!--- PRIMARY NAV --->
 			<div class="row-fluid">
 				<div class="navbar">
 					<div class="navbar-inner">
-						<a class="brand" href="#buildURL('admin:main')#">#HTMLEditFormat(rc.pc.getPackage())#</a>
+						<a class="plugin-brand" href="#buildURL('admin:main')#">#HTMLEditFormat(rc.pc.getPackage())#</a>
 						<ul class="nav">
 							<li class="<cfif rc.action contains 'admin:main'>active</cfif>">
 								<a href="##" class="dropdown-toggle" data-toggle="dropdown">Main <b class="caret"></b></a>
@@ -84,8 +84,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 					<!--- SUB-NAV --->
 					<div class="span3">
-						<ul class="nav nav-list">
-							<!--- <li class="nav-header">Main</li> --->
+						<ul class="nav nav-list murafw1-sidenav">
 							<li class="<cfif rc.action eq 'admin:main.default'>active</cfif>">
 								<a href="#buildURL('admin:main')#"><i class="icon-home"></i> Home</a>
 							</li>
@@ -108,7 +107,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 				</cfif>
 			</div><!--- /.row --->
-		</div><!--- /.container --->
+		</div><!--- /.container-murafw1 --->
 	</cfoutput>
 </cfsavecontent>
 <cfoutput>

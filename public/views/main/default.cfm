@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 --->
 	<cfscript>
-		request.layout = false;
+		//request.layout = false;
 	</cfscript>
 </cfsilent>
 <cfoutput>

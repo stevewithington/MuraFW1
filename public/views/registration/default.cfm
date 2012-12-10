@@ -21,9 +21,32 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	NOTES:
 
 --->
-	<cfsavecontent variable="htmlhead"><cfoutput>
-		<link rel="stylesheet" type="text/css" href="#$.event('pluginPath')#includes/assets/css/murafw1.css">
-	</cfoutput></cfsavecontent>
-	<cfhtmlhead text="#htmlhead#" />
+	<cfscript>
+		//request.layout = false;
+	</cfscript>
 </cfsilent>
-<cfoutput>#body#</cfoutput>
+<cfoutput>
+	<h3>Application ##1: Registration</h3>
+
+	<cfif rc.isSubmitted>
+		<h4>Sample Form Has Been Submitted!</h4>
+		<cfdump var="#form#" label="FORM" />
+		<cfdump var="#rc#" label="REQUEST.CONTEXT" />
+	<cfelse>
+		<h4>Sample Form</h4>
+		<form method="post">
+			<p>
+				<label for="fname">First Name</label>
+				<input type="text" name="fname" value="#rc.fname#" />
+			</p>
+			<p>
+				<label for="lname">Last Name</label>
+				<input type="text" name="lname" value="#rc.lname#" />
+			</p>
+			<input type="hidden" name="MuraFW1Action" value="public:registration.default" />
+			<input type="hidden" name="isSubmitted" value="true" />
+			<p><input type="submit" value="Submit" /></p>
+		</form>
+	</cfif>
+
+</cfoutput>

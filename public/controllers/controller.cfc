@@ -1,5 +1,4 @@
-<cfsilent>
-<!---
+/*
 
 This file is part of MuraFW1
 (c) Stephen J. Withington, Jr. | www.stephenwithington.com
@@ -19,11 +18,21 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 	NOTES:
+		All PUBLIC controllers should EXTEND this file.
 
---->
-	<cfsavecontent variable="htmlhead"><cfoutput>
-		<link rel="stylesheet" type="text/css" href="#$.event('pluginPath')#includes/assets/css/murafw1.css">
-	</cfoutput></cfsavecontent>
-	<cfhtmlhead text="#htmlhead#" />
-</cfsilent>
-<cfoutput>#body#</cfoutput>
+*/
+component persistent="false" accessors="true" output="false" extends="mura.cfobject" {
+		
+		property name="fw" type="any" default="";
+
+		public any function init(required any fw) {
+			setFW(arguments.fw);
+		}
+
+		public any function before(required struct rc) {
+			if ( !getFW().isFrontEndRequest() ) {
+				getFW().redirect(action='admin:main.default');
+			};
+		}
+
+}
