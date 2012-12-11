@@ -18,7 +18,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 	NOTES: 
-		The idea is that you shouldn't have to edit this file.
+		Edit the setSessionCache() method to alter the 'expires' key.
+		Defaults to 1 hour. The sessionCache will also expire
+		if the application has been reloaded.
+
+		The idea is that you really shouldn't have to edit this file.
 		See /includes/displayObjects.cfc && /includes/eventHandler.cfc
 		on how to access these methods.
 
@@ -46,7 +50,15 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 			? request[fwa] : getFullyQualifiedAction(arguments.action);
 
 		request.action = getFullyQualifiedAction(request.context[fwa]);
-		local.viewKey = UCase(p & '_' & arguments.action);
+
+		// viewKey: package_subsystem_section_item
+		local.viewKey = UCase(
+			p 
+			& '_' & getSubSystem(arguments.action) 
+			& '_' & getSection(arguments.action)
+			& '_' & getItem(arguments.action)
+		);
+
 		local.response = getCachedView(local.viewKey);
 
 		local.newViewRequired = !Len(local.response) 
@@ -59,7 +71,6 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 				onRequest(local.targetPath);
 			};
 			clearFW1Request();
-			// cache the view
 			setCachedView(local.viewKey, local.response);
 		};
 
@@ -218,30 +229,6 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 
 	// ========================== PRIVATE ==============================
 
-	private any function getSessionCache() {
-		var local = {};
-		if ( isCacheExpired() ) {
-			setSessionCache();
-		};
-		lock scope='session' type='readonly' timeout=10 {
-			local.cache = session[variables.framework.package];
-		};
-		return local.cache;
-	}
-
-	private void function setSessionCache() {
-		var p = variables.framework.package;
-		// Expires - s:seconds, n:minutes, h:hours, d:days
-		lock scope='session' type='exclusive' timeout=10 {
-			session[p] = {
-				created = Now()
-				, expires = DateAdd('m', 10, Now())
-				, sessionid = Hash(CreateUUID())
-				, views = {}
-			};
-		};
-	}
-
 	private any function getCachedView(required string viewKey) {
 		var view = '';
 		var cache = getSessionCache();
@@ -263,6 +250,31 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 				|| DateCompare(now(), session[p].expires, 's') == 1 
 				|| DateCompare(application.appInitializedTime, session[p].created, 's') == 1
 			? true : false;
+	}
+
+	private any function getSessionCache() {
+		var local = {};
+		if ( isCacheExpired() ) {
+			setSessionCache();
+		};
+		lock scope='session' type='readonly' timeout=10 {
+			local.cache = session[variables.framework.package];
+		};
+		return local.cache;
+	}
+
+	private void function setSessionCache() {
+		var p = variables.framework.package;
+		// Expires - s:seconds, n:minutes, h:hours, d:days
+		lock scope='session' type='exclusive' timeout=10 {
+			StructDelete(session, p);
+			session[p] = {
+				created = Now()
+				, expires = DateAdd('h', 1, Now())
+				, sessionid = Hash(CreateUUID())
+				, views = {}
+			};
+		};
 	}
 
 }
