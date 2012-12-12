@@ -25,7 +25,12 @@ two primary subsystems at play here. One is 'admin' and the
 other is 'public'. This means your URLs will have either 
 '?{packageName}Action=admin:your.view' or 
 '?{packageName}Action=public:your.view' (e.g., 
-?MuraFW1action=admin:default.main)
+?MuraFW1action=admin:default.main). There are also some
+additional example applications inlcuded (e.g., app2, app3, etc.).
+These are included to give you, the developer, a kind of
+'skeleton' application to work with. In addition, this also
+illustrates how one would create multiple display objects for
+Mura CMS.
 
 Next, here are some of the more important files to be aware of 
 and a little bit about what they are.
@@ -75,6 +80,16 @@ This file extends `mura.plugin.pluginGenericEventHandler`.  You
 should be able to add any display methods here.  Just be sure sure 
 to map them into your `config.xml.cfm` file so they'll show up for 
 content managers.
+
+### /includes/factory/ioc.cfc
+This file is DI/1 - Inject One - a very lightweight, convention over
+configuration, dependency injection (inversion of control) framework.
+By default, this plugin uses DI/1 as its Bean Factory. If you wish
+to use something else (e.g., ColdSpring, Mura, etc.), then simply
+edit the Appliction.cfc:setupApplication() method.
+
+Please refer to the [DI/1 Project](https://github.com/seancorfield/di1)
+for more information.
 
 
 ## Additional Resources
