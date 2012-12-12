@@ -22,7 +22,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Defaults to 1 hour. The sessionCache will also expire
 		if the application has been reloaded.
 
-		The idea is that you really shouldn't have to edit this file.
 		See /includes/displayObjects.cfc && /includes/eventHandler.cfc
 		on how to access these methods.
 
@@ -79,11 +78,24 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 
 	public any function setupApplication() {
 		var local = {};
+
 		lock scope='application' type='exclusive' timeout=50 {
 			application[variables.framework.applicationKey].pluginConfig = application.pluginManager.getConfig(ID=variables.framework.applicationKey);
-			local.pc = application[variables.framework.applicationKey].pluginConfig;
-			setBeanFactory(local.pc.getApplication(purge=false));
 		};
+
+		// Bean Factory Options
+
+		// 1) Use DI/1
+		// just be sure to pass in your comma-separated list of folders to scan for CFCs
+		//local.beanFactory = new includes.ioc('/plugins/MuraFW1/app2/services,/plugins/MuraFW1/public/model');
+		local.beanFactory = new includes.factory.ioc('/#variables.framework.package#/app2/services,/#variables.framework.package#/app3/model');
+		setBeanFactory( local.beanFactory );
+
+		// OR
+
+		// 2) Use Mura's
+		// local.pc = application[variables.framework.applicationKey].pluginConfig;
+		// setBeanFactory(local.pc.getApplication(purge=false));
 	}
 
 	public void function setupRequest() {
@@ -203,11 +215,7 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 	}
 
 	public boolean function isAdminRequest() {
-		if ( StructKeyExists(request, 'context') && ListFirst(request.context[variables.framework.action], ':') == 'admin' ) {
-			return true;
-		} else {
-			return false;
-		};
+		return StructKeyExists(request, 'context') && ListFirst(request.context[variables.framework.action], ':') == 'admin' ? true : false;
 	}
 
 	public boolean function isFrontEndRequest() {

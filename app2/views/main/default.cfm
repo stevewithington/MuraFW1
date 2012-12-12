@@ -26,7 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	</cfscript>
 </cfsilent>
 <cfoutput>
-	<h3>Application ##2: Main</h3>
+	<h4>Main</h4>
 	<p>Hello there! Welcome to the <strong>app2:main.default</strong> view.</p>
 	<div class="alert alert-success">
 		<a class="close" data-dismiss="alert" href="##">&times;</a>

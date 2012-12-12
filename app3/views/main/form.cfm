@@ -23,30 +23,24 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 --->
 	<cfscript>
 		//request.layout = false;
+		local.registration = rc.registration;
 	</cfscript>
 </cfsilent>
 <cfoutput>
-	<h3>Application ##1: Registration</h3>
-
-	<cfif rc.isSubmitted>
-		<h4>Sample Form Has Been Submitted!</h4>
-		<cfdump var="#form#" label="FORM" />
-		<cfdump var="#rc#" label="REQUEST.CONTEXT" />
-	<cfelse>
-		<h4>Sample Form</h4>
-		<form method="post">
-			<p>
-				<label for="fname">First Name</label>
-				<input type="text" name="fname" value="#rc.fname#" />
-			</p>
-			<p>
-				<label for="lname">Last Name</label>
-				<input type="text" name="lname" value="#rc.lname#" />
-			</p>
-			<input type="hidden" name="MuraFW1Action" value="public:registration.default" />
-			<input type="hidden" name="isSubmitted" value="true" />
-			<p><input type="submit" value="Submit" /></p>
-		</form>
-	</cfif>
-
+	<h4>Add Registration</h4>
+	<form method="post">
+		<div class="field">
+			<label for="fname">First Name</label>
+			<input type="text" name="fname" value="#HTMLEditFormat(local.registration.getFName())#" />
+		</div>
+		<div class="field">
+			<label for="lname">Last Name</label>
+			<input type="text" name="lname" value="#HTMLEditFormat(local.registration.getLName())#" />
+		</div>
+		<input type="hidden" name="#variables.framework.action#" value="#getFullyQualifiedAction('app3:main.save')#" />
+		<input type="hidden" name="id" value="#local.registration.getID()#" />
+		<div class="control">
+			<input type="submit" value="Save Registration" />
+		</div>
+	</form>
 </cfoutput>

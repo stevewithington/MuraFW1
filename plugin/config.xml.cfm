@@ -39,5 +39,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		<displayobject name="MuraFW1 Simple Display Object" displayobjectfile="includes/display_objects/simple.cfm" />
 		<displayobject name="MuraFW1 App1" displaymethod="dspMuraFW1App1" component="includes.displayObjects" persist="false" />
 		<displayobject name="MuraFW1 App2" displaymethod="dspMuraFW1App2" component="includes.displayObjects" persist="false" />
+		<displayobject name="MuraFW1 App3" displaymethod="dspMuraFW1App3" component="includes.displayObjects" persist="false" />
 	</displayobjects>
 </plugin></cfoutput>

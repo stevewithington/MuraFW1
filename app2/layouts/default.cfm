@@ -23,17 +23,22 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 --->
 </cfsilent>
 <cfoutput>
-	<div style="padding:1em 0; margin:2em 0;">
+	<div class="row-fluid">
+		<h3>Application ##2</h3>
 		<div>
-			<p>
-				<a href="#buildURL('app2:main')#">Application ##2 Main</a> 
-				| <a href="#buildURL('app2:main.another')#">Another Page</a> 
-				| <a href="#buildURL('app2:list')#">List Something</a>
-			</p>
+			<ul class="nav nav-pills">
+				<li<cfif rc.action eq 'app2:main.default'> class="active"</cfif>>
+					<a href="#buildURL('app2:main')#">Application ##2 Main</a>
+				</li>
+				<li<cfif rc.action eq 'app2:main.another'> class="active"</cfif>>
+					<a href="#buildURL('app2:main.another')#">Another Page</a>
+				</li>
+				<li<cfif rc.action eq 'app2:list.default'> class="active"</cfif>>
+					<a href="#buildURL('app2:list')#">List Something</a>
+				</li>
+			</ul>
 		</div>
-		<div>
-			#body#
-		</div>
+		<div>#body#</div>
 		<cfif $.currentUser().isSuperUser()>
 			<div class="clearfix">
 				<a href="#rc.$.globalConfig('context')#/plugins/#rc.pc.getDirectory()#/index.cfm?MuraFW1Action=admin:main.default&compactDisplay=true" rel="shadowbox;">Admin</a>

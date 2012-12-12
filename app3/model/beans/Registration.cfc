@@ -1,5 +1,4 @@
-<cfsilent>
-<!---
+/*
 
 This file is part of MuraFW1
 (c) Stephen J. Withington, Jr. | www.stephenwithington.com
@@ -20,23 +19,29 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 	NOTES:
 
---->
-</cfsilent>
-<cfoutput>
-	<div style="padding:1em 0; margin:2em 0;">
-		<div>
-			<p>
-				<a href="#buildURL('public:main')#">Public Main</a> 
-				| <a href="#buildURL('public:registration')#">Registration</a>
-			</p>
-		</div>
-		<div>
-			#body#
-		</div>
-		<cfif $.currentUser().isSuperUser()>
-			<div class="clearfix">
-				<a href="#rc.$.globalConfig('context')#/plugins/#rc.pc.getDirectory()#/index.cfm?MuraFW1Action=admin:main.default&compactDisplay=true" rel="shadowbox;">Admin</a>
-			</div>
-		</cfif>
-	</div>
-</cfoutput>
+*/
+component persistent="false" accessors="true" output="false" extends="mura.cfobject" displayname="Registration" {
+
+	property name='fname';
+	property name='lname';
+	property name='id';
+
+	public Registration function init() {
+		return this;
+	}
+
+	/**
+	* getProperties()
+	* Metadata property inspector
+	*/
+	public any function getProperties() {
+		var local = {};
+		local.properties = {};
+		local.data = getMetaData(this).properties;
+		for ( local.i=1; local.i <= ArrayLen(local.data); local.i++ ) {
+			local.properties[local.data[local.i].name] = Evaluate('get#local.data[local.i].name#()');
+		};
+		return local.properties;
+	}
+
+}

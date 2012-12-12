@@ -21,33 +21,29 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	NOTES:
 
 --->
-	<cfscript>
-		request.layout = true;
-	</cfscript>
 </cfsilent>
 <cfoutput>
-	<h4>List Something</h4>
-	<div class="success">
-		<h5>A Few Team Mura Developers:</h5>
-		<ul>
-			<cfloop list="#rc.something#" index="i">
-				<li>#HTMLEditFormat(i)#</li>
-			</cfloop>
-		</ul>
-	</div>
+	<div class="row-fluid">
+		<h3>Application ##3</h3>
+		<div>
+			<ul class="nav nav-pills">
+				<li<cfif rc.action eq 'app3:main.default'> class="active"</cfif>>
+					<a href="#buildURL('app3:main')#">Registrations</a>
+				</li>
+				<li<cfif rc.action eq 'app3:main.form'> class="active"</cfif>>
+					<a href="#buildURL('app3:main.form')#">Add Registration</a>
+				</li>
+				<li<cfif rc.action eq 'app3:main.clear'> class="active"</cfif>>
+					<a href="#buildURL('app3:main.clear')#">Clear All Registrations</a>
+				</li>
+			</ul>
+		</div>
+		<div>#body#</div>
+		<cfif $.currentUser().isSuperUser()>
+			<div>
+				<a href="#rc.$.globalConfig('context')#/plugins/#rc.pc.getDirectory()#/index.cfm?#variables.framework.action#=admin:main.default&compactDisplay=true" rel="shadowbox;">Admin</a>
+			</div>
+		</cfif>
 
-	<!--- Some form testing --->
-	<div>
-		<form method="post">
-			<label for="action">Action</label>
-			<!--- NOTE the 'name' attribute! --->
-			<select id="action" name="MuraFW1Action">
-				<cfset local.actions = 'app2:main.default,app2:main.another,app2:list.default'>
-				<cfloop list="#local.actions#" index="local.i">
-					<option value="#local.i#"<cfif rc.action eq local.i> selected="selected"</cfif>>#local.i#</option>
-				</cfloop>
-			</select>
-			<input type="submit" value="Submit" />
-		</form>
 	</div>
 </cfoutput>

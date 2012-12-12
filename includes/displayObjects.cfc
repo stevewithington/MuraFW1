@@ -39,11 +39,15 @@ component persistent="false" accessors="true" output="false" extends="mura.plugi
 		return getApplication().doAction('app2:main.default');
 	}
 
+	public any function dspMuraFW1App3($) {
+		return getApplication().doAction('app3:main.default');
+	}
+
 	// ========================== Helper Methods ==============================
 
 	private any function getApplication() {
 		if( !StructKeyExists(request, '#variables.framework.applicationKey#Application') ) {
-			request['#variables.framework.applicationKey#Application'] = CreateObject('component', '#variables.framework.package#.Application');
+			request['#variables.framework.applicationKey#Application'] = new '#variables.framework.package#.Application'();
 		};
 		return request['#variables.framework.applicationKey#Application'];
 	}

@@ -44,7 +44,7 @@ component persistent="false" accessors="true" output="false" extends="mura.plugi
 
 	private any function getApplication() {
 		if( !StructKeyExists(request, '#variables.framework.applicationKey#Application') ) {
-			request['#variables.framework.applicationKey#Application'] = CreateObject('component', '#variables.framework.package#.Application');
+			request['#variables.framework.applicationKey#Application'] = new '#variables.framework.package#.Application'();
 		};
 		return request['#variables.framework.applicationKey#Application'];
 	}

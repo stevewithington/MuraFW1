@@ -29,7 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 	// !important: enter the plugin packageName here. must be the same as found in '{context}/plugin/config.xml.cfm'
 	variables.framework.package = 'MuraFW1';
-	variables.framework.packageVersion = '3.007';
+	variables.framework.packageVersion = '3.008';
 
 	// If true, then additional information is returned by the Application.onError() method
 	// and FW1 will 'reloadApplicationOnEveryRequest' (unless explicitly set otherwise below).
@@ -59,7 +59,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	variables.framework.generateSES = false;
 	variables.framework.SESOmitIndex = true;
 	variables.framework.baseURL = 'useRequestURI';
-	variables.framework.suppressImplicitService = true;
+	variables.framework.suppressImplicitService = false; //true to suppress fw/1 from storing service calls results in rc.data
 	variables.framework.unhandledExtensions = 'cfc';
 	variables.framework.unhandledPaths = '/flex2gateway';
 	variables.framework.maxNumContextsPreserved = 10;
