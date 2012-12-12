@@ -87,7 +87,6 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 
 		// 1) Use DI/1
 		// just be sure to pass in your comma-separated list of folders to scan for CFCs
-		//local.beanFactory = new includes.ioc('/plugins/MuraFW1/app2/services,/plugins/MuraFW1/public/model');
 		local.beanFactory = new includes.factory.ioc('/#variables.framework.package#/app2/services,/#variables.framework.package#/app3/model');
 		setBeanFactory( local.beanFactory );
 
