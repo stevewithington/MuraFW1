@@ -103,6 +103,8 @@ for more information.
 * [FW/1 Documentation wiki](http://github.com/seancorfield/fw1/wiki)
 * [FW/1 Blog](http://corfield.org/blog/archives.cfm/category/fw1)
 * [FW/1 Support](http://groups.google.com/group/framework-one/)
+* [DI/1 Project Home](https://github.com/seancorfield/di1)
+* [D1/1 Documentation wiki](https://github.com/seancorfield/di1/wiki)
 
 ## License
 This program is free software; you can redistribute it and/or modify
