@@ -27,7 +27,7 @@ limitations under the License.
 
 	// !important: enter the plugin packageName here. must be the same as found in '{context}/plugin/config.xml.cfm'
 	variables.framework.package = 'MuraFW1';
-	variables.framework.packageVersion = '3.010';
+	variables.framework.packageVersion = '3.011';
 
 	// If true, then additional information is returned by the Application.onError() method
 	// and FW1 will 'reloadApplicationOnEveryRequest' (unless explicitly set otherwise below).

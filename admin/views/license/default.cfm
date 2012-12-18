@@ -21,6 +21,6 @@ limitations under the License.
 --->
 </cfsilent>
 <cfoutput>
-	<h1>License</h1>
+	<h2>License</h2>
 	<cfinclude template="../../../plugin/license.cfm" />
 </cfoutput>

@@ -21,6 +21,6 @@ limitations under the License.
 --->
 </cfsilent>
 <cfoutput>
-	<h1>Another Page</h1>
+	<h2>Another Page</h2>
 	<p>Yep! Here's another page in the 'Main' Admin section.</p>
 </cfoutput>

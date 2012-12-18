@@ -21,7 +21,7 @@ limitations under the License.
 --->
 </cfsilent>
 <cfoutput>
-	<h1>General Instructions</h1>
+	<h2>General Instructions</h2>
 	<p> This is how you lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean ac quam eget nulla semper bibendum. Phasellus turpis augue, mattis id ultrices quis, semper euismod mi. In ut ligula ut enim elementum vestibulum vitae at nunc. Maecenas et velit erat, sed ultricies elit. Pellentesque mi eros, varius sed commodo volutpat, condimentum sed velit. Aliquam nulla nulla, lacinia id ultrices nec, laoreet non tellus. In convallis, odio in aliquam adipiscing, quam orci ultrices orci, at consequat tellus velit sed tortor. Lorem ipsum dolor sit amet, consectetur adipiscing elit. In hac habitasse platea dictumst. Proin ac augue odio. Nam est nibh, fringilla sed aliquam euismod, convallis quis lacus.</p>
 	<ul>
 		<li>Ut non sem metus, ac faucibus massa. </li>
