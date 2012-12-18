@@ -2,21 +2,19 @@
 <!---
 
 This file is part of MuraFW1
-(c) Stephen J. Withington, Jr. | www.stephenwithington.com
+Copyright (c) 2010-2012 Stephen J. Withington, Jr.
 
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+	http://www.apache.org/licenses/LICENSE-2.0
 
-You should have received a copy of the GNU General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 
 	NOTES:
 
@@ -30,7 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 				<ul>
 					<cfloop from="1" to="#ArrayLen(rc.errors)#" index="local.e">
 						<li>
-							<cfif isSimpleValue(rc.errors[local.e])>
+							<cfif IsSimpleValue(rc.errors[local.e])>
 								<cfoutput>#rc.errors[local.e]#</cfoutput>
 							<cfelse>
 								<cfdump var="#rc.errors[local.e]#" />
@@ -52,9 +50,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 			<!--- PRIMARY NAV --->
 			<div class="row-fluid">
-				<div class="navbar">
+				<div class="navbar navbar-murafw1">
 					<div class="navbar-inner">
+
 						<a class="plugin-brand" href="#buildURL('admin:main')#">#HTMLEditFormat(rc.pc.getPackage())#</a>
+
 						<ul class="nav">
 							<li class="<cfif rc.action contains 'admin:main'>active</cfif>">
 								<a href="##" class="dropdown-toggle" data-toggle="dropdown">Main <b class="caret"></b></a>
@@ -74,6 +74,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 								<a href="#buildURL('admin:instructions')#"><i class="icon-info-sign"></i> Instructions</a>
 							</li>
 						</ul><!--- /.nav --->
+
 					</div><!--- /.navbar-inner --->
 				</div><!--- /.navbar --->
 			</div><!--- /.row --->
@@ -93,6 +94,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 							</li>
 						</ul>
 					</div>
+
 					<!--- BODY --->
 					<div class="span9">
 						#body#

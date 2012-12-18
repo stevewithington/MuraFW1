@@ -2,28 +2,26 @@
 <!---
 
 This file is part of MuraFW1
-(c) Stephen J. Withington, Jr. | www.stephenwithington.com
+Copyright (c) 2010-2012 Stephen J. Withington, Jr.
 
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+	http://www.apache.org/licenses/LICENSE-2.0
 
-You should have received a copy of the GNU General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 
 	NOTES:
 
 --->
 </cfsilent>
 <cfoutput>
-	<h2>General Instructions</h2>
+	<h1>General Instructions</h1>
 	<p> This is how you lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean ac quam eget nulla semper bibendum. Phasellus turpis augue, mattis id ultrices quis, semper euismod mi. In ut ligula ut enim elementum vestibulum vitae at nunc. Maecenas et velit erat, sed ultricies elit. Pellentesque mi eros, varius sed commodo volutpat, condimentum sed velit. Aliquam nulla nulla, lacinia id ultrices nec, laoreet non tellus. In convallis, odio in aliquam adipiscing, quam orci ultrices orci, at consequat tellus velit sed tortor. Lorem ipsum dolor sit amet, consectetur adipiscing elit. In hac habitasse platea dictumst. Proin ac augue odio. Nam est nibh, fringilla sed aliquam euismod, convallis quis lacus.</p>
 	<ul>
 		<li>Ut non sem metus, ac faucibus massa. </li>
