@@ -26,7 +26,10 @@ component {
 	request._fw1 = {
         cgiScriptName = CGI.SCRIPT_NAME,
         cgiRequestMethod = CGI.REQUEST_METHOD,
-        requestDefaultsInitialized = false
+        controllers = [ ],
+        requestDefaultsInitialized = false,
+        services = [ ],
+        trace = [ ]
     };
 	// do not rely on these, they are meant to be true magic...
     variables.magicApplicationSubsystem = '][';
@@ -36,7 +39,8 @@ component {
 	
 	public void function abortController() {
 		request._fw1.abortController = true;
-		throw( type="FW1.AbortControllerException", message="abortController() called" );
+        frameworkTrace( 'abortController() called' );
+		throw( type='FW1.AbortControllerException', message='abortController() called' );
 	}
 
 	public boolean function actionSpecifiesSubsystem( string action ) {
@@ -239,18 +243,18 @@ component {
 		var tuple = { };
 
 		if ( structKeyExists( request._fw1, 'controllerExecutionStarted' ) ) {
-			raiseException( type="FW1.controllerExecutionStarted", message="Controller '#action#' may not be added at this point.",
-				detail="The controller execution phase has already started. Controllers may not be added by other controller methods." );
+			raiseException( type='FW1.controllerExecutionStarted', message="Controller '#action#' may not be added at this point.",
+				detail='The controller execution phase has already started. Controllers may not be added by other controller methods.' );
 		}
 
 		tuple.controller = getController( section = section, subsystem = subsystem );
 		tuple.key = subsystem & variables.framework.subsystemDelimiter & section;
+        tuple.subsystem = subsystem;
+        tuple.section = section;
 		tuple.item = item;
 
 		if ( structKeyExists( tuple, 'controller' ) && isObject( tuple.controller ) ) {
-			if ( !structKeyExists( request._fw1, 'controllers' ) ) {
-				request._fw1.controllers = [ ];
-			}
+            frameworkTrace( 'queuing controller', subsystem, section, item );
 			arrayAppend( request._fw1.controllers, tuple );
 		}
 	}
@@ -334,8 +338,8 @@ component {
 		}
 
 		if ( variables.framework.defaultSubsystem == '' ) {
-			raiseException( type="FW1.subsystemNotSpecified", message="No subsystem specified and no default configured.",
-					detail="When using subsystems, every request should specify a subsystem or variables.framework.defaultSubsystem should be configured." );
+			raiseException( type='FW1.subsystemNotSpecified', message='No subsystem specified and no default configured.',
+					detail='When using subsystems, every request should specify a subsystem or variables.framework.defaultSubsystem should be configured.' );
 		}
 
 		return variables.framework.defaultSubsystem;
@@ -346,7 +350,7 @@ component {
      * override this to provide your environment selector
      */
     public string function getEnvironment() {
-        return "";
+        return '';
     }
 	
 	/*
@@ -365,7 +369,7 @@ component {
      * return the local hostname of the server
      */
     public string function getHostname() {
-        return createObject( "java", "java.net.InetAddress" ).getLocalHost().getHostName();
+        return createObject( 'java', 'java.net.InetAddress' ).getLocalHost().getHostName();
     }
 	
 	/*
@@ -453,6 +457,13 @@ component {
 		}
 		return getDefaultSubsystem();
 	}
+
+    /*
+     * return the base directory for the current request's subsystem
+     */
+    public string function getSubsystemBase() {
+        return request.subsystemBase;
+    }
 	
 	/*
 	 * return the (optional) configuration for a subsystem
@@ -527,6 +538,7 @@ component {
 	 */
 	public string function layout( string path, string body ) {
 		var layoutPath = parseViewOrLayoutPath( path, 'layout' );
+        frameworkTrace( 'layout( #path# ) called - rendering #viewPath#' );
 		return internalLayout( layoutPath, body );
 	}
 
@@ -555,7 +567,7 @@ component {
 		    if ( !structKeyExists( variables, 'framework' ) ||
                  !structKeyExists( variables.framework, 'version' ) ) {
 		      // error occurred before framework was initialized
-		      failure(arguments.exception, arguments.event, false, true);
+		      failure( exception, event, false, true );
 		      return;
 		    }
 		    
@@ -571,7 +583,9 @@ component {
 			structDelete( request._fw1, 'serviceExecutionComplete' );
 			structDelete( request._fw1, 'overrideViewAction' );
 			// setup the new controller action, based on the error action:
-			structDelete( request._fw1, 'controllers' );
+			request._fw1.controllers = [ ];
+            // reset services for this new action:
+            request._fw1.services = [ ];
 			
 			if ( structKeyExists( variables, 'framework' ) && structKeyExists( variables.framework, 'error' ) ) {
 				request.action = variables.framework.error;
@@ -599,12 +613,14 @@ component {
 					request.cfcbase = '';
 				}
 			}
-			
+			frameworkTrace( 'onError( #exception.message#, #event# ) called' );
 			setupRequestWrapper( false );
 			onRequest( '' );
+            frameworkTraceRender();
 		} catch ( any e ) {
 			failure( e, 'onError' );
 			failure( exception, event, true );
+            frameworkTraceRender();
 		}
 
 	}
@@ -613,11 +629,12 @@ component {
 	 * this can be overridden if you want to change the behavior when
 	 * FW/1 cannot find a matching view
 	 */
-	public void function onMissingView( struct rc ) {
+	public string function onMissingView( struct rc ) {
 		// unable to find a matching view - fail with a nice exception
 		viewNotFound();
 		// if we got here, we would return the string to be rendered
 		// but viewNotFound() throws an exception...
+        // for example, return view( 'main.missing' );
 	}
 
 	/*
@@ -646,48 +663,47 @@ component {
 
 		request._fw1.controllerExecutionStarted = true;
 		try {
-			if ( structKeyExists( request._fw1, 'controllers' ) ) {
-				n = arrayLen( request._fw1.controllers );
-				for ( i = 1; i <= n; i = i + 1 ) {
-					tuple = request._fw1.controllers[ i ];
-					// run before once per controller:
-					if ( !structKeyExists( once, tuple.key ) ) {
-						once[ tuple.key ] = i;
-						doController( tuple.controller, 'before', 'before' );
-						if ( structKeyExists( request._fw1, "abortController" ) ) abortController();
-					}
-					doController( tuple.controller, 'start' & tuple.item, 'start' );
-					if ( structKeyExists( request._fw1, "abortController" ) ) abortController();
-					doController( tuple.controller, tuple.item, 'item' );
-					if ( structKeyExists( request._fw1, "abortController" ) ) abortController();
+			n = arrayLen( request._fw1.controllers );
+			for ( i = 1; i <= n; i = i + 1 ) {
+				tuple = request._fw1.controllers[ i ];
+				// run before once per controller:
+				if ( !structKeyExists( once, tuple.key ) ) {
+					once[ tuple.key ] = i;
+					doController( tuple, 'before', 'before' );
+					if ( structKeyExists( request._fw1, 'abortController' ) ) abortController();
 				}
+				doController( tuple, 'start' & tuple.item, 'start' );
+				if ( structKeyExists( request._fw1, 'abortController' ) ) abortController();
+				doController( tuple, tuple.item, 'item' );
+				if ( structKeyExists( request._fw1, 'abortController' ) ) abortController();
 			}
 			n = arrayLen( request._fw1.services );
 			for ( i = 1; i <= n; i = i + 1 ) {
-				tuple = request._fw1.services[i];
+				tuple = request._fw1.services[ i ];
 				if ( tuple.key == '' ) {
 					// throw the result away:
-					doService( tuple.service, tuple.item, tuple.args, tuple.enforceExistence );
-					if ( structKeyExists( request._fw1, "abortController" ) ) abortController();
+					doService( tuple, tuple.item, tuple.args, tuple.enforceExistence );
+					if ( structKeyExists( request._fw1, 'abortController' ) ) abortController();
 				} else {
-					_data_fw1 = doService( tuple.service, tuple.item, tuple.args, tuple.enforceExistence );
-					if ( structKeyExists( request._fw1, "abortController" ) ) abortController();
+					_data_fw1 = doService( tuple, tuple.item, tuple.args, tuple.enforceExistence );
+					if ( structKeyExists( request._fw1, 'abortController' ) ) abortController();
 					if ( isDefined('_data_fw1') ) {
+                        frameworkTrace( 'store service result in rc.#tuple.key#', tuple.subsystem, tuple.section, tuple.item );
 						request.context[ tuple.key ] = _data_fw1;
-					}
+					} else {
+                        frameworkTrace( 'service returned no result for rc.#tuple.key#', tuple.subsystem, tuple.section, tuple.item );
+                    }
 				}
 			}
 			request._fw1.serviceExecutionComplete = true;
-			if ( structKeyExists( request._fw1, 'controllers' ) ) {
-				n = arrayLen( request._fw1.controllers );
-				for ( i = n; i >= 1; i = i - 1 ) {
-					tuple = request._fw1.controllers[ i ];
-					doController( tuple.controller, 'end' & tuple.item, 'end' );
-					if ( structKeyExists( request._fw1, "abortController" ) ) abortController();
-					if ( once[ tuple.key ] eq i ) {
-						doController( tuple.controller, 'after', 'after' );
-						if ( structKeyExists( request._fw1, "abortController" ) ) abortController();
-					}
+			n = arrayLen( request._fw1.controllers );
+			for ( i = n; i >= 1; i = i - 1 ) {
+				tuple = request._fw1.controllers[ i ];
+				doController( tuple, 'end' & tuple.item, 'end' );
+				if ( structKeyExists( request._fw1, 'abortController' ) ) abortController();
+				if ( once[ tuple.key ] eq i ) {
+					doController( tuple, 'after', 'after' );
+					if ( structKeyExists( request._fw1, 'abortController' ) ) abortController();
 				}
 			}
 		} catch ( FW1.AbortControllerException e ) {
@@ -696,23 +712,36 @@ component {
 		request._fw1.controllerExecutionComplete = true;
 
 		buildViewQueue();
+        frameworkTrace( 'setupView() called' );
 		setupView();
 		if ( structKeyExists(request._fw1, 'view') ) {
+            frameworkTrace( 'rendering #request._fw1.view#' );
 			out = internalView( request._fw1.view );
 		} else {
+            frameworkTrace( 'onMissingView() called' );
 			out = onMissingView( request.context );
 		}
 
         buildLayoutQueue();
 		for ( i = 1; i <= arrayLen(request._fw1.layouts); i = i + 1 ) {
 			if ( structKeyExists(request, 'layout') && !request.layout ) {
+                frameworkTrace( 'aborting layout rendering' );
 				break;
 			}
+            frameworkTrace( 'rendering #request._fw1.layouts[i]#' );
 			out = internalLayout( request._fw1.layouts[i], out );
 		}
 		writeOutput( out );
 		setupResponseWrapper();
 	}
+
+    /*
+     * if you override onRequestEnd(), call super.onRequestEnd() if you
+     * want tracing functionality to continue working
+     */
+    public any function onRequestEnd() {
+        frameworkTraceRender();
+    }
 
 	/*
 	 * it is better to set up your request configuration in
@@ -739,6 +768,8 @@ component {
 				REFindNoCase( '^(' & variables.framework.unhandledPathRegex & ')', targetPath ) ) {		
 			structDelete(this, 'onRequest');
 			structDelete(variables, 'onRequest');
+			structDelete(this, 'onRequestEnd');
+			structDelete(variables, 'onRequestEnd');			
             if ( !variables.framework.unhandledErrorCaught ) {
 			    structDelete(this, 'onError');
 			    structDelete(variables, 'onError');
@@ -757,7 +788,7 @@ component {
 	public any function onSessionStart() {
 		setupFrameworkDefaults();
 		setupRequestDefaults();
-		setupSession();
+		setupSessionWrapper();
 	}
 	
 	// populate() may be invoked inside controllers
@@ -785,12 +816,12 @@ component {
 						if ( trim && isSimpleValue( args[ property ] ) ) args[ property ] = trim( args[ property ] );
 						// cfc[ 'set'&property ]( argumentCollection = args ); // ugh! no portable script version of this?!?!
 						setProperty( cfc, property, args );
-					} else if ( deep && structKeyExists( cfc, "get" & property ) ) {
+					} else if ( deep && structKeyExists( cfc, 'get' & property ) ) {
 						//look for a context property that starts with the property
 						for ( var key in request.context ) {
-							if ( listFindNoCase( key, property, ".") ) {
+							if ( listFindNoCase( key, property, '.') ) {
 								try {
-									setProperty( cfc, key, { "#key#" = request.context[ key ] } );
+									setProperty( cfc, key, { '#key#' = request.context[ key ] } );
 								} catch ( any e ) {
 									onPopulateError( cfc, key, request.context);
 								}
@@ -813,10 +844,10 @@ component {
 						setProperty( cfc, trimProperty, args );
 					}
 				} else if ( deep ) {
-					if ( listLen( trimProperty, "." ) > 1 ) {
-						var prop = listFirst( trimProperty, "." );
-						if ( structKeyExists( cfc, "get" & prop ) ) {
-                            setProperty( cfc, trimProperty, { "#trimProperty#" = request.context[ trimProperty ] } );
+					if ( listLen( trimProperty, '.' ) > 1 ) {
+						var prop = listFirst( trimProperty, '.' );
+						if ( structKeyExists( cfc, 'get' & prop ) ) {
+                            setProperty( cfc, trimProperty, { '#trimProperty#' = request.context[ trimProperty ] } );
                         }
 					}
 				}
@@ -826,14 +857,14 @@ component {
 	}
 
 	private void function setProperty( struct cfc, string property, struct args ) {
-		if ( listLen( property, "." ) > 1 ) {
-			var firstObjName = listFirst( property, "." );
-			var newProperty = listRest( property,  "." );
+		if ( listLen( property, '.' ) > 1 ) {
+			var firstObjName = listFirst( property, '.' );
+			var newProperty = listRest( property,  '.' );
 
 			args[ newProperty ] = args[ property ];
 			structDelete( args, property );
 
-			if ( structKeyExists( cfc , "get" & firstObjName ) ) {
+			if ( structKeyExists( cfc , 'get' & firstObjName ) ) {
 				var obj = getProperty( cfc, firstObjName );
 				if ( !isNull( obj ) ) setProperty( obj, newProperty, args );
 			}
@@ -843,7 +874,7 @@ component {
 	}
 	
 	private any function getProperty( struct cfc, string property ) {
-		if ( structKeyExists( cfc, "get#property#" ) ) return evaluate( 'cfc.get#property#()' );
+		if ( structKeyExists( cfc, 'get#property#' ) ) return evaluate( 'cfc.get#property#()' );
 	}
 
 	// call from your controller to redirect to a clean URL based on an action, pushing data to flash scope if necessary:
@@ -898,6 +929,10 @@ component {
 			}
 		}
 		setupResponseWrapper();
+        if ( variables.framework.trace ) {
+            frameworkTrace( 'redirecting to #targetURL# (#statusCode#)' );
+            session._fw1_trace = request._fw1.trace;
+        }
 		location( targetURL, false, statusCode );
 	}
 	
@@ -908,21 +943,24 @@ component {
 		var item = getItem( action );
 		var tuple = { };
 
-		if ( structKeyExists( request._fw1, "serviceExecutionComplete" ) ) {
-			raiseException( type="FW1.serviceExecutionComplete", message="Service '#action#' may not be added at this point.",
-				detail="The service execution phase is complete. Services may not be added by end*() or after() controller methods." );
+		if ( structKeyExists( request._fw1, 'serviceExecutionComplete' ) ) {
+			raiseException( type='FW1.serviceExecutionComplete', message="Service '#action#' may not be added at this point.",
+				detail='The service execution phase is complete. Services may not be added by end*() or after() controller methods.' );
 		}
 
 		tuple.service = getService(section=section, subsystem=subsystem);
+        tuple.subsystem = subsystem;
+        tuple.section = section;
 		tuple.item = item;
 		tuple.key = key;
 		tuple.args = args;
 		tuple.enforceExistence = enforceExistence;
 
-		if ( structKeyExists( tuple, "service" ) && isObject( tuple.service ) ) {
+		if ( structKeyExists( tuple, 'service' ) && isObject( tuple.service ) ) {
+            frameworkTrace( 'queuing service', subsystem, section, item );
 			arrayAppend( request._fw1.services, tuple );
 		} else if ( enforceExistence ) {
-			raiseException( type="FW1.serviceCfcNotFound", message="Service '#action#' does not exist.",
+			raiseException( type='FW1.serviceCfcNotFound', message="Service '#action#' does not exist.",
 				detail="To have the execution of this service be conditional based upon its existence, pass in a third parameter of 'false'." );
 		}
 	}
@@ -1027,7 +1065,8 @@ component {
 	 * returns the UI generated by the named view
 	 */
 	public string function view( string path, struct args = { } ) {
-		var viewPath = parseViewOrLayoutPath( path, "view" );
+		var viewPath = parseViewOrLayoutPath( path, 'view' );
+        frameworkTrace( 'view( #path# ) called - rendering #viewPath#' );
 		return internalView( viewPath, args );
 	}
 	
@@ -1064,17 +1103,19 @@ component {
 			structDelete( request._fw1, 'overrideLayoutAction' );
 		}
 		subsystembase = request.base & getSubsystemDirPrefix( subsystem );
-
+        frameworkTrace( 'building layout queue', subsystem, section, item );
 		// look for item-specific layout:
 		testLayout = parseViewOrLayoutPath( subsystem & variables.framework.subsystemDelimiter &
 													section & '/' & item, 'layout' );
 		if ( cachedFileExists( testLayout ) ) {
+            frameworkTrace( 'found item-specific layout #testLayout#', subsystem, section, item );
 			arrayAppend( request._fw1.layouts, testLayout );
-		}
+        }
 		// look for section-specific layout:
 		testLayout = parseViewOrLayoutPath( subsystem & variables.framework.subsystemDelimiter &
 													section, 'layout' );
 		if ( cachedFileExists( testLayout ) ) {
+            frameworkTrace( 'found section-specific layout #testLayout#', subsystem, section, item );
 			arrayAppend( request._fw1.layouts, testLayout );
 		}
 		// look for subsystem-specific layout (site-wide layout if not using subsystems):
@@ -1082,6 +1123,7 @@ component {
 			testLayout = parseViewOrLayoutPath( subsystem & variables.framework.subsystemDelimiter &
 														'default', 'layout' );
 			if ( cachedFileExists( testLayout ) ) {
+                frameworkTrace( 'found default layout #testLayout#', subsystem, section, item );
 				arrayAppend( request._fw1.layouts, testLayout );
 			}
 		}
@@ -1090,6 +1132,7 @@ component {
 			testLayout = parseViewOrLayoutPath( variables.framework.siteWideLayoutSubsystem & variables.framework.subsystemDelimiter &
 														'default', 'layout' );
 			if ( cachedFileExists( testLayout ) ) {
+                frameworkTrace( 'found #variables.framework.siteWideLayoutSubsystem# layout #testLayout#', subsystem, section, item );
 				arrayAppend( request._fw1.layouts, testLayout );
 			}
 		}
@@ -1111,11 +1154,14 @@ component {
 			structDelete( request._fw1, 'overrideViewAction' );
 		}
 		subsystembase = request.base & getSubsystemDirPrefix( subsystem );
-
+        frameworkTrace( 'building view queue', subsystem, section, item );
 		// view and layout setup - used to be in setupRequestWrapper():
 		request._fw1.view = parseViewOrLayoutPath( subsystem & variables.framework.subsystemDelimiter &
 													section & '/' & item, 'view' );
-		if ( !cachedFileExists( request._fw1.view ) ) {
+		if ( cachedFileExists( request._fw1.view ) ) {
+            frameworkTrace( 'found view #request._fw1.view#', subsystem, section, item );
+        } else {
+            frameworkTrace( 'no such view #request._fw1.view#', subsystem, section, item );
 			request.missingView = request._fw1.view;
 			// ensures original view not re-invoked for onError() case:
 			structDelete( request._fw1, 'view' );
@@ -1144,9 +1190,11 @@ component {
 		}
 	}
 	
-	private void function doController( any cfc, string method, string lifecycle ) {
+	private void function doController( struct tuple, string method, string lifecycle ) {
+        var cfc = tuple.controller;
 		if ( structKeyExists( cfc, method ) ) {
 			try {
+                frameworkTrace( 'calling #lifecycle# controller', tuple.subsystem, tuple.section, method );
 				evaluate( 'cfc.#method#( rc = request.context )' );
 			} catch ( any e ) {
 				setCfcMethodFailureInfo( cfc, method );
@@ -1155,18 +1203,23 @@ component {
 		}
 		else if ( structKeyExists( cfc, 'onMissingMethod' ) ) {
 			try {
+                frameworkTrace( 'calling #lifecycle# controller (via onMissingMethod)', tuple.subsystem, tuple.section, method );
 				evaluate( 'cfc.#method#( rc = request.context, method = lifecycle )' );
 			} catch ( any e ) {
 				setCfcMethodFailureInfo( cfc, method );
 				rethrow;
 			}
-		}
+		} else {
+            frameworkTrace( 'no #lifecycle# controller to call', tuple.subsystem, tuple.section, method );
+        }
 	}
 	
-	private any function doService( any cfc, string method, struct args, boolean enforceExistence ) {
+	private any function doService( struct tuple, string method, struct args, boolean enforceExistence ) {
+        var cfc = tuple.service;
 		if ( structKeyExists( cfc, method ) || structKeyExists( cfc, 'onMissingMethod' ) ) {
 			try {
 				structAppend( args, request.context, false );
+                frameworkTrace( 'calling service', tuple.subsystem, tuple.section, method );
 				var _result_fw1 = evaluate( 'cfc.#method#( argumentCollection = args )' );
 				if ( !isNull( _result_fw1 ) ) {
 					return _result_fw1;
@@ -1176,7 +1229,7 @@ component {
 				rethrow;
 			}
 		} else if ( enforceExistence ) {
-			raiseException( type="FW1.serviceMethodNotFound", message="Service method '#method#' does not exist in service '#getMetadata( cfc ).fullname#'.",
+			raiseException( type='FW1.serviceMethodNotFound', message="Service method '#method#' does not exist in service '#getMetadata( cfc ).fullname#'.",
 				detail="To have the execution of this service method be conditional based upon its existence, pass in a third parameter of 'false'." );
 		}
 	}
@@ -1204,18 +1257,18 @@ component {
 		if ( structKeyExists(exception, 'rootCause') ) {
 			exception = exception.rootCause;
 		}
-		
+		getPageContext().getResponse().setStatus( 500 );
 		if ( arguments.early ) {
-		    writeOutput( "<h1>Exception occured before FW/1 was initialized</h1>");
+		    writeOutput( '<h1>Exception occured before FW/1 was initialized</h1>');
 		} else {
-			writeOutput( "<h#h#>" & ( indirect ? "Original exception " : "Exception" ) & " in #event#</h#h#>" );
+			writeOutput( '<h#h#>' & ( indirect ? 'Original exception ' : 'Exception' ) & ' in #event#</h#h#>' );
 			if ( structKeyExists( request, 'failedAction' ) ) {
-				writeOutput( "<p>The action #request.failedAction# failed.</p>" );
+				writeOutput( '<p>The action #request.failedAction# failed.</p>' );
 			}
-			writeOutput( "<h#1+h#>#exception.message#</h#1+h#>" );
+			writeOutput( '<h#1+h#>#exception.message#</h#1+h#>' );
 		}
 		
-		writeOutput( "<p>#exception.detail# (#exception.type#)</p>" );
+		writeOutput( '<p>#exception.detail# (#exception.type#)</p>' );
 		dumpException(exception);
 
 	}
@@ -1267,6 +1320,64 @@ component {
 		}
 		return setters;
 	}
+
+    private void function frameworkTrace( string message, string subsystem = '', string section = '', string item = '' ) {
+        if ( variables.framework.trace ) {
+            if ( isDefined( 'session._fw1_trace' ) && structKeyExists( session, '_fw1_trace' ) ) {
+                request._fw1.trace = session._fw1_trace;
+                structDelete( session, '_fw1_trace' );
+            }
+            arrayAppend( request._fw1.trace, { tick = getTickCount(), msg = message, sub = subsystem, s = section, i = item } );
+        }
+    }
+
+    private void function frameworkTraceRender() {
+        if ( variables.framework.trace && arrayLen( request._fw1.trace ) ) {
+            var startTime = request._fw1.trace[1].tick;
+            var font = 'font-family: verdana, helvetica;';
+            writeOutput( '<hr /><div style="background: ##ccdddd; color: black; border: 1px solid; border-color: black; padding: 5px; #font#">' );
+            writeOutput( '<div style="#font# font-weight: bold; font-size: large; float: left;">Framework Lifecycle Trace</div><div style="clear: both;"></div>' );
+            var table = '<table style="border: 1px solid; border-color: black; color: black; #font#" width="100%">';
+            writeOutput( table );
+            var colors = [ '##ccd4dd', '##ccddcc' ];
+            var row = 0;
+            var n = arrayLen( request._fw1.trace );
+            for ( var i = 1; i <= n; ++i ) {
+                var trace = request._fw1.trace[i];
+                var action = '';
+                if ( trace.s == variables.magicApplicationController || trace.sub == variables.magicApplicationSubsystem ) {
+                    action = '<em>Application.cfc</em>';
+                    if ( right( trace.i, len( variables.magicApplicationAction ) ) == variables.magicApplicationAction ) {
+                        continue;
+                    }
+                } else {
+                    action = trace.sub;
+                    if ( action != '' && trace.s != '' ) {
+                        action &= variables.framework.subsystemDelimiter;
+                    }
+                    action &= trace.s;
+                    if ( trace.s != '' ) {
+                        action &= '.';
+                    }
+                    action &= trace.i;
+                }
+                ++row;
+                writeOutput( '<tr style="border: 0; background: #colors[1 + row mod 2]#;">' );
+                writeOutput( '<td style="border: 0; color: black; #font# font-size: small;" width="5%">#trace.tick - startTime#ms</td>' );
+                writeOutput( '<td style="border: 0; color: black; #font# font-size: small;" width="10%">#action#</td>' );
+                var color =
+                    trace.msg.startsWith( 'no ' ) ? '##cc8888' :
+                        trace.msg.startsWith( 'onError( ' ) ? '##cc0000' : '##0000';
+                writeOutput( '<td style="border: 0; color: #color#; #font# font-size: small;">#trace.msg#</td>' );
+                writeOutput( '</tr>' );
+                if ( trace.msg.startsWith( 'redirecting ' ) ) {
+                    writeOutput( '</table>#table#' );
+                    if ( i < n ) startTime = request._fw1.trace[i+1].tick;
+                }
+            }
+            writeOutput( '<table></div>' );
+        }
+    }
 
 	private any function getCachedComponent( string type, string subsystem, string section ) {
 
@@ -1335,20 +1446,24 @@ component {
 	private string function getNextPreserveKeyAndPurgeOld() {
 		var nextPreserveKey = '';
 		var oldKeyToPurge = '';
-		if ( variables.framework.maxNumContextsPreserved > 1 ) {
-			lock scope="session" type="exclusive" timeout="30" {
-				param name="session.__fw1NextPreserveKey" default="1";
-				nextPreserveKey = session.__fw1NextPreserveKey;
-				session.__fw1NextPreserveKey = session.__fw1NextPreserveKey + 1;
-			}
-			oldKeyToPurge = nextPreserveKey - variables.framework.maxNumContextsPreserved;
-		} else {
-			lock scope="session" type="exclusive" timeout="30" {
-				session.__fw1PreserveKey = '';
-				nextPreserveKey = session.__fw1PreserveKey;
-			}
-			oldKeyToPurge = '';
-		}
+        try {
+		    if ( variables.framework.maxNumContextsPreserved > 1 ) {
+			    lock scope="session" type="exclusive" timeout="30" {
+				    param name="session.__fw1NextPreserveKey" default="1";
+				    nextPreserveKey = session.__fw1NextPreserveKey;
+				    session.__fw1NextPreserveKey = session.__fw1NextPreserveKey + 1;
+			    }
+			    oldKeyToPurge = nextPreserveKey - variables.framework.maxNumContextsPreserved;
+		    } else {
+			    lock scope="session" type="exclusive" timeout="30" {
+				    session.__fw1PreserveKey = '';
+				    nextPreserveKey = session.__fw1PreserveKey;
+			    }
+			    oldKeyToPurge = '';
+            }
+		} catch ( any e ) {
+            // ignore - assume session scope is disabled
+        }
 		var key = getPreserveKeySessionKey( oldKeyToPurge );
 		if ( structKeyExists( session, key ) ) {
 			structDelete( session, key );
@@ -1395,8 +1510,8 @@ component {
 			$ = rc.$;
 		}
 		if ( !structKeyExists( request._fw1, 'controllerExecutionComplete' ) ) {
-			raiseException( type="FW1.layoutExecutionFromController", message="Invalid to call the layout method at this point.",
-				detail="The layout method should not be called prior to the completion of the controller execution phase." );
+			raiseException( type='FW1.layoutExecutionFromController', message='Invalid to call the layout method at this point.',
+				detail='The layout method should not be called prior to the completion of the controller execution phase.' );
 		}
 		var response = '';
 		savecontent variable="response" {
@@ -1413,9 +1528,10 @@ component {
 			$ = rc.$;
 		}
 		structAppend( local, args );
-		if ( !structKeyExists( request._fw1, 'serviceExecutionComplete') && arrayLen( request.services ) != 0 ) {
-			raiseException( type="FW1.viewExecutionFromController", message="Invalid to call the view method at this point.",
-				detail="The view method should not be called prior to the completion of the service execution phase." );
+		if ( !structKeyExists( request._fw1, 'serviceExecutionComplete') &&
+             structKeyExists( request._fw1, 'services' ) && arrayLen( request._fw1.services ) != 0 ) {
+			raiseException( type='FW1.viewExecutionFromController', message='Invalid to call the view method at this point.',
+				detail='The view method should not be called prior to the completion of the service execution phase.' );
 		}
 		var response = '';
 		savecontent variable="response" {
@@ -1497,7 +1613,7 @@ component {
 		var n = 1;
 		var placeholders = rematch( '(:[^/]+)|(\([^\)]+)', route );
 		for ( var placeholder in placeholders ) {
-			if ( left( placeholder, 1 ) == ":") {
+			if ( left( placeholder, 1 ) == ':') {
 				route = replace( route, placeholder, '([^/]*)' );
 				target = replace( target, placeholder, chr(92) & n );
 			}
@@ -1633,6 +1749,7 @@ component {
 		}
 		
 		// this will recreate the main bean factory on a reload:
+        frameworkTrace( 'setupApplication() called' );
 		setupApplication();
 		
 		if ( isReload ) {
@@ -1763,7 +1880,10 @@ component {
 		if ( !structKeyExists( variables.framework, 'subsystems' ) ) {
 			variables.framework.subsystems = { };
 		}
-		variables.framework.version = '2.1Alpha1';
+		if ( !structKeyExists( variables.framework, 'trace' ) ) {
+			variables.framework.trace = false;
+		}
+		variables.framework.version = '2.1';
         setupFrameworkEnvironments();
 	}
 
@@ -1850,7 +1970,6 @@ component {
 		request.subsystembase = request.base & getSubsystemDirPrefix( request.subsystem );
 		request.section = getSection( request.action );
 		request.item = getItem( request.action );
-		request._fw1.services = [ ];
 		
 		if ( runSetup ) {
 			rc = request.context;
@@ -1861,6 +1980,7 @@ component {
 			    controller( variables.magicApplicationController & '.' & variables.magicApplicationAction );
             }
 			setupSubsystemWrapper( request.subsystem );
+            frameworkTrace( 'setupRequest() called' );
 			setupRequest();
 		}
 
@@ -1871,10 +1991,12 @@ component {
 	}
 
 	private void function setupResponseWrapper() {
+        frameworkTrace( 'setupResponse() called' );
 		setupResponse();
 	}
 
 	private void function setupSessionWrapper() {
+        frameworkTrace( 'setupSession() called' );
 		setupSession();
 	}
 
@@ -1883,6 +2005,7 @@ component {
 		lock name="fw1_#application.applicationName#_#variables.framework.applicationKey#_subsysteminit_#subsystem#" type="exclusive" timeout="30" {
 			if ( !isSubsystemInitialized( subsystem ) ) {
 				application[ variables.framework.applicationKey ].subsystems[ subsystem ] = now();
+                frameworkTrace( 'setupSubsystem() called', subsystem );
 				setupSubsystem( subsystem );
 			}
 		}
@@ -1891,14 +2014,14 @@ component {
 	private string function validateAction( string action ) {
 		// check for forward and backward slash in the action - using chr() to avoid confusing TextMate (Hi Nathan!)
 		if ( findOneOf( chr(47) & chr(92), action ) > 0 ) {
-			raiseException( type="FW1.actionContainsSlash", message="Found a slash in the action: '#action#'.",
-					detail="Actions are not allowed to embed sub-directory paths.");
+			raiseException( type='FW1.actionContainsSlash', message="Found a slash in the action: '#action#'.",
+					detail='Actions are not allowed to embed sub-directory paths.');
 		}
 		return action;
 	}
 
 	private void function viewNotFound() {
-		raiseException( type="FW1.viewNotFound", message="Unable to find a view for '#request.action#' action.",
+		raiseException( type='FW1.viewNotFound', message="Unable to find a view for '#request.action#' action.",
 				detail="'#request.missingView#' does not exist." );
 	}
 	
