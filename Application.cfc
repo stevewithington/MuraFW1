@@ -89,6 +89,14 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 	public void function setupRequest() {
 		var local = {};
 
+		param name='request.context.siteid' default='';
+
+		if ( !StructKeyExists(session, 'siteid') ) {
+			lock scope='session' type='exclusive' timeout='10' {
+				session.siteid = 'default';
+			};
+		};
+
 		secureRequest();
 
 		request.context.isAdminRequest = isAdminRequest();
@@ -98,13 +106,17 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 			setupApplication();
 		};
 
-		if ( !StructKeyExists(request.context, '$') ) {
-			request.context.$ = application.serviceFactory.getBean('muraScope');
-			if ( StructKeyExists(session, 'siteid') ) {
-				request.context.$.init(session.siteid);
-			} else {
-				request.context.$.init('default');
+		if ( Len(Trim(request.context.siteid)) && ( session.siteid != request.context.siteid) ) {
+			local.siteCheck = application.settingsManager.getSites();
+			if ( StructKeyExists(local.siteCheck, request.context.siteid) ) {
+				lock scope='session' type='exclusive' timeout='10' {
+					session.siteid = request.context.siteid;
+				};
 			};
+		};
+
+		if ( !StructKeyExists(request.context, '$') ) {
+			request.context.$ = application.serviceFactory.getBean('muraScope').init(session.siteid);
 		};
 
 		request.context.pc = application[variables.framework.applicationKey].pluginConfig;
