@@ -68,6 +68,10 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 	public any function setupApplication() {
 		var local = {};
 
+		if ( !StructKeyExists(application, 'pluginManager') ) {
+			location(url='/', addtoken=false);
+		};
+
 		lock scope='application' type='exclusive' timeout=50 {
 			application[variables.framework.applicationKey].pluginConfig = application.pluginManager.getConfig(ID=variables.framework.applicationKey);
 		};
