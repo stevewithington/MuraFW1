@@ -101,7 +101,9 @@ component {
 		if ( isStruct( queryString ) && structCount( queryString ) ) {
 			var q = '';
 			for( var key in queryString ) {
-				q &= '#urlEncodedFormat( key )#=#urlEncodedFormat( queryString[ key ] )#&';
+				if( isSimpleValue( queryString[key] ) ){
+					q &= '#urlEncodedFormat( key )#=#urlEncodedFormat( queryString[ key ] )#&';
+				}
 			}
 			queryString = q;
 		}
@@ -538,7 +540,7 @@ component {
 	 */
 	public string function layout( string path, string body ) {
 		var layoutPath = parseViewOrLayoutPath( path, 'layout' );
-        frameworkTrace( 'layout( #path# ) called - rendering #viewPath#' );
+        frameworkTrace( 'layout( #path# ) called - rendering #layoutPath#' );
 		return internalLayout( layoutPath, body );
 	}
 
@@ -1883,7 +1885,7 @@ component {
 		if ( !structKeyExists( variables.framework, 'trace' ) ) {
 			variables.framework.trace = false;
 		}
-		variables.framework.version = '2.1';
+	    variables.framework.version = '2.1.1';
         setupFrameworkEnvironments();
 	}
 

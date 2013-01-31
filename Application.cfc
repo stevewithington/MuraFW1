@@ -2,7 +2,7 @@
 
 This file is part of MuraFW1
 
-Copyright 2010-2012 Stephen J. Withington, Jr.
+Copyright 2010-2013 Stephen J. Withington, Jr.
 Licensed under the Apache License, Version v2.0
 http://www.apache.org/licenses/LICENSE-2.0
 
@@ -146,13 +146,9 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 			&& IsBoolean(httpRequestData.headers['X-#variables.framework.package#-AJAX']) 
 			&& httpRequestData.headers['X-#variables.framework.package#-AJAX'] 
 		) {
-			if ( StructKeyExists(request.context, 'fw') ) {
-				StructDelete(request.context, 'fw');
-			}
-			if ( StructKeyExists(request.context, '$') ) {
-				StructDelete(request.context, '$');
-			}
-			WriteOutput( SerializeJSON(request.context) );
+			StructDelete(request.context, 'fw');
+			StructDelete(request.context, '$');
+			WriteOutput(SerializeJSON(request.context));
 			abort;
 		};
 	}

@@ -107,7 +107,7 @@ for more information.
 * [DI/1 Documentation wiki](https://github.com/seancorfield/di1/wiki)
 
 ## License
-Copyright 2010-2012 Stephen J. Withington, Jr.
+Copyright 2010-2013 Stephen J. Withington, Jr.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this work except in compliance with the License. You may obtain a copy of the License in the LICENSE file, or at:
 

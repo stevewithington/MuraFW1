@@ -3,7 +3,7 @@
 
 This file is part of MuraFW1
 
-Copyright 2010-2012 Stephen J. Withington, Jr.
+Copyright 2010-2013 Stephen J. Withington, Jr.
 Licensed under the Apache License, Version v2.0
 http://www.apache.org/licenses/LICENSE-2.0
 
@@ -18,7 +18,7 @@ http://www.apache.org/licenses/LICENSE-2.0
 
 	// !important: enter the plugin packageName here. must be the same as found in '{context}/plugin/config.xml.cfm'
 	variables.framework.package = 'MuraFW1';
-	variables.framework.packageVersion = '3.018';
+	variables.framework.packageVersion = '3.019';
 
 	// If true, then additional information is returned by the Application.onError() method
 	// and FW1 will 'reloadApplicationOnEveryRequest' (unless explicitly set otherwise below).
