@@ -232,6 +232,14 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 				StructDelete(request._fw1, arrFW1Keys[i]);
 			};
 			request._fw1.requestDefaultsInitialized = false;
+			request._fw1 = {
+				cgiScriptName = CGI.SCRIPT_NAME
+				, cgiRequestMethod = CGI.REQUEST_METHOD
+				, controllers = []
+				, requestDefaultsInitialized = false
+				, services = []
+				, trace = []
+			};
 		};
 	}
 
