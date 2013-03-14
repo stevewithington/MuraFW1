@@ -120,7 +120,12 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 		};
 
 		if ( !StructKeyExists(request.context, '$') ) {
-			request.context.$ = application.serviceFactory.getBean('muraScope').init(session.siteid);
+			if( structKeyExists(request,"muraScope")) {
+				request.context.$ = request.muraScope;
+			}
+			else {
+				request.context.$ = application.serviceFactory.getBean('muraScope').init(session.siteid);	
+			}	
 		};
 
 		request.context.pc = application[variables.framework.applicationKey].pluginConfig;
