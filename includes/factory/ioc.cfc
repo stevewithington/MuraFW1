@@ -22,6 +22,7 @@ component {
 		variables.config = config;
 		variables.beanInfo = { };
 		variables.beanCache = { };
+        variables.settersInfo = { };
 		variables.autoExclude = [ '/WEB-INF', '/Application.cfc' ];
         variables.listeners = 0;
 		setupFrameworkDefaults();
@@ -230,8 +231,9 @@ component {
 				var n = arrayLen( md.properties );
 				for ( var i = 1; i <= n; ++i ) {
 					var property = md.properties[ i ];
-					if ( implicitSetters ||
-							structKeyExists( property, 'setter' ) && isBoolean( property.setter ) && property.setter ) {
+					if ( implicitSetters &&
+						 ( !structKeyExists( property, 'setter' ) ||
+                           isBoolean( property.setter ) && property.setter ) ) {
 						iocMeta.setters[ property.name ] = 'implicit';
 					}
 				}
@@ -506,13 +508,29 @@ component {
 				    if ( structKeyExists( info.metadata, 'constructor' ) ) {
 					    var args = { };
 						for ( var arg in info.metadata.constructor ) {
-							var argBean = resolveBeanCreate( arg, accumulator );
-							// this throws a non-intuitive exception unless we step in...
-							if ( structKeyExists( argBean, 'bean' ) ) {
-							    args[ arg ] = argBean.bean;
-                            } else if ( info.metadata.constructor[ arg ] ) {
-								throw 'bean not found: #arg#; while resolving constructor arguments for #beanName#';
-							}
+                            var argBean = { };
+                            // handle known required arguments
+                            if ( info.metadata.constructor[ arg ] ) {
+                                var beanMissing = true;
+                                if ( containsBean( arg ) ) {
+                                    argBean = resolveBeanCreate( arg, accumulator );
+                                    if ( structKeyExists( argBean, 'bean' ) ) {
+                                        args[ arg ] = argBean.bean;
+                                        beanMissing = false;
+                                    }
+                                }
+                                if ( beanMissing ) {
+								    throw 'bean not found: #arg#; while resolving constructor arguments for #beanName#';
+                                }
+                            } else if ( containsBean( arg ) ) {
+                                // optional but present
+							    argBean = resolveBeanCreate( arg, accumulator );
+							    if ( structKeyExists( argBean, 'bean' ) ) {
+							        args[ arg ] = argBean.bean;
+							    }
+                            } else {
+                                // optional but not present
+                            }
 						}
 						var __ioc_newBean = evaluate( 'bean.init( argumentCollection = args )' );
 						// if the constructor returns anything, it becomes the bean
@@ -526,7 +544,10 @@ component {
 					}
 				}
                 if ( !structKeyExists( accumulator.injection, beanName ) ) {
-				    var setterMeta = findSetters( bean, info.metadata );
+                    if ( !structKeyExists( variables.settersInfo, beanName ) ) {
+                        variables.settersInfo[ beanName ] = findSetters( bean, info.metadata );
+                    }
+				    var setterMeta = variables.settersInfo[ beanName ];
 				    setterMeta.bean = bean;
 				    accumulator.injection[ beanName ] = setterMeta; 
 				    for ( var property in setterMeta.setters ) {
@@ -582,7 +603,7 @@ component {
             throw 'singletonPattern and transientPattern are mutually exclusive';
         }
 				
-		variables.config.version = '0.4.4';
+		variables.config.version = '0.4.7';
 	}
 	
 	
