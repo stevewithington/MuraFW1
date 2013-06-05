@@ -19,7 +19,7 @@ component persistent="false" accessors="true" output="false" extends="mura.cfobj
 	}
 
 	public any function getDeveloperList() {
-		return 'Matt Levine,Sean Schroeder,Steve Withington,Grant Sherpert,Eddie Ballisty';
+		return 'Matt Levine,Sean Schroeder,Steve Withington,Grant Shepert,Eddie Ballisty';
 	}
 
 }
