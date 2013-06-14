@@ -23,7 +23,7 @@ component persistent="false" accessors="true" output="false" extends="mura.cfobj
 		if ( StructKeyExists(rc, '$') ) {
 			var $ = rc.$;
 			set$(rc.$);
-		};
+		}
 
 		// easy access to site attributes
 		// rc.settingsManager = rc.$.getBean('settingsManager');
@@ -34,11 +34,8 @@ component persistent="false" accessors="true" output="false" extends="mura.cfobj
 		// rc.listSites = ValueList(rc.rsSites.siteid);
 
 		if ( rc.isFrontEndRequest ) {
-			//getFW().redirect(action='public:main.default');
 			location(url='#rc.$.globalConfig('context')#/', addtoken=false);
-		} else if ( !rc.$.currentUser().isSuperUser() ) { // lock app down to Super Users only
-			location(url='#rc.$.globalConfig('context')#/admin/', addtoken=false);
-		};
+		}
 
 	}
 

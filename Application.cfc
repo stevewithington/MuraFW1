@@ -207,11 +207,10 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 	// ========================== Helper Methods ==============================
 
 	public any function secureRequest() {
-		if ( isAdminRequest() && !( IsDefined('session.mura') && ListFindNoCase(session.mura.memberships,'S2') ) ) {
-			if ( !StructKeyExists(session,'siteID') || !StructKeyExists(session,'mura') || !application.permUtility.getModulePerm(application[variables.framework.applicationKey].pluginConfig.getModuleID(),session.siteid) ) {
-				location(url='#application.configBean.getContext()#/admin/', addtoken=false);
-			};
-		};
+		return !isAdminRequest() || ListFindNoCase(session.mura.memberships,'S2') ? true :
+				!StructKeyExists(session, 'mura') 
+				|| !StructKeyExists(session, 'siteid') 
+				|| !application.permUtility.getModulePerm(application[variables.framework.applicationKey].pluginConfig.getModuleID(), session.siteid) ? location(url='#application.configBean.getContext()#/admin/', addtoken=false) : true;
 	}
 
 	public boolean function isAdminRequest() {
