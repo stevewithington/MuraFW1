@@ -211,7 +211,11 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 				!StructKeyExists(session, 'mura') 
 				|| !StructKeyExists(session, 'siteid') 
 				|| !application.permUtility.getModulePerm(application[variables.framework.applicationKey].pluginConfig.getModuleID(), session.siteid) 
-					? location(url='#application.configBean.getContext()#/admin/', addtoken=false) : true;
+					? goToLogin() : true;
+	}
+
+	private void function goToLogin() {
+		location(url='#application.configBean.getContext()#/admin/index.cfm?muraAction=clogin.main&returnURL=/plugins/#variables.framework.package#/', addtoken=false)
 	}
 
 	public boolean function isAdminRequest() {
