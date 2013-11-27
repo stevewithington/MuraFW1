@@ -153,7 +153,7 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 		};
 	}
 
-	public string function buildURL(required string action, string path='#variables.framework.baseURL#', string queryString='') {
+	public string function buildURL(required string action, string path='#variables.framework.baseURL#', any queryString='') {
 		var regx = '&?compactDisplay=[true|false]';
 		arguments.action = getFullyQualifiedAction(arguments.action);
 		if (
@@ -164,7 +164,11 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 		) {
 			var qs = 'compactDisplay=' & request.context.compactDisplay;
 			if ( !Find('?', arguments.action) ) {
-				arguments.queryString = ListAppend(arguments.queryString, qs, '&');
+				if ( isSimpleValue(arguments.queryString) ) {
+					arguments.queryString = ListAppend(arguments.queryString, qs, '&');
+				} else if ( isStruct(arguments.queryString) ) {
+					structAppend(arguments.queryString, {"compactDisplay"=request.context.compactDisplay} );
+				}
 			} else {
 				arguments.action = ListAppend(arguments.action, qs, '&');
 			};
