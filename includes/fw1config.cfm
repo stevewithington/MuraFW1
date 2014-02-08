@@ -3,7 +3,7 @@
 
 This file is part of MuraFW1
 
-Copyright 2010-2013 Stephen J. Withington, Jr.
+Copyright 2010-2014 Stephen J. Withington, Jr.
 Licensed under the Apache License, Version v2.0
 http://www.apache.org/licenses/LICENSE-2.0
 
@@ -18,7 +18,7 @@ http://www.apache.org/licenses/LICENSE-2.0
 
 	// !important: enter the plugin packageName here. must be the same as found in '{context}/plugin/config.xml.cfm'
 	variables.framework.package = 'MuraFW1';
-	variables.framework.packageVersion = '3.024';
+	variables.framework.packageVersion = '3.1.0';
 
 	// If true, then additional information is returned by the Application.onError() method
 	// and FW1 will 'reloadApplicationOnEveryRequest' (unless explicitly set otherwise below).
@@ -40,11 +40,13 @@ http://www.apache.org/licenses/LICENSE-2.0
 	// by default, fw1 uses 'fw1pk' ... however, to allow for plugin-specific keys, this plugin will use your packageName + 'pk'
 	variables.framework.preserveKeyURLKey = variables.framework.package & 'pk';
 
+	// reload application keys
+	variables.framework.reload = 'reload';
+	variables.framework.password = 'appreload'; // IF you're NOT using the default reload key of 'appreload', then you'll need to update this to match the setting found in /config/settings.ini.cfm!
+
 	// ***** rarely modified *****
 	variables.framework.applicationKey = variables.framework.package;
 	variables.framework.base = '/' & variables.framework.package;
-	variables.framework.reload = 'reload';
-	variables.framework.password = 'appreload'; // IF you're NOT using the default reload key of 'appreload', then you'll need to update this!
 	variables.framework.generateSES = false;
 	variables.framework.SESOmitIndex = true;
 	variables.framework.baseURL = 'useRequestURI';

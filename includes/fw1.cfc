@@ -1,6 +1,6 @@
 component {
 /*
-	Copyright (c) 2009-2012, Sean Corfield, Ryan Cogswell
+	Copyright (c) 2009-2013, Sean Corfield, Ryan Cogswell
 
 	Licensed under the Apache License, Version 2.0 (the "License");
 	you may not use this file except in compliance with the License.
@@ -73,7 +73,11 @@ component {
 	 *	in order to provide a simpler transition to using subsystems in the future
 	 */
 	public string function buildURL( string action = '.', string path = variables.magicBaseURL, any queryString = '' ) {
-		if ( action == '.' ) action = getFullyQualifiedAction();
+		if ( action == '.' ) {
+            action = getFullyQualifiedAction();
+        } else if ( left( action, 2 ) == '.?' ) {
+            action = replace( action, '.', getFullyQualifiedAction() );
+        }
 		if ( path == variables.magicBaseURL ) path = getBaseURL();
 		var omitIndex = false;
 		if ( path == 'useSubsystemConfig' ) {
@@ -115,7 +119,9 @@ component {
 			var q = find( '?', action );
 			var a = find( '##', action );
 			if ( q > 0 ) {
-				queryString = right( action, len( action ) - q );
+                if ( q < len( action ) ) {
+				    queryString = right( action, len( action ) - q );
+                }
 				if ( q == 1 ) {
 					action = '';
 				} else {
@@ -255,7 +261,7 @@ component {
         tuple.section = section;
 		tuple.item = item;
 
-		if ( structKeyExists( tuple, 'controller' ) && isObject( tuple.controller ) ) {
+		if ( structKeyExists( tuple, 'controller' ) && isObject( tuple.controller ) && !isNull(tuple.controller)) {
             frameworkTrace( 'queuing controller', subsystem, section, item );
 			arrayAppend( request._fw1.controllers, tuple );
 		}
@@ -397,6 +403,12 @@ component {
 		return variables.framework.routes;
 	}
 	
+	/*
+	 * return the resource route templates
+	 */
+	public array function getResourceRouteTemplates() {
+		return variables.framework.resourceRouteTemplates;
+	}
 	
 	/*
 	 * return the section part of the action
@@ -580,10 +592,20 @@ component {
 			request.exception = exception;
 			request.event = event;
 			// reset lifecycle flags:
+            structDelete( request, 'layout' );
 			structDelete( request._fw1, 'controllerExecutionComplete' );
 			structDelete( request._fw1, 'controllerExecutionStarted' );
 			structDelete( request._fw1, 'serviceExecutionComplete' );
 			structDelete( request._fw1, 'overrideViewAction' );
+            if ( structKeyExists( request._fw1, 'renderData' ) ) {
+                // need to reset the content type as well!
+                try {
+                    getPageContext().getResponse().setContentType( 'text/html; charset=utf-8' );
+                } catch ( any e ) {
+                    // but ignore any exceptions
+                }
+                structDelete( request._fw1, 'renderData' );
+            }
 			// setup the new controller action, based on the error action:
 			request._fw1.controllers = [ ];
             // reset services for this new action:
@@ -713,26 +735,30 @@ component {
 		}
 		request._fw1.controllerExecutionComplete = true;
 
-		buildViewQueue();
-        frameworkTrace( 'setupView() called' );
-		setupView();
-		if ( structKeyExists(request._fw1, 'view') ) {
-            frameworkTrace( 'rendering #request._fw1.view#' );
-			out = internalView( request._fw1.view );
-		} else {
-            frameworkTrace( 'onMissingView() called' );
-			out = onMissingView( request.context );
-		}
-
-        buildLayoutQueue();
-		for ( i = 1; i <= arrayLen(request._fw1.layouts); i = i + 1 ) {
-			if ( structKeyExists(request, 'layout') && !request.layout ) {
-                frameworkTrace( 'aborting layout rendering' );
-				break;
-			}
-            frameworkTrace( 'rendering #request._fw1.layouts[i]#' );
-			out = internalLayout( request._fw1.layouts[i], out );
-		}
+        if ( structKeyExists( request._fw1, 'renderData' ) ) {
+            out = renderDataWithContentType();
+        } else {
+		    buildViewQueue();
+            frameworkTrace( 'setupView() called' );
+		    setupView();
+		    if ( structKeyExists(request._fw1, 'view') ) {
+                frameworkTrace( 'rendering #request._fw1.view#' );
+			    out = internalView( request._fw1.view );
+		    } else {
+                frameworkTrace( 'onMissingView() called' );
+			    out = onMissingView( request.context );
+		    }
+            
+            buildLayoutQueue();
+		    for ( i = 1; i <= arrayLen(request._fw1.layouts); i = i + 1 ) {
+			    if ( structKeyExists(request, 'layout') && !request.layout ) {
+                    frameworkTrace( 'aborting layout rendering' );
+				    break;
+			    }
+                frameworkTrace( 'rendering #request._fw1.layouts[i]#' );
+			    out = internalLayout( request._fw1.layouts[i], out );
+		    }
+        }
 		writeOutput( out );
 		setupResponseWrapper();
 	}
@@ -933,10 +959,19 @@ component {
 		setupResponseWrapper();
         if ( variables.framework.trace ) {
             frameworkTrace( 'redirecting to #targetURL# (#statusCode#)' );
-            session._fw1_trace = request._fw1.trace;
+            try {
+                session._fw1_trace = request._fw1.trace;
+            } catch ( any _ ) {
+                // ignore exception if session is not enabled
+            }
         }
 		location( targetURL, false, statusCode );
 	}
+
+    // call this to render data rather than a view and layouts
+    public void function renderData( string type, any data, numeric statusCode = 200 ) {
+        request._fw1.renderData = { type = type, data = data, statusCode = statusCode };
+    }
 	
 	// call this from your controller to queue up additional services
 	public void function service( string action, string key, struct args = { }, boolean enforceExistence = true ) {
@@ -963,7 +998,7 @@ component {
 			arrayAppend( request._fw1.services, tuple );
 		} else if ( enforceExistence ) {
 			raiseException( type='FW1.serviceCfcNotFound', message="Service '#action#' does not exist.",
-				detail="To have the execution of this service be conditional based upon its existence, pass in a third parameter of 'false'." );
+				detail="To have the execution of this service be conditional based upon its existence, pass in a fourth parameter (or enforceExistence if using named arguments) of 'false'." );
 		}
 	}
 	/*
@@ -1066,10 +1101,18 @@ component {
 	 * view() may be invoked inside views and layouts
 	 * returns the UI generated by the named view
 	 */
-	public string function view( string path, struct args = { } ) {
+	public string function view( string path, struct args = { },
+                                 any missingView = { } ) {
 		var viewPath = parseViewOrLayoutPath( path, 'view' );
-        frameworkTrace( 'view( #path# ) called - rendering #viewPath#' );
-		return internalView( viewPath, args );
+        if ( cachedFileExists( viewPath ) ) {
+            frameworkTrace( 'view( #path# ) called - rendering #viewPath#' );
+		    return internalView( viewPath, args );
+        } else if ( isSimpleValue( missingView ) ) {
+            return missingView;
+        } else {
+            frameworkTrace( 'view( #path# ) called - onMissingView() called' );
+            return onMissingView( request.context );
+        }
 	}
 	
 	// THE FOLLOWING METHODS SHOULD ALL BE CONSIDERED PRIVATE / UNCALLABLE
@@ -1260,7 +1303,7 @@ component {
 			exception = exception.rootCause;
 		}
 		getPageContext().getResponse().setStatus( 500 );
-		if ( arguments.early ) {
+		if ( early ) {
 		    writeOutput( '<h1>Exception occured before FW/1 was initialized</h1>');
 		} else {
 			writeOutput( '<h#h#>' & ( indirect ? 'Original exception ' : 'Exception' ) & ' in #event#</h#h#>' );
@@ -1325,16 +1368,25 @@ component {
 
     private void function frameworkTrace( string message, string subsystem = '', string section = '', string item = '' ) {
         if ( variables.framework.trace ) {
-            if ( isDefined( 'session._fw1_trace' ) && structKeyExists( session, '_fw1_trace' ) ) {
-                request._fw1.trace = session._fw1_trace;
-                structDelete( session, '_fw1_trace' );
+            try {
+                if ( isDefined( 'session._fw1_trace' ) &&
+                     structKeyExists( session, '_fw1_trace' ) ) {
+                    request._fw1.trace = session._fw1_trace;
+                    structDelete( session, '_fw1_trace' );
+                }
+            } catch ( any _ ) {
+                // ignore if session is not enabled
             }
             arrayAppend( request._fw1.trace, { tick = getTickCount(), msg = message, sub = subsystem, s = section, i = item } );
         }
     }
 
     private void function frameworkTraceRender() {
-        if ( variables.framework.trace && arrayLen( request._fw1.trace ) ) {
+        // do not output trace information if we are rendering data as opposed
+        // to rendering HTML views - see #226 and #232
+        if ( variables.framework.trace &&
+             arrayLen( request._fw1.trace ) &&
+             !structKeyExists( request._fw1, 'renderData' ) ) {
             var startTime = request._fw1.trace[1].tick;
             var font = 'font-family: verdana, helvetica;';
             writeOutput( '<hr /><div style="background: ##ccdddd; color: black; border: 1px solid; border-color: black; padding: 5px; #font#">' );
@@ -1398,10 +1450,8 @@ component {
 				if ( !structKeyExists( cache[ types ], componentKey ) ) {
 					if ( usingSubsystems() && hasSubsystemBeanFactory( subsystem ) && getSubsystemBeanFactory( subsystem ).containsBean( beanName ) ) {
 						cfc = getSubsystemBeanFactory( subsystem ).getBean( beanName );
-						if ( type == 'controller' ) injectFramework( cfc );
 					} else if ( !usingSubsystems() && hasDefaultBeanFactory() && getDefaultBeanFactory().containsBean( beanName ) ) {
 						cfc = getDefaultBeanFactory().getBean( beanName );
-						if ( type == 'controller' ) injectFramework( cfc );
 					} else {
 						if ( type == 'controller' && section == variables.magicApplicationController ) {
 							// treat this (Application.cfc) as a controller:
@@ -1426,6 +1476,7 @@ component {
 						}
 					}
 					if ( isObject( cfc ) ) {
+                        if ( type == 'controller' ) injectFramework( cfc );
 						cache[ types ][ componentKey ] = cfc;
 					}
 				}
@@ -1474,7 +1525,7 @@ component {
 	}
 	
 	private string function getPreserveKeySessionKey( string preserveKey ) {
-		return '__f1' & preserveKey;
+		return '__fw1' & preserveKey;
 	}
 	
 	private any function getService( string section, string subsystem = getDefaultSubsystem() ) {
@@ -1495,7 +1546,7 @@ component {
 	
 	private void function injectFramework( any cfc ) {
 		var args = { };
-		if ( structKeyExists( cfc, 'setFramework' ) ) {
+		if ( structKeyExists( cfc, 'setFramework' ) || structKeyExists( cfc, 'onMissingMethod' ) ) {
 			args.framework = this;
 			// allow alternative spellings
 			args.fw = this;
@@ -1543,7 +1594,8 @@ component {
 	}
 	
 	private boolean function isFrameworkInitialized() {
-		return structKeyExists( application, variables.framework.applicationKey );
+		return structKeyExists( variables, 'framework' ) &&
+            structKeyExists( application, variables.framework.applicationKey );
 	}
 
 	private boolean function isFrameworkReloadRequest() {
@@ -1579,88 +1631,188 @@ component {
 	}
 	
 	private struct function processRouteMatch( string route, string target, string path ) {
-		// TODO: could cache preprocessed versions of route / target / etc
-		var routeMatch = { matched = false, redirect = false, method = '' };
-		// if target has numeric prefix, strip it and set redirect:
-		var prefix = listFirst( target, ':' );
-		if ( isNumeric( prefix ) ) {
-			routeMatch.redirect = true;
-			routeMatch.statusCode = prefix;
-			target = listRest( target, ':' );
-		}
-		// special routes begin with $METHOD, * is also a wildcard
-		var routeLen = len( route );
-		if ( routeLen ) {
-			if ( left( route, 1 ) == '$' ) {
-				// check HTTP method
-				routeMatch.method = listFirst( route, '*/' );
-				var methodLen = len( routeMatch.method );
-				if ( routeLen == methodLen ) {
-					route = '*';
-				} else {
-					route = right( route, routeLen - methodLen );
+		var regExCache = isFrameworkInitialized() ? application[ variables.framework.applicationKey ].cache.routes.regex : { };
+		var cacheKey = hash( route & target );
+		if ( !structKeyExists( regExCache, cacheKey ) ) {
+			var routeRegEx = { redirect = false, method = '', pattern = route, target = target };
+			// if target has numeric prefix, strip it and set redirect:
+			var prefix = listFirst( routeRegEx.target, ':' );
+			if ( isNumeric( prefix ) ) {
+				routeRegEx.redirect = true;
+				routeRegEx.statusCode = prefix;
+				routeRegEx.target = listRest( routeRegEx.target, ':' );
+			}
+			// special routes begin with $METHOD, * is also a wildcard
+			var routeLen = len( routeRegEx.pattern );
+			if ( routeLen ) {
+				if ( left( routeRegEx.pattern, 1 ) == '$' ) {
+					// check HTTP method
+					routeRegEx.method = listFirst( routeRegEx.pattern, '*/' );
+					var methodLen = len( routeRegEx.method );
+					if ( routeLen == methodLen ) {
+						routeRegEx.pattern = '*';
+					} else {
+						routeRegEx.pattern = right( routeRegEx.pattern, routeLen - methodLen );
+					}
 				}
+				if ( routeRegEx.pattern == '*' ) {
+					routeRegEx.pattern = '/';
+				} else if ( right( routeRegEx.pattern, 1 ) != '/' && right( routeRegEx.pattern, 1 ) != '$' ) {
+					// only add the closing backslash if last position is not already a "/" or a "$" to respect regex end of string
+					routeRegEx.pattern &= '/';
+				}
+			} else {
+				routeRegEx.pattern = '/';
 			}
-			if ( route == '*' ) {
-				route = '/';
-			} else if ( right( route, 1 ) != '/' && right( route, 1 ) != '$' ) {
-				// only add the closing backslash if last position is not already a "/" or a "$" to respect regex end of string
-				route &= '/';
+			if ( !len( routeRegEx.target ) || right( routeRegEx.target, 1) != '/' ) routeRegEx.target &= '/';
+			// walk for self defined (regex) and :var -  replace :var with ([^/]*) in route and back reference in target:
+			var n = 1;
+			var placeholders = rematch( '(:[^/]+)|(\([^\)]+)', routeRegEx.pattern );
+			for ( var placeholder in placeholders ) {
+				if ( left( placeholder, 1 ) == ':') {
+					routeRegEx.pattern = replace( routeRegEx.pattern, placeholder, '([^/]*)' );
+					routeRegEx.target = replace( routeRegEx.target, placeholder, chr(92) & n );
+				}
+				++n;
 			}
-		} else {
-			route = '/';
+			// add trailing match/back reference: if last character is not "$" to respect regex end of string
+			if (right( routeRegEx.pattern, 1 ) != '$')
+				routeRegEx.pattern &= '(.*)';
+			routeRegEx.target &= chr(92) & n;
+			regExCache[ cacheKey ] = routeRegEx;
 		}
-		if ( !len( target ) || right( target, 1) != '/' ) target &= '/';
-		// walk for self defined (regex) and :var -  replace :var with ([^/]*) in route and back reference in target:
-		var n = 1;
-		var placeholders = rematch( '(:[^/]+)|(\([^\)]+)', route );
-		for ( var placeholder in placeholders ) {
-			if ( left( placeholder, 1 ) == ':') {
-				route = replace( route, placeholder, '([^/]*)' );
-				target = replace( target, placeholder, chr(92) & n );
-			}
-			++n;
-		}
-		// add trailing match/back reference: if last character is not "$" to respect regex end of string
-		if (right( route, 1 ) != '$')
-			route &= '(.*)';
-		target &= chr(92) & n;
 		// end of preprocessing section
+		var routeMatch = { matched = false };
+		structAppend( routeMatch, regExCache[ cacheKey ] );
 		if ( !len( path ) || right( path, 1) != '/' ) path &= '/';
 		var matched = len( routeMatch.method ) ? ( '$' & request._fw1.cgiRequestMethod == routeMatch.method ) : true;
-		if ( matched && reFind( route, path ) ) {
+		if ( matched && reFind( routeMatch.pattern, path ) ) {
 			routeMatch.matched = true;
-			routeMatch.pattern = route;
-			routeMatch.target = target;
+			routeMatch.route = route;
 			routeMatch.path = path;
 		}
 		return routeMatch;
 	}
 
-	private string function processRoutes( string path ) {
-		for ( var routePack in variables.framework.routes ) {
-			for ( var route in routePack ) {
-				if ( route != 'hint' ) {
-					var routeMatch = processRouteMatch( route, routePack[ route ], path );
-					if ( routeMatch.matched ) {
-						path = rereplace( routeMatch.path, routeMatch.pattern, routeMatch.target );
-						if ( routeMatch.redirect ) {
-							location( path, false, routeMatch.statusCode ); 
-						} else {
-							request._fw1.route = route;
-							return path;
-						}
+	private array function getResourceRoutes( any resourcesToRoute, string subsystem = '', string pathRoot = '', string targetAppend = '' ) {
+		var resourceCache = isFrameworkInitialized() ? application[ variables.framework.applicationKey ].cache.routes.resources : { };
+		var cacheKey = hash( serializeJSON( resourcesToRoute ) );
+		if ( !structKeyExists( resourceCache, cacheKey ) ) {
+			// get passed in resourcesToRoute (string,array,struct) to match following struct
+			var resources = { resources = [ ], subsystem = subsystem, pathRoot = pathRoot, methods = [ ], nested = [ ] };
+			if ( isStruct( resourcesToRoute ) ) {
+				structAppend( resources, resourcesToRoute );
+				if ( !isArray( resources.resources ) ) resources.resources = listToArray( resources.resources );
+				if ( !isArray( resources.methods ) ) resources.methods = listToArray( resources.methods );
+				// if this is a recursive (nested) function call, don't let pathRoot or subsystem be overwritten
+				if ( len( pathRoot ) ) {
+					resources.pathRoot = pathRoot;
+					resources.subsystem = subsystem;
+				}
+			} else {
+				resources.resources = isArray( resourcesToRoute ) ? resourcesToRoute : listToArray( resourcesToRoute );
+			}
+			// create the routes
+			var routes = [ ];
+			for ( var resource in resources.resources  ) {
+				// take possible subsystem into account by qualifying resource name with subsystem name (if necessary)
+				var subsystemResource = ( len( resources.subsystem ) && !len( pathRoot ) ? '#resources.subsystem#/' : '' ) & resource;
+				var subsystemResourceTarget = ( len( resources.subsystem ) ? '#resources.subsystem##variables.framework.subsystemDelimiter#' : '' ) & resource;
+				for ( var routeTemplate in getResourceRouteTemplates() ) {
+					// if method names were passed in, only use templates with matching method names
+					if ( arrayLen( resources.methods ) && !arrayFindNoCase( resources.methods, routeTemplate.method ) ) continue;
+					var routePack = { };
+					for ( var httpMethod in routeTemplate.httpMethods ) {
+						// build the route
+						var route = '#httpMethod##resources.pathRoot#/#subsystemResource#';
+						if ( structKeyExists( routeTemplate, 'includeId' ) && routeTemplate.includeId ) route &= '/:id';
+						if ( structKeyExists( routeTemplate, 'routeSuffix' ) ) route &= routeTemplate.routeSuffix;
+						route &= '/$';
+						// build the target
+						var target = '/#subsystemResourceTarget#/#routeTemplate.method#';
+						if ( structKeyExists( routeTemplate, 'includeId' ) && routeTemplate.includeId ) target &= '/id/:id';
+						if ( structKeyExists( routeTemplate, 'targetSuffix' ) ) target &= routeTemplate.targetSuffix;
+						target &= targetAppend; 
+						routePack[ route ] = target;
 					}
+					arrayAppend( routes, routePack );
+				}
+				// nested routes
+				var nestedPathRoot = '#resources.pathRoot#/#subsystemResource#/:#resource#_id';
+				var nestedTargetAppend = '#targetAppend#/#resource#_id/:#resource#_id';
+				var nestedRoutes = getResourceRoutes( resources.nested, resources.subsystem, nestedPathRoot, nestedTargetAppend );
+				// wish I could concatenate the arrays...not sure about using java -> routes.addAll( nestedRoutes )
+				for ( var nestedPack in nestedRoutes ) {
+					arrayAppend( routes, nestedPack );
 				}
 			}
+			resourceCache[ cacheKey ] = routes;
 		}
-		return path;
+		return resourceCache[ cacheKey ];
+	}
+
+	private struct function processRoutes( string path, array routes = getRoutes() ) {
+		for ( var routePack in routes ) {
+			for ( var route in routePack ) {
+				if ( route == 'hint' ) continue;
+				if ( route == '$RESOURCES' ) {
+					var routeMatch = processRoutes( path, getResourceRoutes( routePack[ route ] ) );
+				} else {
+					var routeMatch = processRouteMatch( route, routePack[ route ], path );
+				}
+				if ( routeMatch.matched ) return routeMatch;
+			}
+		}
+		return { matched = false };
 	}
 
 	private void function raiseException( string type, string message, string detail ) {
 		throw( type = type, message = message, detail = detail );
 	}
-	
+
+    private string function renderDataWithContentType() {
+        var out = '';
+        var contentType = '';
+        var type = request._fw1.renderData.type;
+        var data = request._fw1.renderData.data;
+        var statusCode = request._fw1.renderData.statusCode;
+        switch ( type ) {
+        case 'json':
+            contentType = 'application/json; charset=utf-8';
+            out = serializeJSON( data );
+            break;
+        case 'xml':
+            contentType = 'text/xml; charset=utf-8';
+            if ( isXML( data ) ) {
+                if ( isSimpleValue( data ) ) {
+                    // XML as string already
+                    out = data;
+                } else {
+                    // XML object
+                    out = toString( data );
+                }
+            } else {
+                throw( type = 'FW1.UnsupportXMLRender',
+                       message = 'Data is not XML',
+                       detail = 'renderData() called with XML type but unrecognized data format' );
+            }
+            break;
+        case 'text':
+            contentType = 'text/plain; charset=utf-8';
+            out = data;
+            break;
+        default:
+            throw( type = 'FW1.UnsupportedRenderType',
+                   message = 'Only JSON, XML, and TEXT are supported',
+                   detail = 'renderData() called with unknown type: ' & type );
+            break;
+        }
+        getPageContext().getResponse().setStatus( statusCode );
+        // set the content type header portably:
+        getPageContext().getResponse().setContentType( contentType );
+        return out;
+    }
+
 	private void function restoreFlashContext() {
 		if ( variables.framework.maxNumContextsPreserved > 1 ) {
 			if ( !structKeyExists( URL, variables.framework.preserveKeyURLKey ) ) {
@@ -1735,6 +1887,7 @@ component {
 		frameworkCache.fileExists = { };
 		frameworkCache.controllers = { };
 		frameworkCache.services = { };
+		frameworkCache.routes = { regex = { }, resources = { } };
 		lock name="fw1_#application.applicationName#_#variables.framework.applicationKey#_initialization" type="exclusive" timeout="10" {
 			if ( structKeyExists( application, variables.framework.applicationKey ) ) {
 				// application is already loaded, just reset the cache and trigger re-initialization of subsystems
@@ -1765,6 +1918,7 @@ component {
 			frameworkCache.fileExists = { };
 			frameworkCache.controllers = { };
 			frameworkCache.services = { };
+			frameworkCache.routes = { regex = { }, resources = { } };
 			application[variables.framework.applicationKey].cache = frameworkCache;
 			application[variables.framework.applicationKey].subsystems = { };
 		}
@@ -1794,7 +1948,7 @@ component {
 			}
 		}
 		if ( !structKeyExists(variables.framework, 'usingSubsystems') ) {
-			variables.framework.usingSubsystems = false;
+			variables.framework.usingSubsystems = structKeyExists(variables.framework,'defaultSubsystem') || structKeyExists(variables.framework,'sitewideLayoutSubsystem');
 		}
 		if ( !structKeyExists(variables.framework, 'defaultSubsystem') ) {
 			variables.framework.defaultSubsystem = 'home';
@@ -1811,7 +1965,13 @@ component {
 		if ( !structKeyExists(variables.framework, 'siteWideLayoutSubsystem') ) {
 			variables.framework.siteWideLayoutSubsystem = 'common';
 		}
-		if ( !structKeyExists(variables.framework, 'home') ) {
+		if ( structKeyExists(variables.framework, 'home') ) {
+            if (usingSubsystems()) {
+                if ( !find( variables.framework.subsystemDelimiter, variables.framework.home ) ) {
+                    raiseException( type = "FW1.configuration.home", message = "You are using subsystems but framework.home does not specify a subsystem.", detail = "You should set framework.home to #variables.framework.defaultSubsystem##variables.framework.subsystemDelimiter##variables.framework.home#" );
+                }
+            }
+        } else {
 			if (usingSubsystems()) {
 				variables.framework.home = variables.framework.defaultSubsystem & variables.framework.subsystemDelimiter & variables.framework.defaultSection & '.' & variables.framework.defaultItem;
 			} else {
@@ -1876,6 +2036,16 @@ component {
 		if ( !structKeyExists( variables.framework, 'routes' ) ) {
 			variables.framework.routes = [ ];
 		}
+		if ( !structKeyExists( variables.framework, 'resourceRouteTemplates' ) ) {
+			variables.framework.resourceRouteTemplates = [
+				{ method = 'default', httpMethods = [ '$GET' ] },
+				{ method = 'new', httpMethods = [ '$GET' ], routeSuffix = '/new' },
+				{ method = 'create', httpMethods = [ '$POST' ] },
+				{ method = 'show', httpMethods = [ '$GET' ], includeId = true },
+				{ method = 'update', httpMethods = [ '$PUT','$PATCH' ], includeId = true },
+				{ method = 'destroy', httpMethods = [ '$DELETE' ], includeId = true }
+			];
+		}
 		if ( !structKeyExists( variables.framework, 'noLowerCase' ) ) {
 			variables.framework.noLowerCase = false;
 		}
@@ -1885,7 +2055,7 @@ component {
 		if ( !structKeyExists( variables.framework, 'trace' ) ) {
 			variables.framework.trace = false;
 		}
-	    variables.framework.version = '2.1.1';
+	    variables.framework.version = '2.2';
         setupFrameworkEnvironments();
 	}
 
@@ -1921,12 +2091,24 @@ component {
                 // pathInfo is bogus so ignore it:
                 pathInfo = '';
             }
-            pathInfo = processRoutes( pathInfo );
+            var routeMatch = processRoutes( pathInfo );
+						if ( routeMatch.matched ) {
+							pathInfo = rereplace( routeMatch.path, routeMatch.pattern, routeMatch.target );
+							if ( routeMatch.redirect ) {
+								location( pathInfo, false, routeMatch.statusCode ); 
+							} else {
+								request._fw1.route = routeMatch.route;
+							}
+						}
             try {
                 // we use .split() to handle empty items in pathInfo - we fallback to listToArray() on
                 // any system that doesn't support .split() just in case (empty items won't work there!)
                 if ( len( pathInfo ) > 1 ) {
-                    pathInfo = right( pathInfo, len( pathInfo ) - 1 ).split( '/' );
+                    // Strip leading "/" if present.
+                    if ( left( pathInfo, 1 ) EQ '/' ) {
+                        pathInfo = right( pathInfo, len( pathInfo ) - 1 );
+                    }
+                    pathInfo = pathInfo.split( '/' );
                 } else {
                     pathInfo = arrayNew( 1 );
                 }
