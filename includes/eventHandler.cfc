@@ -16,6 +16,9 @@ component persistent="false" accessors="true" output="false" extends="mura.plugi
 	// Add any other Mura CMS Specific methods you need here.
 
 	public void function onApplicationLoad(required struct $) {
+		// trigger MuraFW1 setupApplication()
+		new '#variables.framework.package#.Application'();
+		// register this file as a Mura eventHandler
 		variables.pluginConfig.addEventHandler(this);
 	}
 	
