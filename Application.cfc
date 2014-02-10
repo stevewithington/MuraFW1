@@ -76,11 +76,16 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 	public any function setupApplication() {
 		var local = {};
 
+		WriteLog(type='Information', file='fw1-info', text='MuraFW1 setupApplication() called');
+
 		if ( !StructKeyExists(application, 'pluginManager') ) {
 			location(url='/', addtoken=false);
 		};
 
 		lock scope='application' type='exclusive' timeout=50 {
+			if ( !StructKeyExists(application, variables.framework.applicationKey)  ){
+				application[variables.framework.applicationKey] = {};
+			}
 			application[variables.framework.applicationKey].pluginConfig = application.pluginManager.getConfig(ID=variables.framework.applicationKey);
 		};
 

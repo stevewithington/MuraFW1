@@ -17,7 +17,7 @@ component persistent="false" accessors="true" output="false" extends="mura.plugi
 
 	public void function onApplicationLoad(required struct $) {
 		// trigger MuraFW1 setupApplication()
-		new '#variables.framework.package#.Application'();
+		getApplication().setupApplication();
 		// register this file as a Mura eventHandler
 		variables.pluginConfig.addEventHandler(this);
 	}
