@@ -44,7 +44,7 @@ This file contains 'variables.framework' which is used by both
 FW/1 and Mura. The most important variable in this file is: 
 `variables.framework.package = 'MuraFW1';` You **MUST** enter 
 the plugin's 'packageName' here and it MUST be the same as found 
-in **/plugin/config.xml.cfm**  So please be sure to change 
+in **/plugin/config.xml.cfm** So please be sure to change 
 **MuraFW1** to match your plugin's packageName. You should be 
 able to simply modify the *package* name in this file and the 
 setting should populate `config.xml.cfm` when the plugin is deployed.
@@ -56,7 +56,7 @@ for Mura CMS and FW/1 to coexist.
 Lastly, the `variables.framework.action` defaults to your 
 `pacakgeName & action` ... e.g. if your packageName is 'MuraFW1', 
 the default action will be **MuraFW1action**.  This is to help 
-prevent your plugin from intercepting another plugin's action.  
+prevent your plugin from intercepting another plugin's action. 
 So, if your packageName is not a valid CFML variable name 
 (e.g., begins with a number, etc.) then you will experience 
 problems trying to get your application to work.
@@ -68,13 +68,13 @@ setupRequest(), setupSubsystem() if needed. The hope is that you
 shouldn't have to modify it very much for simple applications.
 
 ### /includes/eventHandler.cfc
-This file extends `mura.plugin.pluginGenericEventHandler`.  Here is 
+This file extends `mura.plugin.pluginGenericEventHandler`. Here is 
 where you can modify/add commonly used Mura 'events' such as 
 onApplicationLoad(), onSiteRequestStart(), onRenderStart(), etc.
 
 ### /includes/displayObjects.cfc
-This file extends `mura.plugin.pluginGenericEventHandler`.  You 
-should be able to add any display methods here.  Just be sure sure 
+This file extends `mura.plugin.pluginGenericEventHandler`. You 
+should be able to add any display methods here. Just be sure sure 
 to map them into your `config.xml.cfm` file so they'll show up for 
 content managers.
 
