@@ -93,18 +93,19 @@ for more information.
 
 
 ## Additional Resources
-* [MuraFW1 Project Home](http://github.com/stevewithington/MuraFW1)
+* [MuraFW1 Project Source Code](http://github.com/stevewithington/MuraFW1)
 * [Mura CMS Project Home](http://www.getmura.com)
-* [Mura CMS Github Project](http://github.com/blueriver/MuraCMS.git)
-* [Mura Support](http://www.getmura.com/index.cfm/support/)
-* [Mura Blog](http://www.getmura.com/index.cfm/blog/)
-* [Mura Forum](http://www.getmura.com/forum/)
+* [Mura CMS Project Source Code](http://github.com/blueriver/MuraCMS)
+* [Mura CMS Support](http://www.getmura.com/support/)
+* [Mura CMS Blog](http://www.getmura.com/blog/)
+* [Mura CMS Forum/Google Group](https://groups.google.com/group/mura-cms-developers)
 * [FW/1 Project Home](http://fw1.riaforge.org)
-* [FW/1 Documentation wiki](http://github.com/seancorfield/fw1/wiki)
+* [FW/1 Project Source Code](https://github.com/framework-one/fw1)
+* [FW/1 Documentation wiki](https://github.com/framework-one/fw1/wiki)
 * [FW/1 Blog](http://corfield.org/blog/archives.cfm/category/fw1)
-* [FW/1 Support](http://groups.google.com/group/framework-one/)
-* [DI/1 Project Home](https://github.com/seancorfield/di1)
-* [DI/1 Documentation wiki](https://github.com/seancorfield/di1/wiki)
+* [FW/1 Forum/Google Group](http://groups.google.com/group/framework-one/)
+* [DI/1 Project Home](https://github.com/framework-one/di1)
+* [DI/1 Documentation wiki](https://github.com/framework-one/di1/wiki)
 
 ## License
 Copyright 2010-2014 Stephen J. Withington, Jr.
