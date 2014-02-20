@@ -83,7 +83,7 @@ This file is [DI/1 - Inject One](https://github.com/framework-one/di1) - a very 
 configuration, dependency injection (inversion of control) framework.
 By default, this plugin uses DI/1 as its Bean Factory. If you wish
 to use something else (e.g., ColdSpring, Mura, etc.), then simply
-edit the Appliction.cfc:setupApplication() method.
+edit the Application.cfc:setupApplication() method.
 
 Please refer to the [DI/1 Project](https://github.com/framework-one/di1)
 for more information.
