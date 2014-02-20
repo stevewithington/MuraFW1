@@ -6,9 +6,7 @@ as its application framework. It's intended to be used by experienced
 ColdFusion/CFML developers and those developers familiar with Framework One, 
 or more commonly known as FW/1.
 
-
 ## PLEASE READ
-**As of version 3.010, this project is licensed under Apache License, Version 2.0**
 
 ### Minimum Requirements
 	* Mura CMS v.6.0+
@@ -81,13 +79,13 @@ to map them into your `config.xml.cfm` file so they'll show up for
 content managers.
 
 ### /includes/factory/ioc.cfc
-This file is DI/1 - Inject One - a very lightweight, convention over
+This file is [DI/1 - Inject One](https://github.com/framework-one/di1) - a very lightweight, convention over
 configuration, dependency injection (inversion of control) framework.
 By default, this plugin uses DI/1 as its Bean Factory. If you wish
 to use something else (e.g., ColdSpring, Mura, etc.), then simply
 edit the Appliction.cfc:setupApplication() method.
 
-Please refer to the [DI/1 Project](https://github.com/seancorfield/di1)
+Please refer to the [DI/1 Project](https://github.com/framework-one/di1)
 for more information.
 
 
