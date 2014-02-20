@@ -1,11 +1,10 @@
 # MuraFW1
--------------------------------------------------------------------------------
 
 ## Introduction
-This is a base Mura CMS plugin using FW/1 as its application 
-framework.  It's intended to be used by experienced 
-ColdFusion/CFML developers and those developers familiar with 
-Framework One, or more commonly known as FW/1.
+This is a base Mura CMS plugin using [FW/1](https://github.com/framework-one/fw1) 
+as its application framework. It's intended to be used by experienced 
+ColdFusion/CFML developers and those developers familiar with Framework One, 
+or more commonly known as FW/1.
 
 
 ## PLEASE READ
