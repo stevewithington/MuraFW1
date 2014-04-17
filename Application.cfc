@@ -187,6 +187,10 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 		return super.buildURL(argumentCollection=arguments);
 	}
 
+	public any function isFrameworkInitialized() {
+		return super.isFrameworkInitialized() && StructKeyExists(application[variables.framework.applicationKey], 'cache');
+	}
+
 	
 	// ========================== Errors & Missing Views ==============================
 
