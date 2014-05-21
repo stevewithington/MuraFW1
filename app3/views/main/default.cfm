@@ -60,4 +60,13 @@ http://www.apache.org/licenses/LICENSE-2.0
 		</tbody>
 	</table>
 
+	<!--- Configurator Settings : Displaying an example of how to retrieve the data --->
+	<cfif StructKeyExists(rc, 'params')>
+		<div class="alert alert-success">
+			<a class="close" data-dismiss="alert" href="##">&times;</a>
+			<h4>Saved Data From Configurator</h4>
+			<cfdump var="#rc.params#" />
+		</div>
+	</cfif>
+
 </cfoutput>

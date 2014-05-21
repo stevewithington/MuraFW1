@@ -23,7 +23,8 @@ component persistent="false" accessors="true" output="false" extends="mura.plugi
 	}
 	
 	public void function onSiteRequestStart(required struct $) {
-		arguments.$.setCustomMuraScopeKey(variables.framework.package, getApplication());
+		// make the methods in displayObjects.cfc accessible via $.packageName.methodName()
+		arguments.$.setCustomMuraScopeKey(variables.framework.package, new displayObjects());
 	}
 
 	public any function onRenderStart(required struct $) {

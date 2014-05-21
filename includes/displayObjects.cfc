@@ -19,7 +19,7 @@ component persistent="false" accessors="true" output="false" extends="mura.plugi
 	// ========================== Display Methods ==============================
 
 	public any function dspMuraFW1App1($) {
-		return getApplication().doAction('public:main.default');
+		return getApplication().doAction('app1:main.default');
 	}
 
 	public any function dspMuraFW1App2($) {
@@ -28,6 +28,24 @@ component persistent="false" accessors="true" output="false" extends="mura.plugi
 
 	public any function dspMuraFW1App3($) {
 		return getApplication().doAction('app3:main.default');
+	}
+
+	// ========================== Configured Display Object(s) ================
+
+	public any function dspConfiguredMuraFW1App3($) {
+		var local = {};
+		local.params = arguments.$.event('objectParams');
+
+		local.defaultParams = {
+			app3message = 'Hello from App3'
+		};
+
+		StructAppend(local.params, local.defaultParams, false);
+
+		// Stuff the params into the rc scope
+		request.context.params = local.params;
+
+		return dspMuraFW1App3(arguments.$);
 	}
 
 	// ========================== Helper Methods ==============================
