@@ -16,9 +16,12 @@ http://www.apache.org/licenses/LICENSE-2.0
 	// FW1 Configuration
 	variables.framework = {};
 
+	// TEMPORARY : feature will be deprecated in 3.0 ...  need to update plugin soon
+	variables.framework.suppressServiceQueue = false;
+
 	// !important: enter the plugin packageName here. must be the same as found in '{context}/plugin/config.xml.cfm'
 	variables.framework.package = 'MuraFW1';
-	variables.framework.packageVersion = '3.2';
+	variables.framework.packageVersion = '3.3';
 
 	// If true, then additional information is returned by the Application.onError() method
 	// and FW1 will 'reloadApplicationOnEveryRequest' (unless explicitly set otherwise below).
