@@ -24,17 +24,21 @@ http://www.apache.org/licenses/LICENSE-2.0
 	</div>
 
 	<!--- Some form testing --->
-	<div>
-		<form method="post">
-			<label for="action">Action</label>
-			<!--- NOTE the 'name' attribute! --->
-			<select id="action" name="MuraFW1Action">
-				<cfset local.actions = 'app2:main.default,app2:main.another,app2:list.default'>
-				<cfloop list="#local.actions#" index="local.i">
-					<option value="#local.i#"<cfif rc.action eq local.i> selected="selected"</cfif>>#local.i#</option>
-				</cfloop>
-			</select>
-			<input type="submit" value="Submit" />
-		</form>
+	<div class="row">
+		<div class="col-md-6">
+			<form method="post" role="form">
+				<div class="form-group">
+					<label for="action">Action</label>
+					<!--- NOTE the 'name' attribute! --->
+					<select class="form-control" id="action" name="MuraFW1Action">
+						<cfset local.actions = 'app2:main.default,app2:main.another,app2:list.default'>
+						<cfloop list="#local.actions#" index="local.i">
+							<option value="#local.i#"<cfif rc.action eq local.i> selected="selected"</cfif>>#local.i#</option>
+						</cfloop>
+					</select>
+				</div>
+				<button type="submit" class="btn btn-default">Submit</button>
+			</form>
+		</div>
 	</div>
 </cfoutput>

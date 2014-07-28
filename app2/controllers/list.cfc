@@ -9,15 +9,13 @@ http://www.apache.org/licenses/LICENSE-2.0
 */
 component persistent="false" accessors="true" extends="controller" output="false" {
 
-  property name="myServices";
-
 	// ********************************* PAGES *******************************************
 
 	public any function default(required struct rc) {
 
 		// These essentially return the same values
 		//rc.something = 'Matt Levine,Sean Schroeder,Steve Withington,Grant Sherpert,Eddie Ballisty';
-    rc.something = variables.myServices.getDeveloperList();
+    rc.something = variables.sampleService.getDeveloperList();
 	}
 
 }

@@ -16,19 +16,15 @@ http://www.apache.org/licenses/LICENSE-2.0
 	// FW1 Configuration
 	variables.framework = {};
 
-	// TEMPORARY : feature will be deprecated in 3.0 ...  need to update plugin soon
-	variables.framework.suppressServiceQueue = false;
-
 	// !important: enter the plugin packageName here. must be the same as found in '{context}/plugin/config.xml.cfm'
 	variables.framework.package = 'MuraFW1';
-	variables.framework.packageVersion = '3.3';
+	variables.framework.packageVersion = '3.4';
 
-	// If true, then additional information is returned by the Application.onError() method
-	// and FW1 will 'reloadApplicationOnEveryRequest' (unless explicitly set otherwise below).
-	variables.framework.debugMode = true;
-	
-	// change to TRUE if you're developing the plugin so you can see changes in your controllers, etc.
-	variables.framework.reloadApplicationOnEveryRequest = variables.framework.debugMode ? true : false;
+	variables.framework.debugMode = true; // if TRUE, then additional information is returned by the Application.onError() method
+
+	variables.framework.reloadApplicationOnEveryRequest = true; // change to TRUE if you're developing the plugin so you can see changes in your controllers, etc. ... otherwise, set to FALSE for production
+
+	variables.framework.trace = false; // if true, will print out debugging/tracing info at the bottom of ea. page (within the Plugin's Administration area only)
 
 	// the 'action' defaults to your packageNameAction, (e.g., 'MuraFW1action') you may want to update this to something else.
 	// please try to avoid using simply 'action' so as not to conflict with other FW1 plugins
@@ -53,7 +49,9 @@ http://www.apache.org/licenses/LICENSE-2.0
 	variables.framework.generateSES = false;
 	variables.framework.SESOmitIndex = true;
 	variables.framework.baseURL = 'useRequestURI';
-	variables.framework.suppressImplicitService = false; //true to suppress fw/1 from storing service calls results in rc.data
+	variables.framework.suppressImplicitService = true; // this used to be false in FW/1 1.x
+	variables.framework.suppressServiceQueue = true; // false restores the FW/1 2.2 behavior
+	variables.framework.enableGlobalRC = false; // true restores the FW/1 2.2 behavior
 	variables.framework.unhandledExtensions = 'cfc';
 	variables.framework.unhandledPaths = '/flex2gateway';
 	variables.framework.maxNumContextsPreserved = 10;

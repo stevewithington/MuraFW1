@@ -23,7 +23,7 @@ component persistent="false" accessors="true" output="false" extends="controller
 		rc.registration = variables.registrationService.get(argumentCollection=arguments.rc);
 	}
 
-	public void function startSave(required struct rc) {
+	public void function save(required struct rc) {
 		var registration = variables.registrationService.get(argumentCollection=arguments.rc);
 		variables.fw.populate(cfc=registration, keys='fname,lname,issubmitted,id', trim=true);
 		rc.message = 'Registration Saved!';
@@ -32,13 +32,11 @@ component persistent="false" accessors="true" output="false" extends="controller
 		} catch (any e) {
 			rc.message = e.message;
 		};
-	}
 
-	public void function endSave(required struct rc) {
 		variables.fw.redirect(action='app3:main', preserve='message');
 	}
 
-	public void function endDelete(required struct rc) {
+	public void function delete(required struct rc) {
 		var registration = variables.registrationService.get(argumentCollection=arguments.rc);
 		rc.message = 'Registration Deleted!';
 		try {
@@ -49,7 +47,7 @@ component persistent="false" accessors="true" output="false" extends="controller
 		variables.fw.redirect(action='app3:main', preserve='message');
 	}
 
-	public void function endClear(required struct rc) {
+	public void function clear(required struct rc) {
 		rc.message = 'All Registrations Have Been Cleared!';
 		try {
 			variables.registrationService.clearRegistrations();

@@ -33,7 +33,7 @@ http://www.apache.org/licenses/LICENSE-2.0
 			</tr>
 		</thead>
 		<tbody>
-			<cfif StructCount(local.registrations) EQ 0>
+			<cfif StructIsEmpty(local.registrations)>
 				<tr>
 					<td colspan="3">
 						<div class="alert alert-error">
@@ -59,6 +59,14 @@ http://www.apache.org/licenses/LICENSE-2.0
 			</cfloop>
 		</tbody>
 	</table>
+
+	<cfif !StructIsEmpty(local.registrations)>
+		<p>
+			<a class="btn btn-primary" href="#buildURL('app3:main.clear')#">
+				Clear All Registrations
+			</a>
+		</p>
+	</cfif>
 
 	<!--- Configurator Settings : Displaying an example of how to retrieve the data --->
 	<cfif StructKeyExists(rc, 'params')>

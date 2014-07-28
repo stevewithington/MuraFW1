@@ -68,7 +68,7 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 			};
 			clearFW1Request();
 			setCachedView(local.viewKey, local.response);
-		};
+		}
 
 		return local.response;
 	}
@@ -78,7 +78,7 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 
 		if ( !StructKeyExists(application, 'pluginManager') ) {
 			location(url='/', addtoken=false);
-		};
+		}
 
 		lock scope='application' type='exclusive' timeout=50 {
 			if ( !StructKeyExists(application, variables.framework.applicationKey)  ){
@@ -102,7 +102,7 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 			lock scope='session' type='exclusive' timeout='10' {
 				session.siteid = 'default';
 			};
-		};
+		}
 
 		secureRequest();
 
@@ -111,7 +111,7 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 		
 		if ( StructKeyExists(url, application.configBean.getAppReloadKey()) ) { 
 			setupApplication();
-		};
+		}
 
 		if ( Len(Trim(request.context.siteid)) && ( session.siteid != request.context.siteid) ) {
 			local.siteCheck = application.settingsManager.getSites();
@@ -120,11 +120,11 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 					session.siteid = request.context.siteid;
 				};
 			};
-		};
+		}
 
 		if ( !StructKeyExists(request.context, '$') ) {
 			request.context.$ = StructKeyExists(request, 'muraScope') ? request.muraScope : application.serviceFactory.getBean('muraScope').init(session.siteid);
-		};
+		}
 
 		request.context.pc = application[variables.framework.applicationKey].pluginConfig;
 		request.context.pluginConfig = application[variables.framework.applicationKey].pluginConfig;
@@ -139,7 +139,7 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 			&& httpRequestData.headers['X-#variables.framework.package#-AJAX'] 
 		) {
 			setupResponse();
-		};
+		}
 	}
 	
 	public void function setupResponse() {
@@ -153,7 +153,7 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 			StructDelete(request.context, '$');
 			WriteOutput(SerializeJSON(request.context));
 			abort;
-		};
+		}
 	}
 
 	public string function buildURL(required string action, string path='#variables.framework.baseURL#', any queryString='') {
@@ -174,8 +174,8 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 				}
 			} else {
 				arguments.action = ListAppend(arguments.action, qs, '&');
-			};
-		};
+			}
+		}
 		return super.buildURL(argumentCollection=arguments);
 	}
 
@@ -198,7 +198,7 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 				scope = arrScopes[i];
 				WriteDump(var=Evaluate(scope),label=UCase(scope));
 			};
-		};
+		}
 		abort;
 	}
 
@@ -212,7 +212,7 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 		} else {
 			ArrayAppend(rc.errors, "The page you're looking for <strong>#rc.action#</strong> doesn't exist.");
 			redirect(action='admin:main', preserve='errors,isMissingView');
-		};
+		}
 	}
 
 	// ========================== Helper Methods ==============================
@@ -252,9 +252,10 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 				, controllers = []
 				, requestDefaultsInitialized = false
 				, services = []
+				, doTrace = false
 				, trace = []
 			};
-		};
+		}
 	}
 
 	// ========================== PRIVATE ==============================
@@ -264,7 +265,7 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 		var cache = getSessionCache();
 		if ( StructKeyExists(cache, 'views') && StructKeyExists(cache.views, arguments.viewKey) ) {
 			view = cache.views[arguments.viewKey];
-		};
+		}
 		return view;
 	}
 
@@ -286,7 +287,7 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 		var local = {};
 		if ( isCacheExpired() ) {
 			setSessionCache();
-		};
+		}
 		lock scope='session' type='readonly' timeout=10 {
 			local.cache = session[variables.framework.package];
 		};

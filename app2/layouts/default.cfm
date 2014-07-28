@@ -10,10 +10,10 @@ http://www.apache.org/licenses/LICENSE-2.0
 --->
 </cfsilent>
 <cfoutput>
-	<div class="row-fluid">
+	<div class="row-fluid mfw1-example">
 		<h3>Application ##2</h3>
 		<div>
-			<ul class="nav nav-pills">
+			<ul class="nav nav-tabs" role="tablist">
 				<li<cfif rc.action eq 'app2:main.default'> class="active"</cfif>>
 					<a href="#buildURL('app2:main')#">Application ##2 Main</a>
 				</li>
@@ -25,11 +25,20 @@ http://www.apache.org/licenses/LICENSE-2.0
 				</li>
 			</ul>
 		</div>
+
 		<div>#body#</div>
+
+		<!--- Admin Link --->
 		<cfif $.currentUser().isSuperUser()>
-			<div class="clearfix">
-				<a href="#rc.$.globalConfig('context')#/plugins/#rc.pc.getDirectory()#/index.cfm?MuraFW1Action=admin:main.default&compactDisplay=true" rel="shadowbox;">Admin</a>
+			<div class="row">
+				<div class="col-md-12">
+					<div class="mfw1-admin-links">
+						<a class="btn btn-primary" href="#rc.$.globalConfig('context')#/plugins/#rc.pc.getDirectory()#/index.cfm?MuraFW1Action=admin:main.default&compactDisplay=true" rel="shadowbox;">Admin</a>
+					</div>
+				</div>
 			</div>
 		</cfif>
+		<!--- /Admin Link --->
+
 	</div>
 </cfoutput>

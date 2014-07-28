@@ -17,7 +17,7 @@ http://www.apache.org/licenses/LICENSE-2.0
 	<p>Hello there! Welcome to the <strong>app2:main.default</strong> view.</p>
 	<div class="alert alert-success">
 		<a class="close" data-dismiss="alert" href="##">&times;</a>
-		<p>Here's something from the public services:<br>
+		<p>Here's something from the sample service:<br>
 		<strong>rc.thisIsJustSomeRCVariable = #rc.thisIsJustSomeRCVariable#</strong></p>
 	</div>
 </cfoutput>

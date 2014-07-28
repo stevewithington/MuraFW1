@@ -40,6 +40,23 @@ http://www.apache.org/licenses/LICENSE-2.0
 	text-shadow: 0 -1px 0 rgba(0,0,0,.2);
 }
 
+.mfw1-example {
+	position: relative;
+	border-color: #ddd;
+	border-width: 1px;
+	border-style: solid;
+	border-radius: 4px 4px 0 0;
+	box-shadow: none;
+	padding: 1em;
+	margin: 0 0 2em 0;
+}
+
+.mfw1-admin-links {
+	margin: 1em 0;
+	padding: 1em 0 0 0;
+	border-top: 1px solid #ddd;
+}
+
 /* MuraFW1 Sidenav
 -------------------------------------------------- */
 .container-murafw1 .nav.nav-list.murafw1-sidenav a {

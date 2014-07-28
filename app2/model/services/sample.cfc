@@ -13,7 +13,7 @@ component persistent="false" accessors="true" output="false" extends="mura.cfobj
 		return this;
 	}
 
-	public any function doSomeService(string someArgument='Hello from app2.model.services.myServices.doSomeService()') {
+	public any function doSomeService(string someArgument='Hello from app2.model.services.sample.doSomeService()') {
 		// do whatever you need in here :)
 		return arguments.someArgument;
 	}
