@@ -73,14 +73,21 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 		return local.response;
 	}
 
-	public any function setupApplication() {
+	// exposed for use by eventHandler.cfc:onApplicationLoad()
+	public void function setupApplicationWrapper() {
+		lock scope='application' type='exclusive' timeout=20 {
+			super.setupApplicationWrapper();
+		};
+	}
+
+	public void function setupApplication() {
 		var local = {};
 
 		if ( !StructKeyExists(application, 'pluginManager') ) {
 			location(url='/', addtoken=false);
 		}
 
-		lock scope='application' type='exclusive' timeout=50 {
+		lock scope='application' type='exclusive' timeout=20 {
 			if ( !StructKeyExists(application, variables.framework.applicationKey)  ){
 				application[variables.framework.applicationKey] = {};
 			}
@@ -111,6 +118,7 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 		
 		if ( StructKeyExists(url, application.configBean.getAppReloadKey()) ) { 
 			setupApplication();
+			//setupApplicationWrapper();
 		}
 
 		if ( Len(Trim(request.context.siteid)) && ( session.siteid != request.context.siteid) ) {

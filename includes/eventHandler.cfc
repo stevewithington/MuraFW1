@@ -16,8 +16,11 @@ component persistent="false" accessors="true" output="false" extends="mura.plugi
 	// Add any other Mura CMS Specific methods you need here.
 
 	public void function onApplicationLoad(required struct $) {
-		// trigger MuraFW1 setupApplication()
-		getApplication().setupApplication();
+		// trigger FW/1 to reload
+		lock scope='application' type='exclusive' timeout=20 {
+			getApplication().setupApplicationWrapper(); // this ensures the appCache is cleared as well
+		};
+
 		// register this file as a Mura eventHandler
 		variables.pluginConfig.addEventHandler(this);
 	}

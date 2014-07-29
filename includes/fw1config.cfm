@@ -18,11 +18,11 @@ http://www.apache.org/licenses/LICENSE-2.0
 
 	// !important: enter the plugin packageName here. must be the same as found in '{context}/plugin/config.xml.cfm'
 	variables.framework.package = 'MuraFW1';
-	variables.framework.packageVersion = '3.4';
+	variables.framework.packageVersion = '3.5';
 
-	variables.framework.debugMode = true; // if TRUE, then additional information is returned by the Application.onError() method
+	variables.framework.debugMode = false; // if TRUE, then additional information is returned by the Application.onError() method
 
-	variables.framework.reloadApplicationOnEveryRequest = true; // change to TRUE if you're developing the plugin so you can see changes in your controllers, etc. ... otherwise, set to FALSE for production
+	variables.framework.reloadApplicationOnEveryRequest = false; // change to TRUE if you're developing the plugin so you can see changes in your controllers, etc. ... otherwise, set to FALSE for production
 
 	variables.framework.trace = false; // if true, will print out debugging/tracing info at the bottom of ea. page (within the Plugin's Administration area only)
 
