@@ -12,7 +12,6 @@ component persistent="false" accessors="true" extends="controller" output="false
 	// ********************************* PAGES *******************************************
 
 	public any function default(required struct rc) {
-
 		// These essentially return the same values
 		//rc.something = 'Matt Levine,Sean Schroeder,Steve Withington,Grant Sherpert,Eddie Ballisty';
     rc.something = variables.sampleService.getDeveloperList();

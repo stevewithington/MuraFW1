@@ -97,7 +97,12 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 		// Bean Factory (uses DI/1)
 		// Be sure to pass in your comma-separated list of folders to scan for CFCs
 		local.beanFactory = new includes.factory.ioc('/#variables.framework.package#/app2/model,/#variables.framework.package#/app3/model');
-		setBeanFactory( local.beanFactory );
+
+		// optionally set Mura to be the parent beanFactory
+		local.parentBeanFactory = application.serviceFactory;
+		local.beanFactory.setParent(local.parentBeanFactory);
+
+		setBeanFactory(local.beanFactory);
 	}
 
 	public void function setupRequest() {
