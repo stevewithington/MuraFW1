@@ -18,6 +18,22 @@ component persistent="false" accessors="true" output="false" extends="mura.plugi
 
 	// ========================== Display Methods ==============================
 
+	/*
+			Important!
+			Each FW/1 display object should always call the subapplication's 'main.default' action.
+			In other words, don't create a dspSomething('app1:main.someotherview').
+
+			Try to think of each subapplication as its own, independent application, or its own
+			little website. Users will be able to interact with it, sometimes calling different
+			views within the object itself. 
+
+			If you had dspSomething('app1:main.default') in one place, and 
+			dspSomething('app1:main.someotherview') in another, what do you think would happen when 
+			you try to pass an action to your application? Well, if your URL had something like 
+			'?muraFW1Action=app1:main.yetanotherview' ... both displays will update to that view!
+
+	*/
+
 	public any function dspMuraFW1App1($) {
 		return getApplication().doAction('app1:main.default');
 	}

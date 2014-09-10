@@ -21,7 +21,7 @@ two primary subsystems at play here. One is 'admin' and the
 other is 'public'. This means your URLs will have either 
 '?{packageName}Action=admin:your.view' or 
 '?{packageName}Action=public:your.view' (e.g., 
-?MuraFW1action=admin:default.main). There are also some
+?MuraFW1action=admin:main.default). There are also some
 additional example applications inlcuded (e.g., app2, app3, etc.).
 These are included to give you, the developer, a kind of
 'skeleton' application to work with. In addition, this also
