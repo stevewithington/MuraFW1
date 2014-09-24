@@ -55,7 +55,8 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 			& '_' & getItem(arguments.action)
 		);
 
-		local.response = getCachedView(local.viewKey);
+		local.response = variables.framework.siloSubsystems 
+			? getCachedView(local.viewKey) : '';
 
 		local.newViewRequired = !Len(local.response) 
 			? true : getSubSystem(arguments.action) == getSubSystem(request.context[fwa])
@@ -67,7 +68,10 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 				onRequest(local.targetPath);
 			};
 			clearFW1Request();
-			setCachedView(local.viewKey, local.response);
+
+			if ( variables.framework.siloSubsystems ) {
+				setCachedView(local.viewKey, local.response);
+			}
 		}
 
 		return local.response;

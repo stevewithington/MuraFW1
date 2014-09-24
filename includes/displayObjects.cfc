@@ -32,6 +32,9 @@ component persistent="false" accessors="true" output="false" extends="mura.plugi
 			you try to pass an action to your application? Well, if your URL had something like 
 			'?muraFW1Action=app1:main.yetanotherview' ... both displays will update to that view!
 
+			If you wish to override this behaviour, and you plan on only having one display object
+			on any given page, then you can set variables.framework.siloSubsystems = false; 
+			in the file located at /includes/fw1config.cfm 
 	*/
 
 	public any function dspMuraFW1App1($) {
