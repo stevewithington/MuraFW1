@@ -175,7 +175,7 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 		}
 	}
 
-	public string function buildURL(required string action, string path='#variables.framework.baseURL#', any queryString='') {
+	public string function buildURL(required string action, string path='#resolvePath()#', any queryString='') {
 		var regx = '&?compactDisplay=[true|false]';
 		arguments.action = getFullyQualifiedAction(arguments.action);
 		if (
@@ -195,7 +195,29 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 				arguments.action = ListAppend(arguments.action, qs, '&');
 			}
 		}
+
 		return super.buildURL(argumentCollection=arguments);
+	}
+
+	public any function resolvePath(string path='#variables.framework.baseURL#') {
+		// don't modify a submitted path
+		if ( arguments.path != variables.framework.baseURL ) {
+			return arguments.path;
+		}
+
+		var uri =  getPageContext().getRequest().getRequestURI();
+		var arrURI = ListToArray(uri, '/');
+		var useIndex = YesNoFormat(application.configBean.getValue('indexfileinurls'));
+		var useSiteID = YesNoFormat(application.configBean.getValue('siteidinurls'));
+
+		if ( useSiteID && !useIndex ) {
+			ArrayDeleteAt(arrURI, 2);
+			uri = '/' & ArrayToList(arrURI, '/') & '/';
+		}
+
+		return !useSiteID && !useIndex
+			? '/' & ListRest(uri, '/')
+			: uri;
 	}
 
 	public any function isFrameworkInitialized() {
