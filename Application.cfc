@@ -29,6 +29,8 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 		var fwa = variables.framework.action;
 		var local = {};
 
+		clearFW1Request();
+
 		local.targetPath = getPageContext().getRequest().getRequestURI();
 
 		setupFrameworkDefaults();
@@ -262,17 +264,17 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 		if ( StructKeyExists(request, '_fw1') ) {
 			for ( i=1; i <= ArrayLen(arrFW1Keys); i++ ) {
 				StructDelete(request._fw1, arrFW1Keys[i]);
-			};
-			request._fw1 = {
-				cgiScriptName = CGI.SCRIPT_NAME
-				, cgiRequestMethod = CGI.REQUEST_METHOD
-				, controllers = []
-				, requestDefaultsInitialized = false
-				, services = []
-				, doTrace = false
-				, trace = []
-			};
+			}
 		}
+		request._fw1 = {
+			cgiScriptName = CGI.SCRIPT_NAME
+			, cgiRequestMethod = CGI.REQUEST_METHOD
+			, controllers = []
+			, requestDefaultsInitialized = false
+			, services = []
+			, doTrace = variables.framework.trace
+			, trace = []
+		};
 	}
 
 	// ========================== PRIVATE ==============================

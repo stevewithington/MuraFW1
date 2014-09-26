@@ -11,6 +11,7 @@ or more commonly known as FW/1.
 	* Mura CMS v.6.0+
 	* Adobe ColdFusion 9.0.1+ or Railo 3.3+
 
+
 ## Important Notes
 Assuming you've used FW/1 in the past, you'll need to know 
 a few minor differences between a typical FW/1 application 
@@ -31,7 +32,6 @@ Mura CMS.
 Next, here are some of the more important files to be aware of 
 and a little bit about what they are.
 
-
 ### /includes/fw1.cfc
 This is the file that is typically known in FW/1 as 
 **/org/corfield/framework.cfc** You should be able to update this 
@@ -39,26 +39,47 @@ with the latest and greatest version available. No modifications
 have been made to the file other than its name.
 
 ### /includes/fw1config.cfm
-This file contains 'variables.framework' which is used by both 
+This file contains `variables.framework` which is used by both 
 FW/1 and Mura. The most important variable in this file is: 
 `variables.framework.package = 'MuraFW1';` You **MUST** enter 
 the plugin's 'packageName' here and it MUST be the same as found 
-in **/plugin/config.xml.cfm** So please be sure to change 
+in **/plugin/config.xml.cfm**. So please be sure to change 
 **MuraFW1** to match your plugin's packageName. You should be 
 able to simply modify the *package* name in this file and the 
 setting should populate `config.xml.cfm` when the plugin is deployed.
+
+Please also note, Mura uses [DI/1](https://github.com/framework-one/di1) 
+to manage its depenency injection. This means that you **will** run 
+into issues if you attempt to use any of the names used for its
+beans as your `pacakageName`. In other words, use something unique for 
+your `packageName`.
 
 Another important variable to note is `framework.baseURL='useRequestURI';`
 **Do NOT change this setting!** This setting is required in order 
 for Mura CMS and FW/1 to coexist.
 
-Lastly, the `variables.framework.action` defaults to your 
+The `variables.framework.action` defaults to your 
 `pacakgeName & action` ... e.g. if your packageName is 'MuraFW1', 
 the default action will be **MuraFW1action**.  This is to help 
 prevent your plugin from intercepting another plugin's action. 
 So, if your packageName is not a valid CFML variable name 
 (e.g., begins with a number, etc.) then you will experience 
 problems trying to get your application to work.
+
+Lastly, by default, each subsystem is treated as its own, individual 
+application, unaware of any other subsystem, and will not respond to 
+requests for any other subsystem. For example, if a link in App2 points 
+to `buildURL('app3:main.form')` as a 'href' tag and is clicked, then 
+App2 will maintain its state and not respond. Only App3 will respond to 
+that request.
+
+There is a setting to override this default behaviour called:
+`variables.framework.siloSubsystems`.
+
+If set to `false`, then it is assumed that you will only have ONE 
+display object on any page at any given time. If you have more than 
+one, then as you interact with it, all of them will respond with the 
+same view. **You have been warned!**
 
 ### /Application.cfc
 This file extends /includes/fw1.cfc. Here is where you'll be able 
@@ -78,11 +99,11 @@ to map them into your `config.xml.cfm` file so they'll show up for
 content managers.
 
 ### /includes/factory/ioc.cfc
-This file is [DI/1 - Inject One](https://github.com/framework-one/di1) - a very lightweight, convention over
-configuration, dependency injection (inversion of control) framework.
-By default, this plugin uses DI/1 as its Bean Factory. If you wish
-to use something else (e.g., ColdSpring, Mura, etc.), then simply
-edit the Application.cfc:setupApplication() method.
+This file is [DI/1 - Inject One](https://github.com/framework-one/di1) - 
+a very lightweight, convention over configuration, dependency injection 
+(inversion of control) framework. By default, this plugin uses DI/1 as 
+its Bean Factory. If you wish to use something else (e.g., ColdSpring, Mura, etc.), 
+then simply edit the Application.cfc:setupApplication() method.
 
 Please refer to the [DI/1 Project](https://github.com/framework-one/di1)
 for more information.
@@ -102,6 +123,7 @@ for more information.
 * [FW/1 Forum/Google Group](http://groups.google.com/group/framework-one/)
 * [DI/1 Project Home](https://github.com/framework-one/di1)
 * [DI/1 Documentation wiki](https://github.com/framework-one/di1/wiki)
+
 
 ## License
 Copyright 2010-2014 Stephen J. Withington, Jr.
