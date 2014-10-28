@@ -199,6 +199,10 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 		return super.buildURL(argumentCollection=arguments);
 	}
 
+	public string function redirect(required string action, string preserve='none', string append='none', string path='#resolvePath()#', string queryString='', string statusCode='302') {
+		return super.redirect(argumentCollection=arguments);
+	}
+
 	public any function resolvePath(string path='#variables.framework.baseURL#') {
 		// don't modify a submitted path
 		if ( arguments.path != variables.framework.baseURL ) {
@@ -225,128 +229,128 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 	}
 
 	
-	// ========================== Errors & Missing Views ==============================
+	// ========================== Errors & Missing Views ==========================
 
-	public any function onError() output="true" {
-		//var scopes = 'application,arguments,cgi,client,cookie,form,local,request,server,session,url,variables';
-		var scopes = 'local,request,session';
-		var arrScopes = ListToArray(scopes);
-		var i = '';
-		var scope = '';
-		WriteOutput('<h2>' & variables.framework.package & ' ERROR</h2>');
-		if ( IsBoolean(variables.framework.debugMode) && variables.framework.debugMode ) {
-			for ( i=1; i <= ArrayLen(arrScopes); i++ ) {
-				scope = arrScopes[i];
-				WriteDump(var=Evaluate(scope),label=UCase(scope));
-			};
+		public any function onError() output="true" {
+			//var scopes = 'application,arguments,cgi,client,cookie,form,local,request,server,session,url,variables';
+			var scopes = 'local,request,session';
+			var arrScopes = ListToArray(scopes);
+			var i = '';
+			var scope = '';
+			WriteOutput('<h2>' & variables.framework.package & ' ERROR</h2>');
+			if ( IsBoolean(variables.framework.debugMode) && variables.framework.debugMode ) {
+				for ( i=1; i <= ArrayLen(arrScopes); i++ ) {
+					scope = arrScopes[i];
+					WriteDump(var=Evaluate(scope),label=UCase(scope));
+				};
+			}
+			abort;
 		}
-		abort;
-	}
 
-	public any function onMissingView(any rc) {
-		rc.errors = [];
-		rc.isMissingView = true;
-		// forward to appropriate error screen
-		if ( isFrontEndRequest() ) {
-			ArrayAppend(rc.errors, "The page you're looking for doesn't exist.");
-			redirect(action='app1:main.error', preserve='errors,isMissingView');
-		} else {
-			ArrayAppend(rc.errors, "The page you're looking for <strong>#rc.action#</strong> doesn't exist.");
-			redirect(action='admin:main', preserve='errors,isMissingView');
-		}
-	}
-
-	// ========================== Helper Methods ==============================
-
-	public any function secureRequest() {
-		return !isAdminRequest() || (StructKeyExists(session, 'mura') && ListFindNoCase(session.mura.memberships,'S2')) ? true :
-				!StructKeyExists(session, 'mura') 
-				|| !StructKeyExists(session, 'siteid') 
-				|| !application.permUtility.getModulePerm(application[variables.framework.applicationKey].pluginConfig.getModuleID(), session.siteid) 
-					? goToLogin() : true;
-	}
-
-	private void function goToLogin() {
-		location(url='#application.configBean.getContext()#/admin/index.cfm?muraAction=clogin.main&returnURL=/plugins/#variables.framework.package#/', addtoken=false)
-	}
-
-	public boolean function isAdminRequest() {
-		return StructKeyExists(request, 'context') && ListFirst(request.context[variables.framework.action], ':') == 'admin' ? true : false;
-	}
-
-	public boolean function isFrontEndRequest() {
-		return StructKeyExists(request, 'murascope');
-	}
-
-	// ==========================  STATE  ==============================
-
-	public void function clearFW1Request() {
-		var arrFW1Keys = ListToArray(variables.fw1Keys);
-		var i = '';
-		if ( StructKeyExists(request, '_fw1') ) {
-			for ( i=1; i <= ArrayLen(arrFW1Keys); i++ ) {
-				StructDelete(request._fw1, arrFW1Keys[i]);
+		public any function onMissingView(any rc) {
+			rc.errors = [];
+			rc.isMissingView = true;
+			// forward to appropriate error screen
+			if ( isFrontEndRequest() ) {
+				ArrayAppend(rc.errors, "The page you're looking for doesn't exist.");
+				redirect(action='app1:main.error', preserve='errors,isMissingView');
+			} else {
+				ArrayAppend(rc.errors, "The page you're looking for <strong>#rc.action#</strong> doesn't exist.");
+				redirect(action='admin:main', preserve='errors,isMissingView');
 			}
 		}
-		request._fw1 = {
-			cgiScriptName = CGI.SCRIPT_NAME
-			, cgiRequestMethod = CGI.REQUEST_METHOD
-			, controllers = []
-			, requestDefaultsInitialized = false
-			, services = []
-			, doTrace = variables.framework.trace
-			, trace = []
-		};
-	}
 
-	// ========================== PRIVATE ==============================
+	// ========================== Helper Methods ==================================
 
-	private any function getCachedView(required string viewKey) {
-		var view = '';
-		var cache = getSessionCache();
-		if ( StructKeyExists(cache, 'views') && StructKeyExists(cache.views, arguments.viewKey) ) {
-			view = cache.views[arguments.viewKey];
+		public any function secureRequest() {
+			return !isAdminRequest() || (StructKeyExists(session, 'mura') && ListFindNoCase(session.mura.memberships,'S2')) ? true :
+					!StructKeyExists(session, 'mura') 
+					|| !StructKeyExists(session, 'siteid') 
+					|| !application.permUtility.getModulePerm(application[variables.framework.applicationKey].pluginConfig.getModuleID(), session.siteid) 
+						? goToLogin() : true;
 		}
-		return view;
-	}
 
-	private void function setCachedView(required string viewKey, string viewValue='') {
-		lock scope='session' type='exclusive' timeout=10 {
-			session[variables.framework.package].views[arguments.viewKey] = arguments.viewValue;
-		};
-	}
-
-	private boolean function isCacheExpired() {
-		var p = variables.framework.package;
-		return !StructKeyExists(session, p) 
-				|| DateCompare(now(), session[p].expires, 's') == 1 
-				|| DateCompare(application.appInitializedTime, session[p].created, 's') == 1
-			? true : false;
-	}
-
-	private any function getSessionCache() {
-		var local = {};
-		if ( isCacheExpired() ) {
-			setSessionCache();
+		private void function goToLogin() {
+			location(url='#application.configBean.getContext()#/admin/index.cfm?muraAction=clogin.main&returnURL=/plugins/#variables.framework.package#/', addtoken=false)
 		}
-		lock scope='session' type='readonly' timeout=10 {
-			local.cache = session[variables.framework.package];
-		};
-		return local.cache;
-	}
 
-	private void function setSessionCache() {
-		var p = variables.framework.package;
-		// Expires - s:seconds, n:minutes, h:hours, d:days
-		lock scope='session' type='exclusive' timeout=10 {
-			StructDelete(session, p);
-			session[p] = {
-				created = Now()
-				, expires = DateAdd('h', 1, Now())
-				, sessionid = Hash(CreateUUID())
-				, views = {}
+		public boolean function isAdminRequest() {
+			return StructKeyExists(request, 'context') && ListFirst(request.context[variables.framework.action], ':') == 'admin' ? true : false;
+		}
+
+		public boolean function isFrontEndRequest() {
+			return StructKeyExists(request, 'murascope');
+		}
+
+	// ========================== STATE ===========================================
+
+		public void function clearFW1Request() {
+			var arrFW1Keys = ListToArray(variables.fw1Keys);
+			var i = '';
+			if ( StructKeyExists(request, '_fw1') ) {
+				for ( i=1; i <= ArrayLen(arrFW1Keys); i++ ) {
+					StructDelete(request._fw1, arrFW1Keys[i]);
+				}
+			}
+			request._fw1 = {
+				cgiScriptName = CGI.SCRIPT_NAME
+				, cgiRequestMethod = CGI.REQUEST_METHOD
+				, controllers = []
+				, requestDefaultsInitialized = false
+				, services = []
+				, doTrace = variables.framework.trace
+				, trace = []
 			};
-		};
-	}
+		}
+
+	// ========================== PRIVATE =========================================
+
+		private any function getCachedView(required string viewKey) {
+			var view = '';
+			var cache = getSessionCache();
+			if ( StructKeyExists(cache, 'views') && StructKeyExists(cache.views, arguments.viewKey) ) {
+				view = cache.views[arguments.viewKey];
+			}
+			return view;
+		}
+
+		private void function setCachedView(required string viewKey, string viewValue='') {
+			lock scope='session' type='exclusive' timeout=10 {
+				session[variables.framework.package].views[arguments.viewKey] = arguments.viewValue;
+			};
+		}
+
+		private boolean function isCacheExpired() {
+			var p = variables.framework.package;
+			return !StructKeyExists(session, p) 
+					|| DateCompare(now(), session[p].expires, 's') == 1 
+					|| DateCompare(application.appInitializedTime, session[p].created, 's') == 1
+				? true : false;
+		}
+
+		private any function getSessionCache() {
+			var local = {};
+			if ( isCacheExpired() ) {
+				setSessionCache();
+			}
+			lock scope='session' type='readonly' timeout=10 {
+				local.cache = session[variables.framework.package];
+			};
+			return local.cache;
+		}
+
+		private void function setSessionCache() {
+			var p = variables.framework.package;
+			// Expires - s:seconds, n:minutes, h:hours, d:days
+			lock scope='session' type='exclusive' timeout=10 {
+				StructDelete(session, p);
+				session[p] = {
+					created = Now()
+					, expires = DateAdd('h', 1, Now())
+					, sessionid = Hash(CreateUUID())
+					, views = {}
+				};
+			};
+		}
 
 }
