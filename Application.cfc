@@ -215,13 +215,13 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 		var useSiteID = YesNoFormat(application.configBean.getValue('siteidinurls'));
 
 		if ( useSiteID && !useIndex ) {
-			ArrayDeleteAt(arrURI, 2);
-			uri = '/' & ArrayToList(arrURI, '/') & '/';
+			ArrayDeleteAt(arrURI, 3);
+			
 		}
-
-		return !useSiteID && !useIndex
-			? '/' & ListRest(uri, '/')
-			: uri;
+		
+		uri = '/' & ArrayToList(arrURI, '/') & '/';
+		
+		return uri;
 	}
 
 	public any function isFrameworkInitialized() {
