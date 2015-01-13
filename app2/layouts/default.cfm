@@ -33,7 +33,7 @@ http://www.apache.org/licenses/LICENSE-2.0
 			<div class="row">
 				<div class="col-md-12">
 					<div class="mfw1-admin-links">
-						<a class="btn btn-primary" href="#rc.$.globalConfig('context')#/plugins/#rc.pc.getDirectory()#/index.cfm?MuraFW1Action=admin:main.default&compactDisplay=true" rel="shadowbox;">Admin</a>
+						<a class="btn btn-primary frontEndToolsModal" href="#rc.$.globalConfig('context')#/plugins/#rc.pc.getDirectory()#/index.cfm?MuraFW1Action=admin:main.default&amp;compactDisplay=true">Admin</a>
 					</div>
 				</div>
 			</div>
