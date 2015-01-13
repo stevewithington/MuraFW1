@@ -2,7 +2,7 @@
 
 This file is part of MuraFW1
 
-Copyright 2010-2014 Stephen J. Withington, Jr.
+Copyright 2010-2015 Stephen J. Withington, Jr.
 Licensed under the Apache License, Version v2.0
 http://www.apache.org/licenses/LICENSE-2.0
 
@@ -211,17 +211,16 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 
 		var uri =  getPageContext().getRequest().getRequestURI();
 		var arrURI = ListToArray(uri, '/');
+		var indexPos = ArrayFind(arrURI, 'index.cfm');
 		var useIndex = YesNoFormat(application.configBean.getValue('indexfileinurls'));
 		var useSiteID = YesNoFormat(application.configBean.getValue('siteidinurls'));
 
-		if ( useSiteID && !useIndex ) {
-			ArrayDeleteAt(arrURI, 2);
+		if ( !useIndex && indexPos ) {
+			ArrayDeleteAt(arrURI, indexPos);
 			uri = '/' & ArrayToList(arrURI, '/') & '/';
 		}
 
-		return !useSiteID && !useIndex
-			? '/' & ListRest(uri, '/')
-			: uri;
+		return uri;
 	}
 
 	public any function isFrameworkInitialized() {
