@@ -46,8 +46,8 @@ The subsystems that are included by default are:
   this one includes an example of how to create a 
   *configurable display object* for Mura CMS.
 
-If you wish to delete any of these (*except for the **admin** of course*),
-just remember to edit the /plugin/config.xml.cfm file and either
+If you wish to delete any of these (*except for the 'admin' of course*).
+Just remember to edit the `/plugin/config.xml.cfm` file and either
 remove, or comment out, the corresponding `displayObjects` that
 have been registered. Once you do this, you will have to go to the
 Mura CMS admin area, then to **Settings > Plugins** and click the
