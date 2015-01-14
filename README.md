@@ -18,32 +18,31 @@ a few minor differences between a typical FW/1 application
 and how it lives within Mura CMS. 
 
 ### Default Subsystems
-First of all, this plugin does use FW/1 subsystems. There are 
-four (4) subsystems in use.
-
-This means your URLs will have either `?{packageName}Action=admin:your.view` 
+First of all, this plugin does use FW/1 subsystems. This means your 
+URLs will have either `?{packageName}Action=admin:your.view` 
 or `?{packageName}Action=app1:your.view`, etc. For example:
 `?MuraFW1action=admin:main.default`.
 
-The subsystems that are included by default are:
+There are four (4) subsystems in use. The subsystems that are 
+included by default are:
 
-* **admin**:
+* **admin**
 
     This is the primary subsystem. You can and *should* modify it,
     but just don't delete it. This is where authorized content
     managers can go to interact with the plugin's own 'Admin' area.
 
-* **app1**:
+* **app1**
 
     This subsystem is just an uber-simple, hello world app. No controllers,
    no layouts, just a `default` view.
 
-* **app2**:
+* **app2**
 
     This subsystem is a step up from 'app1' and includes some controllers,
     multiple views, a layout, and also includes a `sample` service.
 
-* **app3**:
+* **app3**
 
     This subsystem takes things a few more steps up from 'app2' by
     including an example 'bean' and multiple views. In addition to that,
