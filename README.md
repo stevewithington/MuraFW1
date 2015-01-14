@@ -27,27 +27,31 @@ or `?{packageName}Action=app1:your.view`, etc. For example:
 
 The subsystems that are included by default are:
 
-* **admin**
-  This is the primary subsystem. You can and *should* modify it,
-  but just don't delete it. This is where authorized content
-  managers can go to interact with the plugin's own 'Admin' area.
+* **admin**:
 
-* **app1**
-  This subsystem is just an uber-simple, hello world app. No controllers,
-  no layouts, just a `default` view.
+    This is the primary subsystem. You can and *should* modify it,
+    but just don't delete it. This is where authorized content
+    managers can go to interact with the plugin's own 'Admin' area.
 
-* **app2**
-  This subsystem is a step up from 'app1' and includes some controllers,
-  multiple views, a layout, and also includes a `sample` service.
+* **app1**:
 
-* **app3**
-  This subsystem takes things a few more steps up from 'app2' by
-  including an example 'bean' and multiple views. In addition to that,
-  this one includes an example of how to create a 
-  *configurable display object* for Mura CMS.
+    This subsystem is just an uber-simple, hello world app. No controllers,
+   no layouts, just a `default` view.
 
-If you wish to delete any of these (*except for the 'admin' of course*).
-Just remember to edit the `/plugin/config.xml.cfm` file and either
+* **app2**:
+
+    This subsystem is a step up from 'app1' and includes some controllers,
+    multiple views, a layout, and also includes a `sample` service.
+
+* **app3**:
+
+    This subsystem takes things a few more steps up from 'app2' by
+    including an example 'bean' and multiple views. In addition to that,
+    this one includes an example of how to create a 
+    *configurable display object* for Mura CMS.
+
+If you wish to delete any of these, *except for the 'admin' of course*,
+just remember to edit the `/plugin/config.xml.cfm` file and either
 remove, or comment out, the corresponding `displayObjects` that
 have been registered. Once you do this, you will have to go to the
 Mura CMS admin area, then to **Settings > Plugins** and click the
