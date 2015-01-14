@@ -270,7 +270,7 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 		}
 
 		private void function goToLogin() {
-			location(url='#application.configBean.getContext()#/admin/index.cfm?muraAction=clogin.main&returnURL=/plugins/#variables.framework.package#/', addtoken=false)
+			location(url='#application.configBean.getContext()#/admin/index.cfm?muraAction=clogin.main&returnURL=#application.configBean.getContext()#/plugins/#variables.framework.package#/', addtoken=false);
 		}
 
 		public boolean function isAdminRequest() {
