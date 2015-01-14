@@ -17,6 +17,6 @@ http://www.apache.org/licenses/LICENSE-2.0
 <cfoutput>
   <div class="mfw1-example">
   	<h3>Application ##1</h3>
-  	<p>Hello from MuraFW1! Welcome to the <strong>public:main.default</strong> view.</p>
+  	<p>Hello from MuraFW1! Welcome to the <strong>app1:main.default</strong> view.</p>
   </div>
 </cfoutput>
