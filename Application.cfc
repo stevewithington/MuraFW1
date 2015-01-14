@@ -15,7 +15,7 @@ http://www.apache.org/licenses/LICENSE-2.0
 		on how to access these methods.
 
 */
-component persistent="false" accessors="true" output="false" extends="includes.fw1" {
+component persistent="false" accessors="true" output="false" extends="includes.framework.one" {
 
 	include 'includes/fw1config.cfm'; // framework variables
 	include '../../config/applicationSettings.cfm';
@@ -102,7 +102,9 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 
 		// Bean Factory (uses DI/1)
 		// Be sure to pass in your comma-separated list of folders to scan for CFCs
-		local.beanFactory = new includes.factory.ioc('/#variables.framework.package#/app2/model,/#variables.framework.package#/app3/model');
+		local.beanFactory = new includes.framework.ioc('/#variables.framework.package#/app2/model,/#variables.framework.package#/app3/model');
+
+		local.beanFactory.addBean('fw', this);
 
 		// optionally set Mura to be the parent beanFactory
 		local.parentBeanFactory = application.serviceFactory;

@@ -18,7 +18,7 @@ http://www.apache.org/licenses/LICENSE-2.0
 
 	// !important: enter the plugin packageName here. must be the same as found in '{context}/plugin/config.xml.cfm'
 	variables.framework.package = 'MuraFW1';
-	variables.framework.packageVersion = '3.9.1';
+	variables.framework.packageVersion = '4.0.0';
 
 	// If true, then each subsystem is treated as its own, individual application, unaware of any other subsystem, and will not respond to requests for any other subsystem. For example, if a link in App2 points to 'buildURL('app3:main.form') as a 'href' tag and is clicked, then App2 will maintain its state and not respond. Only App3 will respond to that request. If false, then it is assumed that you will only have ONE display object on any page at any given time. If you have more than one, then as you interact with it, all of them will respond with the same view. You have been warned!
 	variables.framework.siloSubsystems = true;
@@ -32,6 +32,12 @@ http://www.apache.org/licenses/LICENSE-2.0
 	// the 'action' defaults to your packageNameAction, (e.g., 'MuraFW1action') you may want to update this to something else.
 	// please try to avoid using simply 'action' so as not to conflict with other FW1 plugins
 	variables.framework.action = variables.framework.package & 'action';
+
+	// dependency injection framework
+	variables.framework.diEngine = 'di1';
+	variables.framework.diLocations = 'model,controllers';
+	variables.framework.diConfig = {};
+	variables.framework.diComponent = variables.framework.package & '.includes.framework.ioc';
 
 	// less commonly modified
 	variables.framework.defaultSection = 'main';

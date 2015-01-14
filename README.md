@@ -8,8 +8,8 @@ or more commonly known as FW/1.
 ## PLEASE READ
 
 ### Minimum Requirements
-	* Mura CMS v.6.0+
-	* Adobe ColdFusion 9.0.1+ or Railo 3.3+
+	* Mura CMS v.6.1+
+	* Adobe ColdFusion 10.0.14+ or Railo 4.1+
 
 
 ## Important Notes
@@ -61,11 +61,11 @@ in order for Mura to pick up the changes.
 Next, here are some of the more important files to be aware of 
 and a little bit about what they are.
 
-#### /includes/fw1.cfc
+#### /includes/framework/one.cfc
 This is the file that is typically known in FW/1 as 
-**/org/corfield/framework.cfc** You should be able to update this 
+**/framework/one.cfc** You should be able to update this 
 with the latest and greatest version available. No modifications 
-have been made to the file other than its name.
+have been made to the file.
 
 #### /includes/fw1config.cfm
 This file contains `variables.framework` which is used by both 
@@ -133,12 +133,14 @@ should be able to add any display methods here. Just be sure sure
 to map them into your `config.xml.cfm` file so they'll show up for 
 content managers.
 
-#### /includes/factory/ioc.cfc
+#### /includes/framework/ioc.cfc
 This file is [DI/1 - Inject One](https://github.com/framework-one/di1) - 
 a very lightweight, convention over configuration, dependency injection 
 (inversion of control) framework. By default, this plugin uses DI/1 as 
 its Bean Factory. If you wish to use something else (e.g., ColdSpring, Mura, etc.), 
-then simply edit the Application.cfc:setupApplication() method.
+then simply edit the `Application.cfc:setupApplication()` method, and
+the `variables.framework.diEngine` setting in the `/includes/fw1config.cfm`
+file.
 
 Please refer to the [DI/1 Project](https://github.com/framework-one/di1)
 for more information.
