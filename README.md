@@ -74,13 +74,13 @@ FW/1 and Mura.
 ##### packageName
 The most important variable in this file is: 
 `variables.framework.package = 'MuraFW1';` You **MUST** enter 
-the plugin's 'packageName' here and it MUST be the same as found 
+the plugin's *packageName* here and it MUST be the same as found 
 in **/plugin/config.xml.cfm**. So please be sure to change 
-**MuraFW1** to match your plugin's packageName. You should be 
-able to simply modify the *package* name in this file and the 
+**MuraFW1** to match your plugin's *packageName*. You should be 
+able to simply modify the `package` attribute in this file and the 
 setting should populate `config.xml.cfm` when the plugin is deployed.
 
-Please also note, Mura uses [DI/1](https://github.com/framework-one/di1) 
+Please also note, Mura CMS *also* uses [DI/1](https://github.com/framework-one/di1) 
 to manage its depenency injection. This means that you **will** run 
 into issues if you attempt to use any of the names used for its
 beans as your `pacakageName`. In other words, use something unique for 
