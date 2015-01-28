@@ -1,7 +1,7 @@
 component {
-    variables._fw1_version = "3.0_snapshot";
+    variables._fw1_version = "3.0_rc";
 /*
-    Copyright (c) 2009-2014, Sean Corfield, Marcin Szczepanski, Ryan Cogswell
+    Copyright (c) 2009-2015, Sean Corfield, Marcin Szczepanski, Ryan Cogswell
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -261,7 +261,7 @@ component {
         tuple.section = section;
         tuple.item = item;
 
-        if ( structKeyExists( tuple, 'controller' ) && isObject( tuple.controller ) && !isNull(tuple.controller)) {
+        if ( structKeyExists( tuple, 'controller' ) && !isNull( tuple.controller ) && isObject( tuple.controller ) ) {
             internalFrameworkTrace( 'queuing controller', subsystem, section, item );
             arrayAppend( request._fw1.controllers, tuple );
         }
@@ -453,29 +453,6 @@ component {
         return listLast( getSectionAndItem( action ), '.' );
     }
     
-    
-    /*
-     * return the current request context structure
-     */
-    public struct function getRC() {
-        deprecated( !variables.framework.enableLegacyRCAccessors,
-                    'getRC() is deprecated - use Application.before(rc) instead of setupRequest() to manipulate the RC at the start of a request; otherwise just use rc where it is available!' );
-        return request.context;
-    }
-    
-    /*
-     * return the specified property from the request context or a default value
-     */
-    public any function getRCValue( string propName, any defaultValue = '' ) {
-        deprecated( !variables.framework.enableLegacyRCAccessors,
-                    'getRCValue() is deprecated - use Application.before(rc) instead of setupRequest() to manipulate the RC at the start of a request; otherwise just use rc where it is available, with ''param name="rc.#propName#" default="...";'' as needed!' );
-        if ( structKeyExists( request, 'context' ) &&
-             structKeyExists( request.context, propName ) ) {
-            return request.context[ propName ];
-        } else {
-            return defaultValue;
-        }
-    }
     
     /*
      * return the current route (if any)
@@ -1089,8 +1066,11 @@ component {
      * - getBean(name) - returns the named bean
      */
     public void function setBeanFactory( any beanFactory ) {
-
-        application[ variables.framework.applicationKey ].factory = beanFactory;
+        if ( isObject( beanFactory ) ) {
+            application[ variables.framework.applicationKey ].factory = beanFactory;
+        } else {
+            structDelete( application[variables.framework.applicationKey], "factory" );
+        }
         // to address #276 flush controller cache when bean factory is reset:
         application[ variables.framework.applicationKey ].cache.controllers = { };
 
@@ -1164,7 +1144,7 @@ component {
      * override this if you wish to intercept the tracing logic
      * and handle it yourself
      */
-    public void function setupTraceRender() { }
+    public void function setupTraceRender( string output = 'html' ) { }
     
     /*
      * override this to provide pre-rendering logic, e.g., to
@@ -1464,9 +1444,8 @@ component {
         // do not output trace information if we are rendering data as opposed
         // to rendering HTML views - see #226 and #232
         if ( request._fw1.doTrace &&
-             arrayLen( request._fw1.trace ) &&
-             !structKeyExists( request._fw1, 'renderData' ) ) {
-            setupTraceRender();
+             arrayLen( request._fw1.trace ) ) {
+            setupTraceRender( structKeyExists( request._fw1, 'renderData' ) ? 'data' : 'html' );
         }
         // re-test to allow for setupTraceRender() handling / disabling tracing
         if ( request._fw1.doTrace &&
@@ -2025,7 +2004,6 @@ component {
                 application[variables.framework.applicationKey].cache = frameworkCache;
                 application[variables.framework.applicationKey].subsystems = { };
                 application[variables.framework.applicationKey].subsystemFactories = { };
-                structDelete( application[variables.framework.applicationKey], "factory" );
             } else {
                 // must be first request so we need to set up the entire structure
                 isReload = false;
@@ -2037,7 +2015,6 @@ component {
         }
 
         switch ( variables.framework.diEngine ) {
-        case "aop1":
         case "di1":
             var ioc = new "#variables.framework.diComponent#"(
                 variables.framework.diLocations,
@@ -2182,16 +2159,22 @@ component {
             variables.framework.unhandledExtensions = 'cfc';
         }
         // NOTE: you can provide a comma delimited list of paths.  Since comma is the delim, it can not be part of your path URL to exclude
-        if ( !structKeyExists(variables.framework, 'unhandledPaths') ) {
+        if ( structKeyExists(variables.framework, 'unhandledPaths') ) {
+            // convert unhandledPaths to regex:
+            var escapes = '(\+|\*|\?|\.|\[|\^|\$|\(|\)|\{|\||\\)';
+            var slashMarker = '@@@@@'; // should be something that will never appear in a filename
+            variables.framework.unhandledPathRegex = replace(
+                replace(
+                    REReplace( variables.framework.unhandledPaths, escapes, slashMarker & '\1', 'all' ),
+                    slashMarker, chr(92), 'all' ),
+                ',', '|', 'all' );
+        } else {
             variables.framework.unhandledPaths = '/flex2gateway';
+            variables.framework.unhandledPathRegex = '/flex2gateway';
         }               
         if ( !structKeyExists( variables.framework, 'unhandledErrorCaught' ) ) {
             variables.framework.unhandledErrorCaught = false;
         }
-        // convert unhandledPaths to regex:
-        variables.framework.unhandledPathRegex = replaceNoCase(
-            REReplace( variables.framework.unhandledPaths, '(\+|\*|\?|\.|\[|\^|\$|\(|\)|\{|\||\\)', '\\\1', 'all' ),
-            ',', '|', 'all' );
         if ( !structKeyExists(variables.framework, 'applicationKey') ) {
             variables.framework.applicationKey = 'framework.one';
         }
@@ -2214,9 +2197,6 @@ component {
         if ( !structKeyExists( variables.framework, 'noLowerCase' ) ) {
             variables.framework.noLowerCase = false;
         }
-        if ( !structKeyExists( variables.framework, 'enableLegacyRCAccessors' ) ) {
-            variables.framework.enableLegacyRCAccessors = false;
-        }
         if ( !structKeyExists( variables.framework, 'trace' ) ) {
             variables.framework.trace = false;
         }
@@ -2232,9 +2212,6 @@ component {
         if ( !structKeyExists( variables.framework, 'diComponent' ) ) {
             var diComponent = 'framework.ioc';
             switch ( variables.framework.diEngine ) {
-                case 'aop1':
-                    diComponent = 'framework.aop';
-                    break;
                 case 'wirebox':
                     diComponent = 'framework.WireBoxAdapter';
                     break;
@@ -2387,9 +2364,8 @@ component {
                 application[ variables.framework.applicationKey ].subsystems[ subsystem ] = now();
                 // Application.cfc does not get a subsystem bean factory!
                 if ( subsystem != variables.magicApplicationSubsystem &&
-                     ( variables.framework.diEngine == "di1" ||
-                       variables.framework.diEngine == "aop1" ) ) {
-                    // we can only reliably automate D/I engine setup for DI/1 / AOP/1
+                     ( variables.framework.diEngine == "di1" ) ) {
+                    // we can only reliably automate D/I engine setup for DI/1
                     var locations = listToArray( variables.framework.diLocations );
                     var subLocations = "";
                     for ( var loc in locations ) {
