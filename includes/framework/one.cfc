@@ -1,5 +1,5 @@
 component {
-    variables._fw1_version = "3.0_rc";
+    variables._fw1_version = "3.1.0";
 /*
     Copyright (c) 2009-2015, Sean Corfield, Marcin Szczepanski, Ryan Cogswell
 
@@ -17,27 +17,25 @@ component {
 */
 
     this.name = hash( getBaseTemplatePath() );
-    if ( len( getContextRoot() ) ) {
-        variables.cgiScriptName = replace( CGI.SCRIPT_NAME, getContextRoot(), '' );
-        variables.cgiPathInfo = replace( CGI.PATH_INFO, getContextRoot(), '' );
-    } else {
-        variables.cgiScriptName = CGI.SCRIPT_NAME;
-        variables.cgiPathInfo = CGI.PATH_INFO;
-    }
     request._fw1 = {
         cgiScriptName = CGI.SCRIPT_NAME,
+        cgiPathInfo = CGI.PATH_INFO,
         cgiRequestMethod = CGI.REQUEST_METHOD,
         controllers = [ ],
         requestDefaultsInitialized = false,
         doTrace = false,
         trace = [ ]
     };
+    if ( len( getContextRoot() ) ) {
+        request._fw1.cgiScriptName = replace( CGI.SCRIPT_NAME, getContextRoot(), '' );
+        request._fw1.cgiPathInfo = replace( CGI.PATH_INFO, getContextRoot(), '' );
+    }
     // do not rely on these, they are meant to be true magic...
     variables.magicApplicationSubsystem = '][';
     variables.magicApplicationController = '[]';
     variables.magicApplicationAction = '__';
     variables.magicBaseURL = '-[]-';
-    
+
     public void function abortController() {
         request._fw1.abortController = true;
         internalFrameworkTrace( 'abortController() called' );
@@ -52,11 +50,11 @@ component {
         return listLen( action, variables.framework.subsystemDelimiter ) > 1 ||
             right( action, 1 ) == variables.framework.subsystemDelimiter;
     }
-    
+
     public void function addRoute( any routes, string target, any methods = [ ], string statusCode = '' ) {
         if ( !isArray( routes ) ) routes = [ routes ];
         if ( !isArray( methods ) ) methods = [ methods ];
-        param name="variables.framework.routes" default="#[ ]#"; 
+        param name="variables.framework.routes" default="#[ ]#";
         if ( len( statusCode ) ) target = statusCode & ':' & target;
         for ( var route in routes ) {
             if ( arrayLen( methods ) ) {
@@ -74,6 +72,7 @@ component {
      * to a resolvedBaseURL() value
      */
     public string function buildCustomURL( string uri ) {
+        uri = replace( uri, chr(92), '/', 'all' );
         var triggers = '[/=&\?]';
         if ( reFind( '#triggers#:', uri ) ) {
             // perform variables substitution from request.context
@@ -85,6 +84,11 @@ component {
             }
         }
         var baseData = resolveBaseURL();
+        if ( len( baseData.path ) && right( baseData.path, 1 ) == '/' &&
+             len( uri ) && left( uri, 1 ) == '/' ) {
+            if ( len( baseData.path ) == 1 ) baseData.path = '';
+            else baseData.path = left( baseData.path, len( baseData.path ) - 1 );
+        }
         return baseData.path & uri;
     }
 
@@ -105,7 +109,7 @@ component {
         if ( isStruct( queryString ) && structCount( queryString ) ) {
             var q = '';
             for( var key in queryString ) {
-                if( isSimpleValue( queryString[key] ) ){
+                if ( isSimpleValue( queryString[key] ) ) {
                     q &= '#urlEncodedFormat( key )#=#urlEncodedFormat( queryString[ key ] )#&';
                 }
             }
@@ -139,7 +143,7 @@ component {
         var cosmeticAction = getFullyQualifiedAction( action );
         var isHomeAction = cosmeticAction == getFullyQualifiedAction( variables.framework.home );
         var isDefaultItem = getItem( cosmeticAction ) == variables.framework.defaultItem;
-        
+
         var initialDelim = '?';
         var varDelim = '&';
         var equalDelim = '=';
@@ -165,11 +169,11 @@ component {
             ses = true;
         }
         var curDelim = varDelim;
-        
+
         if ( usingSubsystems() && getSubsystem( cosmeticAction ) == variables.framework.defaultSubsystem ) {
             cosmeticAction = getSectionAndItem( cosmeticAction );
         }
-        
+
         if ( len( queryString ) ) {
             // extract query part and anchor from query string:
             q = find( '?', queryString );
@@ -203,7 +207,7 @@ component {
                 extraArgs = listChangeDelims( extraArgs, '/', '&=' );
             }
         }
-        
+
         if ( ses ) {
             if ( isHomeAction && extraArgs == '' ) {
                 basePath = path;
@@ -222,7 +226,7 @@ component {
                 basePath = path & initialDelim & variables.framework.action & equalDelim & cosmeticAction;
             }
         }
-        
+
         if ( extraArgs != '' ) {
             basePath = basePath & curDelim & extraArgs;
             curDelim = varDelim;
@@ -330,7 +334,7 @@ component {
     public string function getAction() {
         return variables.framework.action;
     }
-    
+
     /*
      * returns the base URL for redirects and links etc
      * can be overridden if you need to modify this per-request
@@ -338,7 +342,7 @@ component {
     public string function getBaseURL() {
         return variables.framework.baseURL;
     }
-    
+
     /*
      *  returns whatever the framework has been told is a bean factory
      *  this will return a subsystem-specific bean factory if one
@@ -363,7 +367,7 @@ component {
         }
         return getDefaultBeanFactory();
     }
-    
+
     /*
      * return the framework configuration
      */
@@ -377,7 +381,7 @@ component {
      * returns the bean factory set via setBeanFactory
      */
     public any function getDefaultBeanFactory() {
-        return application[ variables.framework.applicationKey ].factory;
+        return getFw1App().factory;
     }
 
     /*
@@ -401,7 +405,7 @@ component {
         return variables.framework.defaultSubsystem;
 
     }
-    
+
     /*
      * override this to provide your environment selector
      */
@@ -426,7 +430,7 @@ component {
     public array function getFrameworkTrace() {
         return request._fw1.trace;
     }
-    
+
     /*
      * return an action with all applicable parts (subsystem, section, and item) specified
      * using defaults from the configuration or request where appropriate
@@ -445,45 +449,45 @@ component {
     public string function getHostname() {
         return createObject( 'java', 'java.net.InetAddress' ).getLocalHost().getHostName();
     }
-    
+
     /*
      * return the item part of the action
      */
     public string function getItem( string action = request.action ) {
         return listLast( getSectionAndItem( action ), '.' );
     }
-    
-    
+
+
     /*
      * return the current route (if any)
      */
     public string function getRoute() {
         return structKeyExists( request._fw1, 'route' ) ? request._fw1.route : '';
     }
-    
-    
+
+
     /*
      * return the configured routes
      */
     public array function getRoutes() {
         return variables.framework.routes;
     }
-    
+
     /*
      * return the resource route templates
      */
     public array function getResourceRouteTemplates() {
         return variables.framework.resourceRouteTemplates;
     }
-    
+
     /*
      * return the section part of the action
      */
     public string function getSection( string action = request.action ) {
         return listFirst( getSectionAndItem( action ), '.' );
     }
-    
-    
+
+
     /*
      * return the action without the subsystem
      */
@@ -516,8 +520,8 @@ component {
 
         return sectionAndItem;
     }
-    
-    
+
+
     /*
      * return the subsystem part of the action
      */
@@ -543,10 +547,10 @@ component {
 
         setupSubsystemWrapper( subsystem );
 
-        return application[ variables.framework.applicationKey ].subsystemFactories[ subsystem ];
+        return getFw1App().subsystemFactories[ subsystem ];
 
     }
-    
+
     /*
      * return the (optional) configuration for a subsystem
      */
@@ -588,7 +592,7 @@ component {
      * returns true iff the framework has been told about a bean factory via setBeanFactory
      */
     public boolean function hasDefaultBeanFactory() {
-        return structKeyExists( application[ variables.framework.applicationKey ], 'factory' );
+        return structKeyExists( getFw1App(), 'factory' );
     }
 
     /*
@@ -598,7 +602,7 @@ component {
 
         ensureNewFrameworkStructsExist();
 
-        return structKeyExists( application[ variables.framework.applicationKey ].subsystemFactories, subsystem );
+        return structKeyExists( getFw1App().subsystemFactories, subsystem );
 
     }
 
@@ -623,9 +627,9 @@ component {
         // the requested template.
         // NOTE: for unhandledPaths, we make the list into an escaped
         // regular expression so we match on subdirectories, meaning
-        // /myexcludepath will match '/myexcludepath' and all subdirectories  
+        // /myexcludepath will match '/myexcludepath' and all subdirectories
         return listFindNoCase( variables.framework.unhandledExtensions,
-                               listLast( targetPath, '.' ) ) || 
+                               listLast( targetPath, '.' ) ) ||
             REFindNoCase( '^(' & variables.framework.unhandledPathRegex & ')',
                           targetPath );
     }
@@ -668,7 +672,7 @@ component {
               failure( exception, event, false, true );
               return;
             }
-            
+
             // record details of the exception:
             if ( structKeyExists( request, 'action' ) ) {
                 request.failedAction = request.action;
@@ -691,7 +695,7 @@ component {
             }
             // setup the new controller action, based on the error action:
             request._fw1.controllers = [ ];
-            
+
             if ( structKeyExists( variables, 'framework' ) && structKeyExists( variables.framework, 'error' ) ) {
                 request.action = variables.framework.error;
             } else {
@@ -811,7 +815,7 @@ component {
                 internalFrameworkTrace( 'onMissingView() called' );
                 out = onMissingView( request.context );
             }
-            
+
             buildLayoutQueue();
             for ( i = 1; i <= arrayLen(request._fw1.layouts); i = i + 1 ) {
                 if ( structKeyExists(request, 'layout') && !request.layout ) {
@@ -846,17 +850,19 @@ component {
 
         if ( !isFrameworkInitialized() || isFrameworkReloadRequest() ) {
             setupApplicationWrapper();
+        } else {
+            variables.fw1App = getFw1App();
         }
 
         restoreFlashContext();
         // ensure flash context cannot override request action:
         request.context[variables.framework.action] = request.action;
 
-        if ( isUnhandledRequest( targetPath ) ) {       
+        if ( isUnhandledRequest( targetPath ) ) {
             structDelete(this, 'onRequest');
             structDelete(variables, 'onRequest');
             structDelete(this, 'onRequestEnd');
-            structDelete(variables, 'onRequestEnd');            
+            structDelete(variables, 'onRequestEnd');
             if ( !variables.framework.unhandledErrorCaught ) {
                 structDelete(this, 'onError');
                 structDelete(variables, 'onError');
@@ -877,7 +883,7 @@ component {
         setupRequestDefaults();
         setupSessionWrapper();
     }
-    
+
     // populate() may be invoked inside controllers
     public any function populate( any cfc, string keys = '', boolean trustKeys = false, boolean trim = false, boolean deep = false, any properties = '' ) {
         var props = isSimpleValue( properties ) ? request.context : properties;
@@ -889,7 +895,7 @@ component {
                         var args = { };
                         args[ property ] = props[ property ];
                         if ( trim && isSimpleValue( args[ property ] ) ) args[ property ] = trim( args[ property ] );
-                        // cfc[ 'set'&property ]( argumentCollection = args ); // ugh! no portable script version of this?!?!                       
+                        // cfc[ 'set'&property ]( argumentCollection = args ); // ugh! no portable script version of this?!?!
                         setProperty( cfc, property, args );
                     } catch ( any e ) {
                         onPopulateError( cfc, property, props );
@@ -960,7 +966,10 @@ component {
     }
 
     // call from your controller to redirect to a clean URL based on an action, pushing data to flash scope if necessary:
-    public void function redirect( string action, string preserve = 'none', string append = 'none', string path = variables.magicBaseURL, string queryString = '', string statusCode = '302' ) {
+    public void function redirect(
+        string action, string preserve = 'none', string append = 'none', string path = variables.magicBaseURL,
+        string queryString = '', string statusCode = '302', string header = ''
+    ) {
         if ( path == variables.magicBaseURL ) path = getBaseURL();
         var preserveKey = '';
         if ( preserve != 'none' ) {
@@ -981,10 +990,10 @@ component {
                         baseQueryString = listAppend( baseQueryString, key & '=' & urlEncodedFormat( request.context[ key ] ), '&' );
                     }
                 }
-                
+
             }
         }
-        
+
         if ( baseQueryString != '' ) {
             if ( queryString != '' ) {
                 if ( left( queryString, 1 ) == '?' || left( queryString, 1 ) == '##' ) {
@@ -996,7 +1005,7 @@ component {
         } else {
             baseQueryString = queryString;
         }
-        
+
         var targetURL = buildURL( action, path, baseQueryString );
         if ( preserveKey != '' && variables.framework.maxNumContextsPreserved > 1 ) {
             if ( find( '?', targetURL ) ) {
@@ -1019,12 +1028,19 @@ component {
                 // ignore exception if session is not enabled
             }
         }
-        location( targetURL, false, statusCode );
+        if ( len( header ) ) {
+            // per #338 support custom header-based redirect
+            getPageContext().getResponse().setStatus( statusCode );
+            getPageContext().getResponse().setHeader( header, targetURL );
+            abortController();
+        } else {
+            location( targetURL, false, statusCode );
+        }
     }
 
     // append and querystring are not supported here: you are providing the URI so
     // you are responsible for all of its contents
-    public void function redirectCustomURL( string uri, string preserve = 'none', string statusCode = '302' ) {
+    public void function redirectCustomURL( string uri, string preserve = 'none', string statusCode = '302', string header = '' ) {
         var preserveKey = '';
         if ( preserve != 'none' ) {
             preserveKey = saveFlashContext( preserve );
@@ -1051,14 +1067,21 @@ component {
                 // ignore exception if session is not enabled
             }
         }
-        location( targetURL, false, statusCode );
+        if ( len( header ) ) {
+            // per #338 support custom header-based redirect
+            getPageContext().getResponse().setStatus( statusCode );
+            getPageContext().getResponse().setHeader( header, targetURL );
+            abortController();
+        } else {
+            location( targetURL, false, statusCode );
+        }
     }
 
     // call this to render data rather than a view and layouts
-    public void function renderData( string type, any data, numeric statusCode = 200 ) {
-        request._fw1.renderData = { type = type, data = data, statusCode = statusCode };
+    public void function renderData( string type, any data, numeric statusCode = 200, string jsonpCallback = "" ) {
+        request._fw1.renderData = { type = type, data = data, statusCode = statusCode, jsonpCallback = jsonpCallback };
     }
-    
+
     /*
      * call this from your setupApplication() method to tell the framework
      * about your bean factory - only assumption is that it supports:
@@ -1067,12 +1090,12 @@ component {
      */
     public void function setBeanFactory( any beanFactory ) {
         if ( isObject( beanFactory ) ) {
-            application[ variables.framework.applicationKey ].factory = beanFactory;
+            getFw1App().factory = beanFactory;
         } else {
-            structDelete( application[variables.framework.applicationKey], "factory" );
+            structDelete( getFw1App(), "factory" );
         }
         // to address #276 flush controller cache when bean factory is reset:
-        application[ variables.framework.applicationKey ].cache.controllers = { };
+        getFw1App().cache.controllers = { };
 
     }
 
@@ -1083,7 +1106,7 @@ component {
         request._fw1.overrideLayoutAction = validateAction( action );
         request._fw1.suppressOtherLayouts = suppressOtherLayouts;
     }
-    
+
     /*
      * call this from your setupSubsystem() method to tell the framework
      * about your subsystem-specific bean factory - only assumption is that it supports:
@@ -1093,7 +1116,7 @@ component {
     public void function setSubsystemBeanFactory( string subsystem, any factory ) {
 
         ensureNewFrameworkStructsExist();
-        application[ variables.framework.applicationKey ].subsystemFactories[ subsystem ] = factory;
+        getFw1App().subsystemFactories[ subsystem ] = factory;
 
     }
 
@@ -1145,14 +1168,14 @@ component {
      * and handle it yourself
      */
     public void function setupTraceRender( string output = 'html' ) { }
-    
+
     /*
      * override this to provide pre-rendering logic, e.g., to
      * populate the request context with globally required data
      * you do not need to call super.setupView()
      */
     public void function setupView( struct rc ) { }
-    
+
     /*
      * use this to override the default view
      */
@@ -1166,7 +1189,7 @@ component {
     public boolean function usingSubsystems() {
         return variables.framework.usingSubsystems;
     }
-    
+
     /*
      * view() may be invoked inside views and layouts
      * returns the UI generated by the named view
@@ -1190,9 +1213,9 @@ component {
             return onMissingView( request.context );
         }
     }
-    
+
     // THE FOLLOWING METHODS SHOULD ALL BE CONSIDERED PRIVATE / UNCALLABLE
-    
+
     private void function autowire( any cfc, any beanFactory ) {
         var setters = findImplicitAndExplicitSetters( cfc );
         for ( var property in setters ) {
@@ -1204,7 +1227,7 @@ component {
             }
         }
     }
-    
+
     private void function buildLayoutQueue() {
         var siteWideLayoutBase = request.base & getSubsystemDirPrefix( variables.framework.siteWideLayoutSubsystem );
         var testLayout = 0;
@@ -1213,10 +1236,10 @@ component {
         var section = request.section;
         var item = request.item;
         var subsystembase = '';
-        
+
         request._fw1.layouts = [ ];
         var cascadeLayouts = true; // default can be overridden via setLayout() second argument
-        
+
         // has layout been overridden?
         if ( structKeyExists( request._fw1, 'overrideLayoutAction' ) ) {
             subsystem = getSubsystem( request._fw1.overrideLayoutAction );
@@ -1226,7 +1249,7 @@ component {
             if ( structKeyExists( request._fw1, 'suppressOtherLayouts' ) ) {
                 cascadeLayouts = !request._fw1.suppressOtherLayouts;
                 structDelete( request._fw1, 'suppressOtherLayouts' );
-            } 
+            }
         }
         subsystembase = request.base & getSubsystemDirPrefix( subsystem );
         internalFrameworkTrace( 'building layout queue', subsystem, section, item );
@@ -1272,7 +1295,7 @@ component {
         var section = request.section;
         var item = request.item;
         var subsystembase = '';
-        
+
         // has view been overridden?
         if ( structKeyExists( request._fw1, 'overrideViewAction' ) ) {
             subsystem = getSubsystem( request._fw1.overrideViewAction );
@@ -1297,7 +1320,7 @@ component {
 
 
     private boolean function cachedFileExists( string filePath ) {
-        var cache = application[ variables.framework.applicationKey ].cache;
+        var cache = getFw1App().cache;
         if ( !variables.framework.cacheFileExists ) {
             return fileExists( expandPath( filePath) );
         }
@@ -1307,8 +1330,8 @@ component {
         }
         return cache.fileExists[ filePath ];
     }
-    
-    
+
+
     private string function cfcFilePath( string dottedPath ) {
         if ( dottedPath == '' ) {
             return '/';
@@ -1327,7 +1350,7 @@ component {
             out.println( "FW/1: DEPRECATED: " & message );
         }
     }
-    
+
     private void function doController( struct tuple, string method, string lifecycle ) {
         var cfc = tuple.controller;
         if ( structKeyExists( cfc, method ) ) {
@@ -1350,14 +1373,14 @@ component {
             internalFrameworkTrace( 'no #lifecycle# controller to call', tuple.subsystem, tuple.section, method );
         }
     }
-    
+
     private void function dumpException( any exception ) {
         writeDump( var = exception, label = 'Exception - click to expand', expand = false );
     }
-    
+
     private void function ensureNewFrameworkStructsExist() {
 
-        var framework = application[variables.framework.applicationKey];
+        var framework = getFw1App();
 
         if ( !structKeyExists(framework, 'subsystemFactories') ) {
             framework.subsystemFactories = { };
@@ -1384,7 +1407,7 @@ component {
             }
             writeOutput( '<h#1+h#>#exception.message#</h#1+h#>' );
         }
-        
+
         writeOutput( '<p>#exception.detail# (#exception.type#)</p>' );
         dumpException(exception);
 
@@ -1515,17 +1538,17 @@ component {
     private any function getCachedController( string subsystem, string section ) {
 
         setupSubsystemWrapper( subsystem );
-        var cache = application[variables.framework.applicationKey].cache;
+        var cache = getFw1App().cache;
         var cfc = 0;
         var subsystemDir = getSubsystemDirPrefix( subsystem );
         var subsystemDot = replace( subsystemDir, '/', '.', 'all' );
         var subsystemUnderscore = replace( subsystemDir, '/', '_', 'all' );
         var componentKey = subsystemUnderscore & section;
         var beanName = section & "controller";
-        
-        if ( !structKeyExists( cache.controllers, componentKey ) ) {
+        // per #310 we no longer cache the Application controller since it is new on each request
+        if ( !structKeyExists( cache.controllers, componentKey ) || section == variables.magicApplicationController ) {
             lock name="fw1_#application.applicationName#_#variables.framework.applicationKey#_#componentKey#" type="exclusive" timeout="30" {
-                if ( !structKeyExists( cache.controllers, componentKey ) ) {
+                if ( !structKeyExists( cache.controllers, componentKey ) || section == variables.magicApplicationController ) {
                     if ( usingSubsystems() && hasSubsystemBeanFactory( subsystem ) && getSubsystemBeanFactory( subsystem ).containsBean( beanName ) ) {
                         cfc = getSubsystemBeanFactory( subsystem ).getBean( beanName );
                     } else if ( !usingSubsystems() && hasDefaultBeanFactory() && getDefaultBeanFactory().containsBean( beanName ) ) {
@@ -1562,14 +1585,22 @@ component {
         }
         // else "return null" effectively
     }
-    
+
     private any function getController( string section, string subsystem = getDefaultSubsystem() ) {
         var _controller_fw1 = getCachedController( subsystem, section );
         if ( !isNull( _controller_fw1 ) ) {
             return _controller_fw1;
         }
     }
-    
+
+    private struct function getFw1App() {
+        if ( structKeyExists( variables, "fw1App" ) ) {
+            return variables.fw1App;
+        } else {
+            return application[variables.framework.applicationKey];
+        }
+    }
+
     private string function getNextPreserveKeyAndPurgeOld() {
         var nextPreserveKey = '';
         var oldKeyToPurge = '';
@@ -1597,11 +1628,11 @@ component {
         }
         return nextPreserveKey;
     }
-    
+
     private string function getPreserveKeySessionKey( string preserveKey ) {
         return '__fw1' & preserveKey;
     }
-    
+
     private any function getProperty( struct cfc, string property ) {
         if ( structKeyExists( cfc, 'get#property#' ) ) return evaluate( 'cfc.get#property#()' );
     }
@@ -1614,7 +1645,7 @@ component {
 
         return subsystem & '/';
     }
-    
+
     private void function injectFramework( any cfc ) {
         var args = { };
         if ( structKeyExists( cfc, 'setFramework' ) || structKeyExists( cfc, 'onMissingMethod' ) ) {
@@ -1625,7 +1656,7 @@ component {
             evaluate( 'cfc.setFramework( argumentCollection = args )' );
         }
     }
-    
+
     private void function internalFrameworkTrace( string message, string subsystem = '', string section = '', string item = '' ) {
         if ( request._fw1.doTrace ) {
             try {
@@ -1658,7 +1689,7 @@ component {
         }
         return response;
     }
-    
+
     private string function internalView( string viewPath, struct args = { } ) {
         var rc = request.context;
         var $ = { };
@@ -1673,7 +1704,7 @@ component {
         }
         return response;
     }
-    
+
     private boolean function isFrameworkInitialized() {
         return structKeyExists( variables, 'framework' ) &&
             structKeyExists( application, variables.framework.applicationKey );
@@ -1690,7 +1721,7 @@ component {
 
         ensureNewFrameworkStructsExist();
 
-        return structKeyExists( application[ variables.framework.applicationKey ].subsystems, subsystem );
+        return structKeyExists( getFw1App().subsystems, subsystem );
 
     }
 
@@ -1710,9 +1741,9 @@ component {
         return customizeViewOrLayoutPath( pathInfo, type, '#pathInfo.base##type#s/#pathInfo.path#.cfm' );
 
     }
-    
+
     private struct function processRouteMatch( string route, string target, string path, string httpMethod ) {
-        var regExCache = isFrameworkInitialized() ? application[ variables.framework.applicationKey ].cache.routes.regex : { };
+        var regExCache = isFrameworkInitialized() ? getFw1App().cache.routes.regex : { };
         var cacheKey = hash( route & target );
         if ( !structKeyExists( regExCache, cacheKey ) ) {
             var routeRegEx = { redirect = false, method = '', pattern = route, target = target };
@@ -1728,7 +1759,7 @@ component {
             if ( routeLen ) {
                 if ( left( routeRegEx.pattern, 1 ) == '$' ) {
                     // check HTTP method
-                    routeRegEx.method = listFirst( routeRegEx.pattern, '*/' );
+                    routeRegEx.method = listFirst( routeRegEx.pattern, '*/^' );
                     var methodLen = len( routeRegEx.method );
                     if ( routeLen == methodLen ) {
                         routeRegEx.pattern = '*';
@@ -1748,11 +1779,22 @@ component {
             if ( !len( routeRegEx.target ) || right( routeRegEx.target, 1) != '/' ) routeRegEx.target &= '/';
             // walk for self defined (regex) and :var -  replace :var with ([^/]*) in route and back reference in target:
             var n = 1;
-            var placeholders = rematch( '(:[^/]+)|(\([^\)]+)', routeRegEx.pattern );
+            var placeholders = rematch( '(\{[-_a-zA-Z0-9]+:[^\}]*\})|(:[-_a-zA-Z0-9]+)|(\([^\)]+)', routeRegEx.pattern );
             for ( var placeholder in placeholders ) {
-                if ( left( placeholder, 1 ) == ':') {
+                var placeholderFirstChar = left( placeholder, 1 );
+                if ( placeholderFirstChar == ':') {
                     routeRegEx.pattern = replace( routeRegEx.pattern, placeholder, '([^/]*)' );
                     routeRegEx.target = replace( routeRegEx.target, placeholder, chr(92) & n );
+                }
+                else if ( placeholderFirstChar == '{') {
+                    var findPlaceholderSpecificRegex = refind("\{([^:]*):([^\}]*)\}", placeholder, 1, true);
+                    var placeholderSpecificRegexFound = arrayLen(findPlaceholderSpecificRegex.pos) gte 3;
+                    if( placeholderSpecificRegexFound ){
+                        var placeholderName = mid( placeholder, findPlaceholderSpecificRegex.pos[2], findPlaceholderSpecificRegex.len[2] );
+                        var placeholderSpecificRegex = mid( placeholder, findPlaceholderSpecificRegex.pos[3], findPlaceholderSpecificRegex.len[3] );
+                        routeRegEx.pattern = replace( routeRegEx.pattern, placeholder, "(#placeholderSpecificRegex#)" );
+                        routeRegEx.target = replace( routeRegEx.target, ":" & placeholderName, chr(92) & n );
+                    }
                 }
                 ++n;
             }
@@ -1767,7 +1809,7 @@ component {
         structAppend( routeMatch, regExCache[ cacheKey ] );
         if ( !len( path ) || right( path, 1) != '/' ) path &= '/';
         var matched = len( routeMatch.method ) ? ( '$' & httpMethod == routeMatch.method ) : true;
-        if ( matched && reFind( routeMatch.pattern, path ) ) {
+        if ( matched && routeRegexFind( routeMatch.pattern, path ) ) {
             routeMatch.matched = true;
             routeMatch.route = route;
             routeMatch.path = path;
@@ -1775,8 +1817,16 @@ component {
         return routeMatch;
     }
 
+    private numeric function routeRegexFind( string pattern, string path ) {
+        if ( variables.framework.routesCaseSensitive ) {
+            return reFind( pattern, path );
+        } else {
+            return REFindNoCase( pattern, path );
+        }
+    }
+
     private array function getResourceRoutes( any resourcesToRoute, string subsystem = '', string pathRoot = '', string targetAppend = '' ) {
-        var resourceCache = isFrameworkInitialized() ? application[ variables.framework.applicationKey ].cache.routes.resources : { };
+        var resourceCache = isFrameworkInitialized() ? getFw1App().cache.routes.resources : { };
         var cacheKey = hash( serializeJSON( resourcesToRoute ) );
         if ( !structKeyExists( resourceCache, cacheKey ) ) {
             // get passed in resourcesToRoute (string,array,struct) to match following struct
@@ -1813,7 +1863,7 @@ component {
                         var target = '/#subsystemResourceTarget#/#routeTemplate.method#';
                         if ( structKeyExists( routeTemplate, 'includeId' ) && routeTemplate.includeId ) target &= '/id/:id';
                         if ( structKeyExists( routeTemplate, 'targetSuffix' ) ) target &= routeTemplate.targetSuffix;
-                        target &= targetAppend; 
+                        target &= targetAppend;
                         routePack[ route ] = target;
                     }
                     arrayAppend( routes, routePack );
@@ -1847,6 +1897,24 @@ component {
             contentType = 'application/json; charset=utf-8';
             out = serializeJSON( data );
             break;
+        case 'jsonp':
+            contentType = 'application/javascript; charset=utf-8';
+            if ( !len(request._fw1.renderData.jsonpCallback) ){
+                throw( type = 'FW1.jsonpCallbackRequired',
+                       message = 'Callback was not defined',
+                       detail = 'renderData() called with jsonp type requires a jsonpCallback' );
+            }
+            out = request._fw1.renderData.jsonpCallback & "(" & serializeJSON( data ) & ");";
+            break;
+        case 'rawjson':
+            contentType = 'application/json; charset=utf-8';
+            out = data;
+            break;
+        case 'html':
+            contentType = 'text/html; charset=utf-8';
+            out = data;
+            structDelete( request._fw1, 'renderData' );
+            break;
         case 'xml':
             contentType = 'text/xml; charset=utf-8';
             if ( isXML( data ) ) {
@@ -1869,19 +1937,19 @@ component {
             break;
         default:
             throw( type = 'FW1.UnsupportedRenderType',
-                   message = 'Only JSON, XML, and TEXT are supported',
+                   message = 'Only HTML, JSON, JSONP, RAWJSON, XML, and TEXT are supported',
                    detail = 'renderData() called with unknown type: ' & type );
             break;
         }
+        // Clear any previous content then set status / content type:
+        getPageContext().getResponse().reset();
         getPageContext().getResponse().setStatus( statusCode );
-        // set the content type header portably:
         getPageContext().getResponse().setContentType( contentType );
         return out;
     }
 
     private struct function resolveBaseURL( string action = '.', string path = variables.magicBaseURL ) {
         if ( path == variables.magicBaseURL ) path = getBaseURL();
-        var omitIndex = false;
         if ( path == 'useSubsystemConfig' ) {
             var subsystemConfig = getSubsystemConfig( getSubsystem( action ) );
             if ( structKeyExists( subsystemConfig, 'baseURL' ) ) {
@@ -1890,20 +1958,22 @@ component {
                 path = getBaseURL();
             }
         }
+        var omitIndex = false;
+        var optionalOmit = false;
         if ( path == 'useCgiScriptName' ) {
-            path = request._fw1.cgiScriptName;
-            if ( variables.framework.SESOmitIndex ) {
-                path = getDirectoryFromPath( path );
-                omitIndex = true;
-            }
+            path = getContextRoot() & request._fw1.cgiScriptName;
+            optionalOmit = true;
         } else if ( path == 'useRequestURI' ) {
             path = getPageContext().getRequest().getRequestURI();
+            optionalOmit = true;
+        }
+        if ( optionalOmit ) {
             if ( variables.framework.SESOmitIndex ) {
                 path = getDirectoryFromPath( path );
                 omitIndex = true;
             }
         }
-        return { path = path, omitIndex = omitIndex };
+        return { path = replace( path, chr(92), '/', 'all' ), omitIndex = omitIndex };
     }
 
     private void function restoreFlashContext() {
@@ -1933,7 +2003,7 @@ component {
             // session scope not enabled, do nothing
         }
     }
-    
+
     private string function saveFlashContext( string keys ) {
         var curPreserveKey = getNextPreserveKeyAndPurgeOld();
         var preserveKeySessionKey = getPreserveKeySessionKey( curPreserveKey );
@@ -1966,7 +2036,7 @@ component {
         }
         request.failedMethod = method;
     }
-    
+
     private void function setProperty( struct cfc, string property, struct args ) {
         if ( listLen( property, '.' ) > 1 ) {
             var firstObjName = listFirst( property, '.' );
@@ -1983,7 +2053,7 @@ component {
             evaluate( 'cfc.set#property#( argumentCollection = args )' );
         }
     }
-    
+
     private void function setupApplicationWrapper() {
         /*
             since this can be called on a reload, we need to lock it to prevent other threads
@@ -1991,30 +2061,21 @@ component {
             data struct... if the application is already running, we don't blow away the factories
             because we don't want to affect other threads that may be running at this time
         */
-        var frameworkCache = { };
-        var framework = { };
-        var isReload = true;
-        frameworkCache.lastReload = now();
-        frameworkCache.fileExists = { };
-        frameworkCache.controllers = { };
-        frameworkCache.routes = { regex = { }, resources = { } };
-        lock name="fw1_#application.applicationName#_#variables.framework.applicationKey#_initialization" type="exclusive" timeout="10" {
-            if ( structKeyExists( application, variables.framework.applicationKey ) ) {
-                // application is already loaded, just reset the cache and trigger re-initialization of subsystems
-                application[variables.framework.applicationKey].cache = frameworkCache;
-                application[variables.framework.applicationKey].subsystems = { };
-                application[variables.framework.applicationKey].subsystemFactories = { };
-            } else {
-                // must be first request so we need to set up the entire structure
-                isReload = false;
-                framework.cache = frameworkCache;
-                framework.subsystems = { };
-                framework.subsystemFactories = { }; 
-                application[variables.framework.applicationKey] = framework;
-            }
-        }
+        if ( structKeyExists( request._fw1, "appWrapped" ) ) return;
+        request._fw1.appWrapped = true;
+        variables.fw1App = {
+            cache = {
+                lastReload = now(),
+                fileExists = { },
+                controllers = { },
+                routes = { regex = { }, resources = { } }
+            },
+            subsystems = { },
+            subsystemFactories = { }
+        };
 
         switch ( variables.framework.diEngine ) {
+        case "aop1":
         case "di1":
             var ioc = new "#variables.framework.diComponent#"(
                 variables.framework.diLocations,
@@ -2039,28 +2100,14 @@ component {
             setBeanFactory( ioc );
             break;
         }
-        
+
         // this will recreate the main bean factory on a reload:
         internalFrameworkTrace( 'setupApplication() called' );
         setupApplication();
-        
-        if ( isReload ) {
-            /*
-                it's possible that the cache got populated by another thread between resetting the cache above
-                and the factory getting recreated by the user code in setupApplication() so we flush the cache
-                again here to be safe / paranoid! 
-            */
-            frameworkCache = { };
-            frameworkCache.lastReload = now();
-            frameworkCache.fileExists = { };
-            frameworkCache.controllers = { };
-            frameworkCache.routes = { regex = { }, resources = { } };
-            application[variables.framework.applicationKey].cache = frameworkCache;
-            application[variables.framework.applicationKey].subsystems = { };
-        }
-    
+        application[variables.framework.applicationKey] = variables.fw1App;
+
     }
-    
+
     private void function setupFrameworkDefaults() {
 
         // default values for Application::variables.framework structure:
@@ -2073,8 +2120,9 @@ component {
             variables.framework.action = 'action';
         }
         if ( !structKeyExists(variables.framework, 'base') ) {
-            variables.framework.base = getDirectoryFromPath( variables.cgiScriptName );
-        } else if ( right( variables.framework.base, 1 ) != '/' ) {
+            variables.framework.base = getDirectoryFromPath( request._fw1.cgiScriptName );
+        }
+        if ( right( variables.framework.base, 1 ) != '/' ) {
             variables.framework.base = variables.framework.base & '/';
         }
         variables.framework.base = replace( variables.framework.base, chr(92), '/', 'all' );
@@ -2171,7 +2219,7 @@ component {
         } else {
             variables.framework.unhandledPaths = '/flex2gateway';
             variables.framework.unhandledPathRegex = '/flex2gateway';
-        }               
+        }
         if ( !structKeyExists( variables.framework, 'unhandledErrorCaught' ) ) {
             variables.framework.unhandledErrorCaught = false;
         }
@@ -2194,6 +2242,9 @@ component {
                 { method = 'destroy', httpMethods = [ '$DELETE' ], includeId = true }
             ];
         }
+        if ( !structKeyExists( variables.framework, 'routesCaseSensitive' ) ) {
+            variables.framework.routesCaseSensitive = true;
+        }
         if ( !structKeyExists( variables.framework, 'noLowerCase' ) ) {
             variables.framework.noLowerCase = false;
         }
@@ -2212,6 +2263,9 @@ component {
         if ( !structKeyExists( variables.framework, 'diComponent' ) ) {
             var diComponent = 'framework.ioc';
             switch ( variables.framework.diEngine ) {
+                case 'aop1':
+                    diComponent = 'framework.aop';
+                    break;
                 case 'wirebox':
                     diComponent = 'framework.WireBoxAdapter';
                     break;
@@ -2237,18 +2291,61 @@ component {
             var envs = variables.framework.environments;
             var tier = listFirst( env, '-' );
             if ( structKeyExists( envs, tier ) ) {
-                structAppend( variables.framework, envs[ tier ] );
+                mergeConfig( variables.framework, envs[ tier ] );
             }
-            if ( structKeyExists( envs, env ) ) {
-                structAppend( variables.framework, envs[ env ] );
+            if ( env != tier && structKeyExists( envs, env ) ) {
+                mergeConfig( variables.framework, envs[ env ] );
             }
         }
         return env;
     }
 
+    private void function mergeConfig( struct target, struct source ) {
+        // subsystems and diConfig should be merged
+        var subsystems = structKeyExists( target, 'subsystems' ) ? structCopy( target.subsystems ) : { };
+        var diConfig = structKeyExists( target, 'diConfig' ) ? structCopy( target.diConfig ) : { };
+        // and diConfig has constants, singulars as sub-structs
+        var constants = structKeyExists( diConfig, 'constants' ) ? structCopy( diConfig.constants ) : { };
+        var singulars = structKeyExists( diConfig, 'singulars' ) ? structCopy( diConfig.singulars ) : { };
+        // and diConfig has exclude, transients as sub-arrays
+        var exclude = [ ];
+        if ( structKeyExists( diConfig, 'exclude' ) )
+            for ( var ei in diConfig.exclude )
+                arrayAppend( exclude, ei );
+        var transients = [ ];
+        if ( structKeyExists( diConfig, 'transients' ) )
+            for ( var ti in diConfig.transients )
+                arrayAppend( transients, ti );
+        // subsystems might have its own diConfig but that's too complex to address right now
+
+        // merge top-level config destructively
+        structAppend( target, source );
+
+        // re-merge subsystems keys non-destructively
+        if ( structKeyExists( source, 'subsystems' ) ) {
+            structAppend( target.subsystems, subsystems, false );
+        }
+        // re-merge diConfig keys non-destructively and recurse in
+        if ( structKeyExists( source, 'diConfig' ) ) {
+            structAppend( target.diConfig, diConfig, false );
+            if ( structKeyExists( source.diConfig, 'constants' ) ) {
+                structAppend( target.diConfig.constants, constants, false );
+            }
+            if ( structKeyExists( source.diConfig, 'singulars' ) ) {
+                structAppend( target.diConfig.singulars, singulars, false );
+            }
+            if ( structKeyExists( source.diConfig, 'exclude' ) ) {
+                for ( ei in exclude ) arrayAppend( target.diConfig.exclude, ei );
+            }
+            if ( structKeyExists( source.diConfig, 'transients' ) ) {
+                for ( ti in transients ) arrayAppend( target.diConfig.transients, ti );
+            }
+        }
+    }
+
     private void function setupRequestDefaults() {
         if ( !request._fw1.requestDefaultsInitialized ) {
-            var pathInfo = variables.cgiPathInfo;
+            var pathInfo = request._fw1.cgiPathInfo;
             request.base = variables.framework.base;
             request.cfcbase = variables.framework.cfcbase;
 
@@ -2256,10 +2353,10 @@ component {
                 request.context = { };
             }
             // SES URLs by popular request :)
-            if ( len( pathInfo ) > len( variables.cgiScriptName ) && left( pathInfo, len( variables.cgiScriptName ) ) == variables.cgiScriptName ) {
+            if ( len( pathInfo ) > len( request._fw1.cgiScriptName ) && left( pathInfo, len( request._fw1.cgiScriptName ) ) == request._fw1.cgiScriptName ) {
                 // canonicalize for IIS:
-                pathInfo = right( pathInfo, len( pathInfo ) - len( variables.cgiScriptName ) );
-            } else if ( len( pathInfo ) > 0 && pathInfo == left( variables.cgiScriptName, len( pathInfo ) ) ) {
+                pathInfo = right( pathInfo, len( pathInfo ) - len( request._fw1.cgiScriptName ) );
+            } else if ( len( pathInfo ) > 0 && pathInfo == left( request._fw1.cgiScriptName, len( pathInfo ) ) ) {
                 // pathInfo is bogus so ignore it:
                 pathInfo = '';
             }
@@ -2271,7 +2368,7 @@ component {
                     internalFrameworkTrace( 'route matched - #routeMatch.route# - #pathInfo#' );
                     pathInfo = rereplace( routeMatch.path, routeMatch.pattern, routeMatch.target );
                     if ( routeMatch.redirect ) {
-                        location( pathInfo, false, routeMatch.statusCode ); 
+                        location( pathInfo, false, routeMatch.statusCode );
                     } else {
                         request._fw1.route = routeMatch.route;
                     }
@@ -2331,7 +2428,7 @@ component {
         request.subsystembase = request.base & getSubsystemDirPrefix( request.subsystem );
         request.section = getSection( request.action );
         request.item = getItem( request.action );
-        
+
         if ( runSetup ) {
             if ( usingSubsystems() ) {
                 controller( variables.magicApplicationSubsystem & variables.framework.subsystemDelimiter &
@@ -2361,28 +2458,38 @@ component {
         if ( !usingSubsystems() ) return;
         lock name="fw1_#application.applicationName#_#variables.framework.applicationKey#_subsysteminit_#subsystem#" type="exclusive" timeout="30" {
             if ( !isSubsystemInitialized( subsystem ) ) {
-                application[ variables.framework.applicationKey ].subsystems[ subsystem ] = now();
+                getFw1App().subsystems[ subsystem ] = now();
                 // Application.cfc does not get a subsystem bean factory!
-                if ( subsystem != variables.magicApplicationSubsystem &&
-                     ( variables.framework.diEngine == "di1" ) ) {
-                    // we can only reliably automate D/I engine setup for DI/1
-                    var locations = listToArray( variables.framework.diLocations );
-                    var subLocations = "";
-                    for ( var loc in locations ) {
-                        var relLoc = trim( loc );
-                        // make a relative location:
-                        if ( len( relLoc ) > 2 && left( relLoc, 2 ) == "./" ) {
-                            relLoc = right( relLoc, len( relLoc ) - 2 );
-                        } else if ( len( relLoc ) > 1 && left( relLoc, 1 ) == "/" ) {
-                            relLoc = right( relLoc, len( relLoc ) - 1 );
+                if ( subsystem != variables.magicApplicationSubsystem ) {
+                    var subsystemConfig = getSubsystemConfig( subsystem );
+                    var diEngine = structKeyExists( subsystemConfig, 'diEngine' ) ? subsystemConfig.diEngine : variables.framework.diEngine;
+                    if ( diEngine == "di1" || diEngine == "aop1" ) {
+                        // we can only reliably automate D/I engine setup for DI/1 / AOP/1
+                        var diLocations = structKeyExists( subsystemConfig, 'diLocations' ) ? subsystemConfig.diLocations : variables.framework.diLocations;
+                        var locations = listToArray( diLocations );
+                        var subLocations = "";
+                        for ( var loc in locations ) {
+                            var relLoc = trim( loc );
+                            // make a relative location:
+                            if ( len( relLoc ) > 2 && left( relLoc, 2 ) == "./" ) {
+                                relLoc = right( relLoc, len( relLoc ) - 2 );
+                            } else if ( len( relLoc ) > 1 && left( relLoc, 1 ) == "/" ) {
+                                relLoc = right( relLoc, len( relLoc ) - 1 );
+                            }
+                            subLocations = listAppend( subLocations, variables.framework.base & subsystem & "/" & relLoc );
                         }
-                        subLocations = listAppend( subLocations, variables.framework.base & "/" & subsystem & "/" & relLoc );
+                        var diComponent = structKeyExists( subsystemConfig, 'diComponent' ) ? subsystemConfig : variables.framework.diComponent;
+                        var ioc = new "#diComponent#"(
+                            subLocations,
+                            ( structKeyExists( subsystemConfig, 'diConfig' ) ?
+                              subsystemConfig.diConfig :
+                              variables.framework.diConfig )
+                        );
+                        ioc.setParent( getDefaultBeanFactory() );
+                        setSubsystemBeanFactory( subsystem, ioc );
                     }
-                    var ioc = new "#variables.framework.diComponent#"( subLocations );
-                    ioc.setParent( getDefaultBeanFactory() );
-                    setSubsystemBeanFactory( subsystem, ioc );
                 }
-        
+
                 internalFrameworkTrace( 'setupSubsystem() called', subsystem );
                 setupSubsystem( subsystem );
             }
@@ -2406,5 +2513,5 @@ component {
         raiseException( type='FW1.viewNotFound', message="Unable to find a view for '#request.action#' action.",
                 detail="'#request.missingView#' does not exist." );
     }
-    
+
 }

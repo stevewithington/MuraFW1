@@ -151,7 +151,7 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 		request.context.pluginConfig = application[variables.framework.applicationKey].pluginConfig;
 		request.context.action = request.context[variables.framework.action];
 	}
-	
+
 	public void function setupView() {
 		var httpRequestData = GetHTTPRequestData();
 		if ( 
@@ -175,6 +175,14 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 			WriteOutput(SerializeJSON(request.context));
 			abort;
 		}
+	}
+
+	public void function setupSession() {
+		include '../../config/appcfc/onSessionStart_include.cfm';
+	}
+
+	public void function onSessionEnd() {
+		include '../../config/appcfc/onSessionEnd_include.cfm';
 	}
 
 	public string function buildURL(required string action, string path='#resolvePath()#', any queryString='') {
@@ -228,13 +236,6 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 	public any function isFrameworkInitialized() {
 		return super.isFrameworkInitialized() && StructKeyExists(application[variables.framework.applicationKey], 'cache');
 	}
-
-	// ========================== Session State Handlers Passthrough To Mura ==========
-	public any function setupSession() {
-		var local = structNew();
-		include '../../config/appcfc/onSessionStart_include.cfm';
-	}
-	include '../../config/appcfc/onSessionEnd_method.cfm';
 	
 	// ========================== Errors & Missing Views ==========================
 
@@ -301,6 +302,7 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 			}
 			request._fw1 = {
 				cgiScriptName = CGI.SCRIPT_NAME
+				, cgiPathInfo = CGI.PATH_INFO
 				, cgiRequestMethod = CGI.REQUEST_METHOD
 				, controllers = []
 				, requestDefaultsInitialized = false
