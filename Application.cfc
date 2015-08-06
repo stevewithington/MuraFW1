@@ -229,6 +229,12 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 		return super.isFrameworkInitialized() && StructKeyExists(application[variables.framework.applicationKey], 'cache');
 	}
 
+	// ========================== Session State Handlers Passthrough To Mura ==========
+	public any function setupSession() {
+		var local = structNew();
+		include '../../config/appcfc/onSessionStart_include.cfm';
+	}
+	include '../../config/appcfc/onSessionEnd_method.cfm';
 	
 	// ========================== Errors & Missing Views ==========================
 
