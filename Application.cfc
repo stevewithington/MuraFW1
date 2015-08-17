@@ -94,10 +94,7 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 		}
 
 		lock scope='application' type='exclusive' timeout=20 {
-			if ( !StructKeyExists(application, variables.framework.applicationKey)  ){
-				application[variables.framework.applicationKey] = {};
-			}
-			application[variables.framework.applicationKey].pluginConfig = application.pluginManager.getConfig(ID=variables.framework.applicationKey);
+			getFw1App().pluginConfig = application.pluginManager.getConfig(ID=variables.framework.applicationKey);
 		};
 
 		// Bean Factory (uses DI/1)
@@ -147,8 +144,8 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 			request.context.$ = StructKeyExists(request, 'muraScope') ? request.muraScope : application.serviceFactory.getBean('muraScope').init(session.siteid);
 		}
 
-		request.context.pc = application[variables.framework.applicationKey].pluginConfig;
-		request.context.pluginConfig = application[variables.framework.applicationKey].pluginConfig;
+		request.context.pc = getFw1App().pluginConfig;
+		request.context.pluginConfig = getFw1App().pluginConfig;
 		request.context.action = request.context[variables.framework.action];
 	}
 
@@ -234,7 +231,7 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 	}
 
 	public any function isFrameworkInitialized() {
-		return super.isFrameworkInitialized() && StructKeyExists(application[variables.framework.applicationKey], 'cache');
+		return super.isFrameworkInitialized() && StructKeyExists(getFw1App(), 'cache');
 	}
 	
 	// ========================== Errors & Missing Views ==========================
@@ -274,7 +271,7 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 			return !isAdminRequest() || (StructKeyExists(session, 'mura') && ListFindNoCase(session.mura.memberships,'S2')) ? true :
 					!StructKeyExists(session, 'mura') 
 					|| !StructKeyExists(session, 'siteid') 
-					|| !application.permUtility.getModulePerm(application[variables.framework.applicationKey].pluginConfig.getModuleID(), session.siteid) 
+					|| !application.permUtility.getModulePerm(getFw1App().pluginConfig.getModuleID(), session.siteid) 
 						? goToLogin() : true;
 		}
 
