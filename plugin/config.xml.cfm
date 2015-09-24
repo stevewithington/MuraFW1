@@ -149,32 +149,11 @@ http://www.apache.org/licenses/LICENSE-2.0
 		-->
 		<displayobjects location="global">
 
-			<!-- An uber simple display object, has nothing to do with FW/1 -->
+			<!-- MyApp is a FW/1 sub-application -->
 			<displayobject 
-					name="MuraFW1 Simple Display Object" 
-					displayobjectfile="includes/display_objects/simple.cfm" />
-
-			<!-- App1 is a FW/1 sub-application -->
-			<displayobject 
-					name="MuraFW1 App1" 
+					name="MuraFW1 MyApp" 
 					component="includes.displayObjects"
-					displaymethod="dspMuraFW1App1" 
-					persist="false" />
-
-			<!-- App2 is a FW/1 sub-application -->
-			<displayobject 
-					name="MuraFW1 App2" 
-					component="includes.displayObjects" 
-					displaymethod="dspMuraFW1App2" 
-					persist="false" />
-
-			<!-- App3 is a FW/1 sub-application -->
-			<!-- Configurable Display Object Example -->
-			<displayobject name="MuraFW1 App3"
-					component="includes.displayObjects"  
-					displaymethod="dspConfiguredMuraFW1App3" 
-					configuratorJS="includes/configurators/app3/configurator.js"
-					configuratorInit="initApp3Configurator"
+					displaymethod="dspMyApp" 
 					persist="false" />
 
 		</displayobjects>

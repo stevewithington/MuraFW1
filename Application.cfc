@@ -99,7 +99,7 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 
 		// Bean Factory (uses DI/1)
 		// Be sure to pass in your comma-separated list of folders to scan for CFCs
-		local.beanFactory = new includes.framework.ioc('/#variables.framework.package#/app2/model,/#variables.framework.package#/app3/model');
+		local.beanFactory = new includes.framework.ioc('/#variables.framework.package#/myapp/model');
 
 		local.beanFactory.addBean('fw', this);
 
@@ -252,19 +252,6 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 				};
 			}
 			abort;
-		}
-
-		public any function onMissingView(any rc) {
-			rc.errors = [];
-			rc.isMissingView = true;
-			// forward to appropriate error screen
-			if ( isFrontEndRequest() ) {
-				ArrayAppend(rc.errors, "The page you're looking for doesn't exist.");
-				redirect(action='app1:main.error', preserve='errors,isMissingView');
-			} else {
-				ArrayAppend(rc.errors, "The page you're looking for <strong>#rc.action#</strong> doesn't exist.");
-				redirect(action='admin:main', preserve='errors,isMissingView');
-			}
 		}
 
 	// ========================== Helper Methods ==================================

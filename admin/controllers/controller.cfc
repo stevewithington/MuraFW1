@@ -25,14 +25,6 @@ component persistent="false" accessors="true" output="false" extends="mura.cfobj
 			set$(rc.$);
 		}
 
-		// easy access to site attributes
-		// rc.settingsManager = rc.$.getBean('settingsManager');
-		// rc.siteBean = rc.settingsManager.getSite(rc.$.siteConfig('siteid'));
-		// rc.siteName = rc.siteBean.getSite();
-		// rc.rsAllSites = rc.settingsManager.getList();
-		// rc.rsSites = rc.pc.getAssignedSites();
-		// rc.listSites = ValueList(rc.rsSites.siteid);
-
 		if ( rc.isFrontEndRequest ) {
 			location(url='#rc.$.globalConfig('context')#/', addtoken=false);
 		}

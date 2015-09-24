@@ -46,21 +46,7 @@ http://www.apache.org/licenses/LICENSE-2.0
 
 						<ul class="nav">
 							<li class="<cfif rc.action contains 'admin:main'>active</cfif>">
-								<a href="##" class="dropdown-toggle" data-toggle="dropdown">Main <b class="caret"></b></a>
-								<ul class="dropdown-menu">
-									<li class="<cfif rc.action eq 'admin:main.default'>active</cfif>">
-										<a href="#buildURL('admin:main')#"><i class="icon-home"></i> Home</a>
-									</li>
-									<li class="<cfif rc.action contains 'admin:main.another'>active</cfif>">
-										<a href="#buildURL('admin:main.another')#"><i class="icon-leaf"></i> Another Page</a>
-									</li>
-								</ul>
-							</li>
-							<li class="<cfif rc.action contains 'admin:license'>active</cfif>">
-								<a href="#buildURL('admin:license')#"><i class="icon-book"></i> License</a>
-							</li>
-							<li class="<cfif rc.action contains 'admin:instructions'>active</cfif>">
-								<a href="#buildURL('admin:instructions')#"><i class="icon-info-sign"></i> Instructions</a>
+								<a href="#buildURL('admin:main')#">Main</a>
 							</li>
 						</ul><!--- /.nav --->
 
@@ -70,33 +56,10 @@ http://www.apache.org/licenses/LICENSE-2.0
 
 			<!--- MAIN CONTENT AREA --->
 			<div class="row-fluid">
-				<cfif rc.action contains 'admin:main'>
-
-					<!--- SUB-NAV --->
-					<div class="span3">
-						<ul class="nav nav-list murafw1-sidenav">
-							<li class="<cfif rc.action eq 'admin:main.default'>active</cfif>">
-								<a href="#buildURL('admin:main')#"><i class="icon-home"></i> Home</a>
-							</li>
-							<li class="<cfif rc.action eq 'admin:main.another'>active</cfif>">
-								<a href="#buildURL('admin:main.another')#"><i class="icon-leaf"></i> Another Page</a>
-							</li>
-						</ul>
-					</div>
-
-					<!--- BODY --->
-					<div class="span9">
-						#body#
-					</div>
-
-				<cfelse>
-
 					<!--- BODY --->
 					<div class="span12">
 						#body#
 					</div>
-
-				</cfif>
 			</div><!--- /.row --->
 		</div><!--- /.container-murafw1 --->
 	</cfoutput>
