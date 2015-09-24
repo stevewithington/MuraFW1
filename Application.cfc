@@ -224,7 +224,9 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 
 		if ( !useIndex && indexPos ) {
 			ArrayDeleteAt(arrURI, indexPos);
-			uri = '/' & ArrayToList(arrURI, '/') & '/';
+			uri = ArrayLen(arrURI)
+				? '/' & ArrayToList(arrURI, '/') & '/'
+				: '/';
 		}
 
 		return uri;
