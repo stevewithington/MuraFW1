@@ -1,8 +1,8 @@
 /**
-* 
+*
 * This file is part of MuraFW1
 *
-* Copyright 2010-2015 Stephen J. Withington, Jr.
+* Copyright 2010-2016 Stephen J. Withington, Jr.
 * Licensed under the Apache License, Version v2.0
 * http://www.apache.org/licenses/LICENSE-2.0
 *
@@ -16,7 +16,7 @@ component output=false {
 	include '#repeatString('../',depth)#config/appcfc/onApplicationStart_method.cfm';
 
 	public any function onRequestStart() {
-		// NOTE: If you need to allow direct access to a file located 
+		// NOTE: If you need to allow direct access to a file located
 		// under your site/theme (e.g., a remote web service, etc.),
 		// just add the file name to the list of files below.
 		var safeFilesList = 'configurator.cfm';

@@ -2,7 +2,7 @@
 
 This file is part of MuraFW1
 
-Copyright 2010-2015 Stephen J. Withington, Jr.
+Copyright 2010-2016 Stephen J. Withington, Jr.
 Licensed under the Apache License, Version v2.0
 http://www.apache.org/licenses/LICENSE-2.0
 
@@ -11,7 +11,7 @@ http://www.apache.org/licenses/LICENSE-2.0
 
 */
 component persistent="false" accessors="true" output="false" extends="mura.cfobject" {
-		
+
 		property name="fw" type="any" default="";
 		//property name="beanFactory"; // use if you need access to the beanFactory
 

@@ -3,7 +3,7 @@
 
 This file is part of MuraFW1
 
-Copyright 2010-2015 Stephen J. Withington, Jr.
+Copyright 2010-2016 Stephen J. Withington, Jr.
 Licensed under the Apache License, Version v2.0
 http://www.apache.org/licenses/LICENSE-2.0
 
@@ -15,7 +15,7 @@ http://www.apache.org/licenses/LICENSE-2.0
 	<ul>
 		<li>Ut non sem metus, ac faucibus massa. </li>
 		<li>Donec interdum dictum tortor, quis viverra nulla pretium vitae. </li>
-		<li>Morbi a semper mi. Proin vel est eros, eu posuere augue. 
+		<li>Morbi a semper mi. Proin vel est eros, eu posuere augue.
 			<ul>
 				<li>Suspendisse ullamcorper augue eu erat suscipit lacinia vehicula tellus bibendum. </li>
 				<li>Duis vitae orci quam, aliquet sagittis turpis. </li>

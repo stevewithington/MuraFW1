@@ -3,7 +3,7 @@
 
 This file is part of MuraFW1
 
-Copyright 2010-2015 Stephen J. Withington, Jr.
+Copyright 2010-2016 Stephen J. Withington, Jr.
 Licensed under the Apache License, Version v2.0
 http://www.apache.org/licenses/LICENSE-2.0
 
@@ -37,7 +37,7 @@ http://www.apache.org/licenses/LICENSE-2.0
 				<tr>
 					<td colspan="3">
 						<div class="alert alert-error">
-							No registrations exist yet. Would you like to 
+							No registrations exist yet. Would you like to
 							<a href="#buildURL(action='app3:main.form')#">add one now</a>?
 						</div>
 					</td>
