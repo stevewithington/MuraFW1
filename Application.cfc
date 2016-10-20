@@ -172,10 +172,10 @@ component persistent="false" accessors="true" output="false" extends="framework.
 		include '../../config/appcfc/onSessionEnd_include.cfm';
 	}
 
-	public string function buildURL(required string action, string path='#resolvePath()#', any queryString='') {
+	// path=#resolvePath()#
+	public string function buildURL(required string action, string path='./', any queryString='') {
 		var regx = '&?compactDisplay=[true|false]';
 		arguments.action = getFullyQualifiedAction(arguments.action);
-
 
 		if (
 			StructKeyExists(request.context, 'compactDisplay')
@@ -198,36 +198,18 @@ component persistent="false" accessors="true" output="false" extends="framework.
 		return super.buildURL(argumentCollection=arguments);
 	}
 
-	public string function redirect(required string action, string preserve='none', string append='none', string path='#resolvePath()#', string queryString='', string statusCode='302') {
+	public string function redirect(required string action, string preserve='none', string append='none', string path='./', string queryString='', string statusCode='302') {
+		if ( request.muraAPIRequest ) {
+			request.muraJSONRedirectURL = buildURL(argumentCollection=arguments);
+			renderData('json','redirect complete','200');
+			return true;
+		}
+
 		return super.redirect(argumentCollection=arguments);
 	}
 
-	public any function resolvePath(string path='#variables.framework.baseURL#') {
-		// don't modify a submitted path
-		if ( arguments.path != variables.framework.baseURL ) {
-			return arguments.path;
-		}
-
-		var uri =  getPageContext().getRequest().getRequestURI();
-
-		// if displayed as a display object, we could be accessing via the JSON API
-		if ( ListFindNoCase(uri, '_api', '/') ) {
-			return './';
-		}
-
-		var arrURI = ListToArray(uri, '/');
-		var indexPos = ArrayFind(arrURI, 'index.cfm');
-		var useIndex = YesNoFormat(application.configBean.getValue('indexfileinurls'));
-		var useSiteID = YesNoFormat(application.configBean.getValue('siteidinurls'));
-
-		if ( !useIndex && indexPos ) {
-			ArrayDeleteAt(arrURI, indexPos);
-			uri = ArrayLen(arrURI)
-				? '/' & ArrayToList(arrURI, '/') & '/'
-				: '/';
-		}
-
-		return uri;
+	public string function resolvePath() {
+		return './';
 	}
 
 	public any function isFrameworkInitialized() {
