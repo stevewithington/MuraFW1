@@ -50,7 +50,7 @@ http://www.apache.org/licenses/LICENSE-2.0
 						<a href="#buildURL(action='app3:main.form&id=#local.id#')#">#local.id#</a>
 					</td>
 					<td>
-						<a href="#buildURL(action='app3:main.form&id=#local.id#')#">#HTMLEditFormat(local.registration.getFName())# #HTMLEditFormat(local.registration.getLName())#</a>
+						<a href="#buildURL(action='app3:main.form&id=#local.id#')#">#esapiEncode('html', local.registration.getFName())# #esapiEncode('html', local.registration.getLName())#</a>
 					</td>
 					<td>
 						<a href="#buildURL(action='app3:main.delete&id=#local.id#')#">[ X ]</a>
@@ -69,12 +69,11 @@ http://www.apache.org/licenses/LICENSE-2.0
 	</cfif>
 
 	<!--- Configurator Settings : Displaying an example of how to retrieve the data --->
-	<cfif StructKeyExists(rc, 'params')>
+	<cfif StructKeyExists(rc, 'app3message')>
 		<div class="alert alert-success">
 			<a class="close" data-dismiss="alert" href="##">&times;</a>
 			<h4>Saved Data From Configurator</h4>
-			<cfdump var="#rc.params#" />
+			<cfdump var="#rc.app3message#" />
 		</div>
 	</cfif>
-
 </cfoutput>
