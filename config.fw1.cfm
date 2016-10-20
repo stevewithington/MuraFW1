@@ -33,8 +33,10 @@ http://www.apache.org/licenses/LICENSE-2.0
 	// dependency injection framework
 	variables.framework.diConfig = {};
 	variables.framework.diEngine = 'di1';
+	variables.framework.diOverrideAllowed = false;
 	variables.framework.diLocations = ['model', 'controllers', 'beans', 'services'];
 	variables.framework.diComponent = 'mura.bean.ioc';
+
 
 	// less commonly modified
 	variables.framework.defaultSection = 'main';

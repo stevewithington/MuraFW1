@@ -79,7 +79,7 @@ component persistent="false" accessors="true" output="false" extends="framework.
 		return local.response;
 	}
 
-	// exposed for use by eventHandler.cfc:onApplicationLoad()
+	// exposed for use by model.handlers.murafw1.cfc:onApplicationLoad()
 	public void function setupApplicationWrapper() {
 		lock scope='application' type='exclusive' timeout=20 {
 			super.setupApplicationWrapper();
@@ -96,18 +96,6 @@ component persistent="false" accessors="true" output="false" extends="framework.
 		lock scope='application' type='exclusive' timeout=20 {
 			getFw1App().pluginConfig = application.pluginManager.getConfig(ID=variables.framework.applicationKey);
 		};
-
-		// Bean Factory (uses DI/1)
-		// Be sure to pass in your comma-separated list of folders to scan for CFCs
-		// local.beanFactory = new mura.bean.ioc('/#variables.framework.package#/app2/model,/#variables.framework.package#/app3/model');
-		//
-		// local.beanFactory.addBean('fw', this);
-		//
-		// // optionally set Mura to be the parent beanFactory
-		// local.parentBeanFactory = application.serviceFactory;
-		// local.beanFactory.setParent(local.parentBeanFactory);
-		//
-		// setBeanFactory(local.beanFactory);
 	}
 
 	public void function setupRequest() {
