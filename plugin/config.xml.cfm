@@ -7,7 +7,7 @@ Licensed under the Apache License, Version v2.0
 http://www.apache.org/licenses/LICENSE-2.0
 
 --->
-<cfinclude template="../includes/fw1config.cfm" />
+<cfinclude template="../config.fw1.cfm" />
 <cfoutput>
 	<plugin>
 
@@ -134,7 +134,7 @@ http://www.apache.org/licenses/LICENSE-2.0
 			<!-- only need to register the eventHandler.cfc via onApplicationLoad() -->
 			<eventHandler
 					event="onApplicationLoad"
-					component="includes.eventHandler"
+					component="model.handlers.murafw1"
 					persist="false" />
 		</eventHandlers>
 
@@ -147,24 +147,20 @@ http://www.apache.org/licenses/LICENSE-2.0
 			for CFC-based objects determine whether they are cached or instantiated
 			on a per-request basis.
 		-->
-		<displayobjects location="global">
+		<!--- <displayobjects location="global">
 
-			<!-- App1 is a FW/1 sub-application -->
 			<displayobject
 					name="MuraFW1 App1"
 					component="includes.displayObjects"
 					displaymethod="dspMuraFW1App1"
 					persist="false" />
 
-			<!-- App2 is a FW/1 sub-application -->
 			<displayobject
 					name="MuraFW1 App2"
 					component="includes.displayObjects"
 					displaymethod="dspMuraFW1App2"
 					persist="false" />
 
-			<!-- App3 is a FW/1 sub-application -->
-			<!-- Configurable Display Object Example -->
 			<displayobject name="MuraFW1 App3"
 					component="includes.displayObjects"
 					displaymethod="dspConfiguredMuraFW1App3"
@@ -172,7 +168,7 @@ http://www.apache.org/licenses/LICENSE-2.0
 					configuratorInit="initApp3Configurator"
 					persist="false" />
 
-		</displayobjects>
+		</displayobjects> --->
 
 
 		<!--

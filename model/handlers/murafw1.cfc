@@ -10,12 +10,12 @@ http://www.apache.org/licenses/LICENSE-2.0
 component persistent="false" accessors="true" output="false" extends="mura.plugin.pluginGenericEventHandler" {
 
 	// framework variables
-	include 'fw1config.cfm';
+	include '../../config.fw1.cfm';
 
 	// ========================== Mura CMS Specific Methods ==============================
 	// Add any other Mura CMS Specific methods you need here.
 
-	public void function onApplicationLoad(required struct $) {
+	public void function onApplicationLoad(required struct m) {
 		// trigger FW/1 to reload
 		lock scope='application' type='exclusive' timeout=20 {
 			getApplication().setupApplicationWrapper(); // this ensures the appCache is cleared as well
@@ -23,15 +23,6 @@ component persistent="false" accessors="true" output="false" extends="mura.plugi
 
 		// register this file as a Mura eventHandler
 		variables.pluginConfig.addEventHandler(this);
-	}
-
-	public void function onSiteRequestStart(required struct $) {
-		// make the methods in displayObjects.cfc accessible via $.packageName.methodName()
-		arguments.$.setCustomMuraScopeKey(variables.framework.package, new displayObjects());
-	}
-
-	public any function onRenderStart(required struct $) {
-		arguments.$.loadShadowboxJS();
 	}
 
 	// ========================== Helper Methods ==============================

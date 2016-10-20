@@ -15,9 +15,9 @@ http://www.apache.org/licenses/LICENSE-2.0
 		on how to access these methods.
 
 */
-component persistent="false" accessors="true" output="false" extends="includes.framework.one" {
+component persistent="false" accessors="true" output="false" extends="framework.one" {
 
-	include 'includes/fw1config.cfm'; // framework variables
+	include 'config.fw1.cfm'; // framework variables
 	include '../../config/applicationSettings.cfm';
 	include '../../config/mappings.cfm';
 	include '../mappings.cfm';
@@ -99,15 +99,15 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 
 		// Bean Factory (uses DI/1)
 		// Be sure to pass in your comma-separated list of folders to scan for CFCs
-		local.beanFactory = new includes.framework.ioc('/#variables.framework.package#/app2/model,/#variables.framework.package#/app3/model');
-
-		local.beanFactory.addBean('fw', this);
-
-		// optionally set Mura to be the parent beanFactory
-		local.parentBeanFactory = application.serviceFactory;
-		local.beanFactory.setParent(local.parentBeanFactory);
-
-		setBeanFactory(local.beanFactory);
+		// local.beanFactory = new mura.bean.ioc('/#variables.framework.package#/app2/model,/#variables.framework.package#/app3/model');
+		//
+		// local.beanFactory.addBean('fw', this);
+		//
+		// // optionally set Mura to be the parent beanFactory
+		// local.parentBeanFactory = application.serviceFactory;
+		// local.beanFactory.setParent(local.parentBeanFactory);
+		//
+		// setBeanFactory(local.beanFactory);
 	}
 
 	public void function setupRequest() {
@@ -144,6 +144,10 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 			request.context.$ = StructKeyExists(request, 'muraScope') ? request.muraScope : application.serviceFactory.getBean('muraScope').init(session.siteid);
 		}
 
+		if ( !StructKeyExists(request.context, 'm') ) {
+			request.context.m = request.context.$;
+		}
+
 		request.context.pc = getFw1App().pluginConfig;
 		request.context.pluginConfig = getFw1App().pluginConfig;
 		request.context.action = request.context[variables.framework.action];
@@ -169,6 +173,7 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 		) {
 			StructDelete(request.context, 'fw');
 			StructDelete(request.context, '$');
+			StructDelete(request.context, 'm');
 			WriteOutput(SerializeJSON(request.context));
 			abort;
 		}
@@ -254,18 +259,18 @@ component persistent="false" accessors="true" output="false" extends="includes.f
 			abort;
 		}
 
-		public any function onMissingView(any rc) {
-			rc.errors = [];
-			rc.isMissingView = true;
-			// forward to appropriate error screen
-			if ( isFrontEndRequest() ) {
-				ArrayAppend(rc.errors, "The page you're looking for doesn't exist.");
-				redirect(action='app1:main.error', preserve='errors,isMissingView');
-			} else {
-				ArrayAppend(rc.errors, "The page you're looking for <strong>#rc.action#</strong> doesn't exist.");
-				redirect(action='admin:main', preserve='errors,isMissingView');
-			}
-		}
+		// public any function onMissingView(any rc) {
+		// 	rc.errors = [];
+		// 	rc.isMissingView = true;
+		// 	// forward to appropriate error screen
+		// 	if ( isFrontEndRequest() ) {
+		// 		ArrayAppend(rc.errors, "The page you're looking for doesn't exist.");
+		// 		redirect(action='app1:main.error', preserve='errors,isMissingView');
+		// 	} else {
+		// 		ArrayAppend(rc.errors, "The page you're looking for <strong>#rc.action#</strong> doesn't exist.");
+		// 		redirect(action='admin:main', preserve='errors,isMissingView');
+		// 	}
+		// }
 
 	// ========================== Helper Methods ==================================
 

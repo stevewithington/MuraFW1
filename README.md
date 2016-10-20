@@ -164,7 +164,7 @@ for more information.
 
 
 ## License
-Copyright 2010-2016 Stephen J. Withington, Jr.
+Copyright 2010-2016 Stephen J. Withington, Jr. (and others -- see individual files for additional copyright holders).
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this work except in compliance with the License. You may obtain a copy of the License in the LICENSE file, or at:
 

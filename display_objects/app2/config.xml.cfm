@@ -9,13 +9,4 @@
 *
 */
 </cfscript>
-<cfoutput>
-  #body#
-
-  <script>
-    Mura(function(m) { 
-      m.loader() 
-        .loadcss('#rc.m.globalConfig('context')#/plugins/MuraFW1/assets/css/murafw1.css') ;
-    });
-  </script>
-</cfoutput>
+<mura name="MuraFW1 App2" contenttypes="*" iconclass="mi-leaf"></mura>
