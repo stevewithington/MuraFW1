@@ -175,6 +175,8 @@ component persistent="false" accessors="true" output="false" extends="framework.
 	public string function buildURL(required string action, string path='#resolvePath()#', any queryString='') {
 		var regx = '&?compactDisplay=[true|false]';
 		arguments.action = getFullyQualifiedAction(arguments.action);
+
+
 		if (
 			StructKeyExists(request.context, 'compactDisplay')
 			&& IsBoolean(request.context.compactDisplay)
@@ -207,6 +209,12 @@ component persistent="false" accessors="true" output="false" extends="framework.
 		}
 
 		var uri =  getPageContext().getRequest().getRequestURI();
+
+		// if displayed as a display object, we could be accessing via the JSON API
+		if ( ListFindNoCase(uri, '_api', '/') ) {
+			return './';
+		}
+
 		var arrURI = ListToArray(uri, '/');
 		var indexPos = ArrayFind(arrURI, 'index.cfm');
 		var useIndex = YesNoFormat(application.configBean.getValue('indexfileinurls'));

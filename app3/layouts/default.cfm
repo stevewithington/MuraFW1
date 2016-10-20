@@ -15,10 +15,10 @@ http://www.apache.org/licenses/LICENSE-2.0
 		<div>
 			<ul class="nav nav-tabs" role="tablist">
 				<li<cfif rc.action eq 'app3:main.default'> class="active"</cfif>>
-					<a href="#buildURL('app3:main')#">Registrations</a>
+					<a href="#buildURL(action='app3:main', path='./')#">Registrations</a>
 				</li>
 				<li<cfif rc.action eq 'app3:main.form'> class="active"</cfif>>
-					<a href="#buildURL('app3:main.form')#">Add Registration</a>
+					<a href="#buildURL(action='app3:main.form', path='./')#">Add Registration</a>
 				</li>
 			</ul>
 		</div>
