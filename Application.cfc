@@ -11,9 +11,6 @@ http://www.apache.org/licenses/LICENSE-2.0
 		Defaults to 1 hour. The sessionCache will also expire
 		if the application has been reloaded.
 
-		See /includes/displayObjects.cfc && /includes/eventHandler.cfc
-		on how to access these methods.
-
 */
 component persistent="false" accessors="true" output="false" extends="framework.one" {
 
