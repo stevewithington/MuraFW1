@@ -73,7 +73,9 @@ http://www.apache.org/licenses/LICENSE-2.0
 		<div class="alert alert-success">
 			<a class="close" data-dismiss="alert" href="##">&times;</a>
 			<h4>Saved Data From Configurator</h4>
-			<cfdump var="#rc.app3message#" />
+			<cfdump var="#rc.app3message#" label="app3message" />
+			<cfdump var="#rc.configuredDTS#" label="configuredDTS" />
+			<cfdump var="#rc.configuredBy#" label="configuredBy" />
 		</div>
 	</cfif>
 </cfoutput>
