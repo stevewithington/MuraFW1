@@ -138,39 +138,6 @@ http://www.apache.org/licenses/LICENSE-2.0
 					persist="false" />
 		</eventHandlers>
 
-
-		<!--
-			Display Objects :
-			Allows developers to provide widgets that end users can apply to a
-			content node's display region(s) when editing a page. They'll be
-			listed under the Layout & Objects tab. The 'persist' attribute
-			for CFC-based objects determine whether they are cached or instantiated
-			on a per-request basis.
-		-->
-		<!--- <displayobjects location="global">
-
-			<displayobject
-					name="MuraFW1 App1"
-					component="includes.displayObjects"
-					displaymethod="dspMuraFW1App1"
-					persist="false" />
-
-			<displayobject
-					name="MuraFW1 App2"
-					component="includes.displayObjects"
-					displaymethod="dspMuraFW1App2"
-					persist="false" />
-
-			<displayobject name="MuraFW1 App3"
-					component="includes.displayObjects"
-					displaymethod="dspConfiguredMuraFW1App3"
-					configuratorJS="includes/configurators/app3/configurator.js"
-					configuratorInit="initApp3Configurator"
-					persist="false" />
-
-		</displayobjects> --->
-
-
 		<!--
 			Extensions :
 			Allows you to create custom Class Extensions of any type.
