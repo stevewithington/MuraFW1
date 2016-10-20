@@ -62,13 +62,13 @@ in order for Mura to pick up the changes.
 Next, here are some of the more important files to be aware of
 and a little bit about what they are.
 
-#### /includes/framework/one.cfc
+#### /framework/one.cfc
 This is the file that is typically known in FW/1 as
 **/framework/one.cfc** You should be able to update this
 with the latest and greatest version available. No modifications
 have been made to the file.
 
-#### /includes/fw1config.cfm
+#### /config.fw1.cfm
 This file contains `variables.framework` which is used by both
 FW/1 and Mura.
 
@@ -82,7 +82,7 @@ able to simply modify the `package` attribute in this file and the
 setting should populate `config.xml.cfm` when the plugin is deployed.
 
 Please also note, Mura CMS *also* uses [DI/1](https://github.com/framework-one/di1)
-to manage its depenency injection. This means that you **will** run
+to manage its dependency injection. This means that you **will** run
 into issues if you attempt to use any of the names used for its
 beans as your `pacakageName`. In other words, use something unique for
 your `packageName`.
@@ -118,33 +118,16 @@ one, then as you interact with it, all of them will respond with the
 same view. **You have been warned!**
 
 #### /Application.cfc
-This file extends /includes/fw1.cfc. Here is where you'll be able
+This file extends /framework/one.cfc. Here is where you'll be able
 to edit common FW/1 methods such as setupApplication(), setupSession(),
 setupRequest(), setupSubsystem() if needed. The hope is that you
 shouldn't have to modify it very much for simple applications.
 
-#### /includes/eventHandler.cfc
+#### /model/handlers/murafw1.cfc
 This file extends `mura.plugin.pluginGenericEventHandler`. Here is
 where you can modify/add commonly used Mura 'events' such as
 onApplicationLoad(), onSiteRequestStart(), onRenderStart(), etc.
 
-#### /includes/displayObjects.cfc
-This file extends `mura.plugin.pluginGenericEventHandler`. You
-should be able to add any display methods here. Just be sure sure
-to map them into your `config.xml.cfm` file so they'll show up for
-content managers.
-
-#### /includes/framework/ioc.cfc
-This file is [DI/1 - Inject One](https://github.com/framework-one/di1) -
-a very lightweight, convention over configuration, dependency injection
-(inversion of control) framework. By default, this plugin uses DI/1 as
-its Bean Factory. If you wish to use something else (e.g., ColdSpring, Mura, etc.),
-then simply edit the `Application.cfc:setupApplication()` method, and
-the `variables.framework.diEngine` setting in the `/includes/fw1config.cfm`
-file.
-
-Please refer to the [DI/1 Project](https://github.com/framework-one/di1)
-for more information.
 
 
 ## Additional Resources
