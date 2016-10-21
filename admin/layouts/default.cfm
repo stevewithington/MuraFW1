@@ -35,16 +35,19 @@ http://www.apache.org/licenses/LICENSE-2.0
 </cfsilent>
 <cfsavecontent variable="local.newBody">
 	<cfoutput>
-		<div class="container-murafw1">
+		<div class="container-murafw1 container">
 
 			<!--- PRIMARY NAV --->
-			<div class="row-fluid">
-				<div class="navbar navbar-murafw1">
-					<div class="navbar-inner">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="navbar navbar-murafw1">
+						<div class="navbar-header">
+							<a class="plugin-brand" href="#buildURL('admin:main')#">
+								#esapiEncode('html', rc.pc.getPackage())#
+							</a>
+						</div><!--- /.navbar-header --->
 
-						<a class="plugin-brand" href="#buildURL('admin:main')#">#HTMLEditFormat(rc.pc.getPackage())#</a>
-
-						<ul class="nav">
+						<ul class="nav navbar-nav">
 							<li class="<cfif rc.action contains 'admin:main'>active</cfif>">
 								<a href="##" class="dropdown-toggle" data-toggle="dropdown">Main <b class="caret"></b></a>
 								<ul class="dropdown-menu">
@@ -63,18 +66,17 @@ http://www.apache.org/licenses/LICENSE-2.0
 								<a href="#buildURL('admin:instructions')#"><i class="icon-info-sign"></i> Instructions</a>
 							</li>
 						</ul><!--- /.nav --->
-
-					</div><!--- /.navbar-inner --->
-				</div><!--- /.navbar --->
-			</div><!--- /.row --->
+					</div><!--- /.navbar --->
+				</div><!--- /.col-md-12 --->
+			</div><!--- .row-fluid --->
 
 			<!--- MAIN CONTENT AREA --->
-			<div class="row-fluid">
+			<div class="row">
 				<cfif rc.action contains 'admin:main'>
 
 					<!--- SUB-NAV --->
-					<div class="span3">
-						<ul class="nav nav-list murafw1-sidenav">
+					<div class="col-md-3">
+						<ul class="nav nav-stacked murafw1-sidenav">
 							<li class="<cfif rc.action eq 'admin:main.default'>active</cfif>">
 								<a href="#buildURL('admin:main')#"><i class="icon-home"></i> Home</a>
 							</li>
@@ -85,14 +87,14 @@ http://www.apache.org/licenses/LICENSE-2.0
 					</div>
 
 					<!--- BODY --->
-					<div class="span9">
+					<div class="col-md-9">
 						#body#
 					</div>
 
 				<cfelse>
 
 					<!--- BODY --->
-					<div class="span12">
+					<div class="col-md-12">
 						#body#
 					</div>
 

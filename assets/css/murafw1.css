@@ -10,13 +10,13 @@ http://www.apache.org/licenses/LICENSE-2.0
 
 /* MuraFW1 Brand
 -------------------------------------------------- */
-.container-murafw1 .navbar .plugin-brand {
-	padding: 5px;
-	margin-left: 20px;
+.container-murafw1 .navbar .navbar-header {
+	padding: 0.5em;
+	margin: 0 1em;
 	float: right;
 	font-weight: bold;
 	font-size: 20px;
-	color: #000;
+	color: #333;
 	text-shadow: 0 1px 0 rgba(255,255,255,.1), 0 0 30px rgba(255,255,255,.125);
 	-webkit-transition: all .2s linear;
 	-moz-transition: all .2s linear;
@@ -25,53 +25,41 @@ http://www.apache.org/licenses/LICENSE-2.0
 
 /* MuraFW1 Nav
 -------------------------------------------------- */
-.container-murafw1 .navbar-murafw1, .mura #cPlugins .container-murafw1 .navbar-murafw1 {
-	margin-bottom: 1.5em;
+.container-murafw1 .navbar-header a {
+	color: #333;
 }
-.container-murafw1 .navbar .plugin-brand:hover  {
+.container-murafw1 .navbar-header .plugin-brand:hover  {
 	text-decoration: none;
 	text-shadow: 0 1px 0 rgba(255,255,255,.1), 0 0 30px rgba(255,255,255,.4);
-	color:#fff;
-}
-.container-murafw1 .navbar .nav > li > a, .mura #cPlugins .container-murafw1 .navbar .nav > li > a {
-	padding: 6px 15px;
-}
-.container-murafw1 .navbar .nav > li > .dropdown-menu a, .mura #cPlugins .container-murafw1 .navbar .nav > li > .dropdown-menu a {
-	text-shadow: 0 -1px 0 rgba(0,0,0,.2);
+	color: #999;
 }
 
-.mfw1-example {
-	position: relative;
-	border-color: #ddd;
-	border-width: 1px;
-	border-style: solid;
-	border-radius: 4px 4px 0 0;
-	box-shadow: none;
-	padding: 1em;
-	margin: 0 0 2em 0;
+.container-murafw1 .navbar li.active a {
+	color: #333;
 }
 
-.mfw1-admin-links {
-	margin: 1em 0;
-	padding: 1em 0 0 0;
-	border-top: 1px solid #ddd;
+.container-murafw1 .nav-stacked li.active a {
+	background: #69C;
+	color: #fff;
 }
 
-/* MuraFW1 Sidenav
--------------------------------------------------- */
-.container-murafw1 .nav.nav-list.murafw1-sidenav a {
-	border: 1px solid #e5e5e5;
-	margin: 0 -15px -1px;
+.container-murafw1 ul:not(.nav), .container-murafw1 ol:not(.nav) {
+	margin: 1em;
+}
+.container-murafw1 ul:not(.nav) li, .container-murafw1 ol:not(.nav) li {
+	margin: 0.5em;
+}
+.content .container-murafw1 p {
+	margin-bottom: 1em !important;
 }
 
-/* Desktop
-------------------------- */
-@media (max-width: 980px) {
-	/* Unfloat brand */
-	.container-murafw1 .navbar-fixed-top .plugin-brand, .mura #cPlugins .container-murafw1 .navbar-fixed-top .plugin-brand {
-		float: left;
+
+@media screen and (max-width: 780px) {
+	.container-murafw1 .navbar .navbar-header {
+		float: none;
+		clear: both;
+		dislay: block;
+		padding: 0 0 1em 0;
 		margin-left: 0;
-		padding-left: 10px;
-		padding-right: 10px;
 	}
 }
