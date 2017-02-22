@@ -42,7 +42,6 @@
   <cfelse>
     #application.pluginManager.renderAdminTemplate(
   		body=body
-  		,pageTitle=rc.pc.getName()
   		,compactDisplay=rc.compactDisplay
   	)#
   </cfif>
