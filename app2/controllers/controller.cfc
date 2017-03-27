@@ -20,10 +20,10 @@ component persistent="false" accessors="true" output="false" extends="mura.cfobj
 			setFW(arguments.fw);
 		}
 
-		public any function before(required struct rc) {
-			if ( !getFW().isFrontEndRequest() ) {
-				getFW().redirect(action='admin:main.default');
-			};
-		}
+		// public any function before(required struct rc) {
+		// 	if ( !getFW().isFrontEndRequest() ) {
+		// 		getFW().redirect(action='admin:main.default');
+		// 	};
+		// }
 
 }
