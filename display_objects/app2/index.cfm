@@ -10,5 +10,5 @@
 */
 
 include '../../config.fw1.cfm';
-WriteOutput(new MuraFW1.Application(variables.framework).doAction('app2:main.default'));
+WriteOutput( CreateObject( "#variables.framework.package#.Application" ).init( variables.framework ).doAction( 'app2:main.default' ) );
 </cfscript>
