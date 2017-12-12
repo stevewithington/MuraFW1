@@ -15,9 +15,26 @@ http://www.apache.org/licenses/LICENSE-2.0
 component persistent="false" accessors="true" output="false" extends="framework.one" {
 
 	include 'config.fw1.cfm'; // framework variables
-	include '../../config/applicationSettings.cfm';
-	include '../../config/mappings.cfm';
-	include '../mappings.cfm';
+
+	this.pluginPath = GetDirectoryFromPath(GetCurrentTemplatePath());
+	this.muraroot = Left(this.pluginPath, Find('plugins', this.pluginPath) - 1);
+	this.depth = ListLen(RemoveChars(this.pluginPath,1, Len(this.muraroot)), '\/');  
+	this.includeroot = RepeatString('../', this.depth);
+
+	if ( DirectoryExists(this.muraroot & 'core') ) {
+		// Using 7.1
+		this.muraAppConfigPath = this.includeroot & 'core/';
+		include this.muraAppConfigPath & 'appcfc/applicationSettings.cfm';
+	} else {
+		// Pre 7.1
+		this.muraAppConfigPath = this.includeroot & 'config';
+		include this.includeroot & 'config/applicationSettings.cfm';
+
+		try {
+			include this.includeroot & 'config/mappings.cfm';
+			include this.includeroot & 'plugins/mappings.cfm';
+		} catch(any e) {}
+	}
 
 	variables.fw1Keys = 'SERVICEEXECUTIONCOMPLETE,LAYOUTS,CONTROLLEREXECUTIONCOMPLETE,VIEW,SERVICES,CONTROLLERS,CONTROLLEREXECUTIONSTARTED';
 
@@ -165,11 +182,11 @@ component persistent="false" accessors="true" output="false" extends="framework.
 	}
 
 	public void function setupSession() {
-		include '../../config/appcfc/onSessionStart_include.cfm';
+		include this.muraAppConfigPath &  '/appcfc/onSessionStart_include.cfm';
 	}
 
 	public void function onSessionEnd() {
-		include '../../config/appcfc/onSessionEnd_include.cfm';
+		include this.muraAppConfigPath & '/appcfc/onSessionEnd_include.cfm';
 	}
 
 	// path=#resolvePath()#
@@ -233,19 +250,6 @@ component persistent="false" accessors="true" output="false" extends="framework.
 			}
 			abort;
 		}
-
-		// public any function onMissingView(any rc) {
-		// 	rc.errors = [];
-		// 	rc.isMissingView = true;
-		// 	// forward to appropriate error screen
-		// 	if ( isFrontEndRequest() ) {
-		// 		ArrayAppend(rc.errors, "The page you're looking for doesn't exist.");
-		// 		redirect(action='app1:main.error', preserve='errors,isMissingView');
-		// 	} else {
-		// 		ArrayAppend(rc.errors, "The page you're looking for <strong>#rc.action#</strong> doesn't exist.");
-		// 		redirect(action='admin:main', preserve='errors,isMissingView');
-		// 	}
-		// }
 
 	// ========================== Helper Methods ==================================
 

@@ -10,6 +10,10 @@ http://www.apache.org/licenses/LICENSE-2.0
 
 /* MuraFW1 Brand
 -------------------------------------------------- */
+.container-murafw1 {
+	max-width: 100%;
+}
+
 .container-murafw1 .navbar .navbar-header {
 	padding: 0.5em;
 	margin: 0 1em;
@@ -18,9 +22,9 @@ http://www.apache.org/licenses/LICENSE-2.0
 	font-size: 20px;
 	color: #333;
 	text-shadow: 0 1px 0 rgba(255,255,255,.1), 0 0 30px rgba(255,255,255,.125);
-	-webkit-transition: all .2s linear;
+	/* -webkit-transition: all .2s linear;
 	-moz-transition: all .2s linear;
-	transition: all .2s linear;
+	transition: all .2s linear; */
 }
 
 /* MuraFW1 Nav

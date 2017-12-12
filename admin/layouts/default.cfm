@@ -18,7 +18,7 @@ http://www.apache.org/licenses/LICENSE-2.0
 				<div class="navbar navbar-murafw1">
 					<div class="navbar-header">
 						<a class="plugin-brand" href="#buildURL('admin:main')#">
-							#esapiEncode('html', rc.pc.getPackage())#
+							#EncodeForHTML(rc.pc.getPackage())#
 						</a>
 					</div><!--- /.navbar-header --->
 
