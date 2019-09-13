@@ -84,7 +84,7 @@ setting should populate `config.xml.cfm` when the plugin is deployed.
 Please also note, Mura CMS *also* uses [DI/1](https://github.com/framework-one/di1)
 to manage its dependency injection. This means that you **will** run
 into issues if you attempt to use any of the names used for its
-beans as your `pacakageName`. In other words, use something unique for
+beans as your `packageName`. In other words, use something unique for
 your `packageName`.
 
 ##### useRequestURI
@@ -92,9 +92,9 @@ Another important variable to note is `framework.baseURL='useRequestURI';`
 **Do NOT change this setting!** This setting is required in order
 for Mura CMS and FW/1 to coexist.
 
-##### packageName
+##### packageNameAction
 The `variables.framework.action` defaults to your
-`pacakgeName & action` ... e.g. if your packageName is 'MuraFW1',
+`packageName & action` ... e.g. if your packageName is 'MuraFW1',
 the default action will be **MuraFW1action**.  This is to help
 prevent your plugin from intercepting another plugin's action.
 So, if your packageName is not a valid CFML variable name
