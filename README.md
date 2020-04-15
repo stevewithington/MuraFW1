@@ -9,9 +9,9 @@ or more commonly known as FW/1.
 
 ### Minimum Requirements
 
-* [Mura CMS](http://www.getmura.com) Core Version 7.0+
-* [Adobe ColdFusion](http://www.adobe.com/coldfusion) 2016.0.02.299200
-* [Lucee](http://lucee.org) 5.0.0.254
+* [Mura CMS](https://www.getmura.com) Core Version 7.0+
+* [Adobe ColdFusion](https://www.adobe.com/coldfusion) 2016.0.02.299200
+* [Lucee](https://lucee.org) 5.0.0.254
 
 ## Important Notes
 
