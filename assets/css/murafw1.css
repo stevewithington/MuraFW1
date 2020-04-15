@@ -2,7 +2,7 @@
 
 This file is part of MuraFW1
 
-Copyright 2010-2017 Stephen J. Withington, Jr.
+Copyright 2010-2020 Stephen J. Withington, Jr.
 Licensed under the Apache License, Version v2.0
 http://www.apache.org/licenses/LICENSE-2.0
 
@@ -62,7 +62,7 @@ http://www.apache.org/licenses/LICENSE-2.0
 	.container-murafw1 .navbar .navbar-header {
 		float: none;
 		clear: both;
-		dislay: block;
+		display: block;
 		padding: 0 0 1em 0;
 		margin-left: 0;
 	}

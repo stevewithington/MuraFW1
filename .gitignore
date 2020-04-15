@@ -1,3 +1,4 @@
+WEB-INF/*
 *~
 .DS_Store
 ._*
@@ -5,9 +6,15 @@ Thumbs.db
 .cache
 .project
 .rdsTempFiles
+settings.xml
 .settings
 .tmproj
 *.esproj
 *.sublime-project
 *.sublime-workspace
 *_notes/
+# Intellij IDEA files
+*.iml
+*.ipr
+*.idea
+run-tests.sh

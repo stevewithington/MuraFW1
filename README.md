@@ -8,17 +8,19 @@ or more commonly known as FW/1.
 ## PLEASE READ
 
 ### Minimum Requirements
+
 * [Mura CMS](http://www.getmura.com) Core Version 7.0+
 * [Adobe ColdFusion](http://www.adobe.com/coldfusion) 2016.0.02.299200
 * [Lucee](http://lucee.org) 5.0.0.254
 
-
 ## Important Notes
+
 Assuming you've used FW/1 in the past, you'll need to know
 a few minor differences between a typical FW/1 application
 and how it lives within Mura CMS.
 
 ### Default Subsystems
+
 First of all, this plugin does use FW/1 subsystems. This means your
 URLs will have either `?{packageName}Action=admin:your.view`
 or `?{packageName}Action=app1:your.view`, etc. For example:
@@ -59,20 +61,24 @@ pencil icon to edit the plugin, and finally click the **Update** button
 in order for Mura to pick up the changes.
 
 ### Important Files
+
 Next, here are some of the more important files to be aware of
 and a little bit about what they are.
 
 #### /framework/one.cfc
+
 This is the file that is typically known in FW/1 as
 **/framework/one.cfc** You should be able to update this
 with the latest and greatest version available. No modifications
 have been made to the file.
 
 #### /config.fw1.cfm
+
 This file contains `variables.framework` which is used by both
 FW/1 and Mura.
 
 ##### packageName
+
 The most important variable in this file is:
 `variables.framework.package = 'MuraFW1';` You **MUST** enter
 the plugin's *packageName* here and it MUST be the same as found
@@ -88,11 +94,13 @@ beans as your `packageName`. In other words, use something unique for
 your `packageName`.
 
 ##### useRequestURI
+
 Another important variable to note is `framework.baseURL='useRequestURI';`
 **Do NOT change this setting!** This setting is required in order
 for Mura CMS and FW/1 to coexist.
 
 ##### packageNameAction
+
 The `variables.framework.action` defaults to your
 `packageName & action` ... e.g. if your packageName is 'MuraFW1',
 the default action will be **MuraFW1action**.  This is to help
@@ -102,6 +110,7 @@ So, if your packageName is not a valid CFML variable name
 problems trying to get your application to work.
 
 ##### siloSubsystems
+
 Lastly, by default, each subsystem is treated as its own, individual
 application, unaware of any other subsystem, and will not respond to
 requests for any other subsystem. For example, if a link in App2 points
@@ -118,39 +127,39 @@ one, then as you interact with it, all of them will respond with the
 same view. **You have been warned!**
 
 #### /Application.cfc
+
 This file extends /framework/one.cfc. Here is where you'll be able
 to edit common FW/1 methods such as setupApplication(), setupSession(),
 setupRequest(), setupSubsystem() if needed. The hope is that you
 shouldn't have to modify it very much for simple applications.
 
 #### /model/handlers/murafw1.cfc
+
 This file extends `mura.plugin.pluginGenericEventHandler`. Here is
 where you can modify/add commonly used Mura 'events' such as
 onApplicationLoad(), onSiteRequestStart(), onRenderStart(), etc.
 
-
-
 ## Additional Resources
-* [MuraFW1 Project Source Code](http://github.com/stevewithington/MuraFW1)
-* [Mura CMS Project Home](http://www.getmura.com)
-* [Mura CMS Project Source Code](http://github.com/blueriver/MuraCMS)
-* [Mura CMS Support](http://www.getmura.com/support/)
-* [Mura CMS Blog](http://www.getmura.com/blog/)
-* [Mura CMS Forum/Google Group](https://groups.google.com/group/mura-cms-developers)
-* [FW/1 Project Home](http://fw1.riaforge.org)
-* [FW/1 Project Source Code](https://github.com/framework-one/fw1)
-* [FW/1 Documentation wiki](https://github.com/framework-one/fw1/wiki)
-* [FW/1 Blog](http://corfield.org/blog/archives.cfm/category/fw1)
-* [FW/1 Forum/Google Group](http://groups.google.com/group/framework-one/)
-* [DI/1 Project Home](https://github.com/framework-one/di1)
-* [DI/1 Documentation wiki](https://github.com/framework-one/di1/wiki)
 
+* [MuraFW1 Project Source Code](https://github.com/stevewithington/MuraFW1)
+* [Mura CMS Project Home](https://www.getmura.com)
+* [Mura CMS Project Source Code](https://github.com/blueriver/MuraCMS)
+* [Mura CMS Support](https://www.getmura.com/support/)
+* [Mura CMS Blog](https://www.getmura.com/blog/)
+* [Mura CMS Forum/Google Group](https://groups.google.com/group/mura-cms-developers)
+* [FW/1 Project Home](https://framework-one.github.io/)
+* [FW/1 Project Source Code](https://github.com/framework-one/fw1)
+* [FW/1 Documentation](https://framework-one.github.io/documentation/)
+* [FW/1 Forum/Google Group](https://groups.google.com/group/framework-one/)
+* [DI/1 Project Home](https://github.com/framework-one/di1)
+* [DI/1 Documentation](http://framework-one.github.io/documentation/using-di-one.html)
 
 ## License
-Copyright 2010-2017 Stephen J. Withington, Jr. (and others -- see individual files for additional copyright holders).
+
+Copyright 2010-2020 Stephen J. Withington, Jr. (and others -- see individual files for additional copyright holders).
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this work except in compliance with the License. You may obtain a copy of the License in the LICENSE file, or at:
 
-http://www.apache.org/licenses/LICENSE-2.0
+<http://www.apache.org/licenses/LICENSE-2.0>
 
 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
